@@ -5,4 +5,6 @@
 *.crf
 
 STM32F103C8T6_LoRaSun-RT_Thread/Project/Project-LoRaSun(Node)/Objects
+STM32F103C8T6_LoRaSun-RT_Thread/Project/Project-LoRaSun(Node)/Listings
 STM32F103C8T6_LoRaSun-RT_Thread/Project/Project-LoRaSun(Slave)/Objects
+STM32F103C8T6_LoRaSun-RT_Thread/Project/Project-LoRaSun(Slave)/Listings
