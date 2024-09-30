@@ -99,6 +99,7 @@ typedef struct
 
 typedef struct
 {
+	u32 gw_sn;
   u8 base_freq;//基础频率
   u8 wireless_num;//天线数量
 }NwkParentSaveStruct;//要连接的网关参数,配对模式使用

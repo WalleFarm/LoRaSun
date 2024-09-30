@@ -167,7 +167,7 @@ void app_sx1278_thread_entry(void *parameter)
       printf_hex("recv=", recv_from->app_data, recv_from->data_len);
     }
 
-    delay_os(10);
+    delay_os(5);
   }
 }
 

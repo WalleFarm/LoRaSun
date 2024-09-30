@@ -47,6 +47,7 @@ void nwk_slave_uart_parse(u8 *recv_buff, u16 recv_len)
           pSlaveBroad->bw=pData[0];
           pData+=1;          
           u8 broad_len=pData[0];
+					pData+=1;
           if(broad_len>sizeof(pSlaveBroad->broad_buff))
           {
             printf("error broad_len=%d\n", broad_len);
@@ -503,14 +504,30 @@ void nwk_slave_broad_process(void)
     {
       nwk_slave_set_lora_param(pSlaveBroad->freq, pSlaveBroad->sf, pSlaveBroad->bw);
 			printf("broad param (%d, %d, %d)\n", pSlaveBroad->freq/1000000, pSlaveBroad->sf, pSlaveBroad->bw);
-      nwk_slave_send_buff(pSlaveBroad->broad_buff, pSlaveBroad->broad_len);//发送数据包
-      u32 tx_time=nwk_slave_calcu_air_time(pSlaveBroad->sf, pSlaveBroad->bw, pSlaveBroad->broad_len)*1.2;//发送时间,冗余
-      pSlaveBroad->start_rtc_time=nwk_get_rtc_counter();//记录当前时间,防止超时
-      pSlaveBroad->wait_cnts=tx_time/1000+1;//等待秒数
-			printf("tx_time=%d ms, wait_cnts=%d\n", tx_time, pSlaveBroad->wait_cnts);
-      pSlaveBroad->broad_state=NwkSlaveBroadTxCheck;       
+			pSlaveBroad->sniff_cnts=0;
+			pSlaveBroad->broad_state=NwkSlaveBroadSniff;       
       break;
     }
+		case NwkSlaveBroadSniff:
+		{
+			if(pSlaveBroad->sniff_cnts<5)
+			{
+				nwk_slave_send_sniff(pSlaveBroad->sf, pSlaveBroad->bw);
+				pSlaveBroad->sniff_cnts++;
+			}
+			else
+			{
+				nwk_slave_recv_init();//状态切换,清除发送状态位
+				nwk_slave_set_lora_param(pSlaveBroad->freq, pSlaveBroad->sf, pSlaveBroad->bw);
+				nwk_slave_send_buff(pSlaveBroad->broad_buff, pSlaveBroad->broad_len);//发送数据包
+				u32 tx_time=nwk_slave_calcu_air_time(pSlaveBroad->sf, pSlaveBroad->bw, pSlaveBroad->broad_len)*1.2;//发送时间,冗余
+				pSlaveBroad->start_rtc_time=nwk_get_rtc_counter();//记录当前时间,防止超时
+				pSlaveBroad->wait_cnts=tx_time/1000+1;//等待秒数
+				printf("tx_time=%d ms, wait_cnts=%d\n", tx_time, pSlaveBroad->wait_cnts);
+				pSlaveBroad->broad_state=NwkSlaveBroadTxCheck;  				
+			}
+			break;
+		}
     case NwkSlaveBroadTxCheck:
     {
       u32 now_time=nwk_get_rtc_counter();
@@ -833,8 +850,8 @@ void nwk_slave_work_state_check(void)
       }
       else
       {
-        pSlaveRx->rx_state=NwkSlaveRxInit;
-        g_sNwkSlaveWork.work_state=NwkSlaveWorkRX;
+//        pSlaveRx->rx_state=NwkSlaveRxInit;
+//        g_sNwkSlaveWork.work_state=NwkSlaveWorkRX;
       }
       break;
     }

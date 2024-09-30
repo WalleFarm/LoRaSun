@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\Objects\KKK.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\Objects\KKK.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060422: Last Updated: Mon Sep 30 17:13:27 2024
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060422: Last Updated: Mon Sep 30 19:46:02 2024
 <BR><P>
 <H3>Maximum Stack Usage =       1108 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -1928,10 +1928,11 @@ Global Symbols
 <LI><a href="#[10c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_recv_parse
 </UL>
 
-<P><STRONG><a name="[115]"></a>nwk_node_search_process</STRONG> (Thumb, 340 bytes, Stack size 48 bytes, nwk_node.o(i.nwk_node_search_process))
+<P><STRONG><a name="[115]"></a>nwk_node_search_process</STRONG> (Thumb, 402 bytes, Stack size 48 bytes, nwk_node.o(i.nwk_node_search_process))
 <BR><BR>[Stack]<UL><LI>Max Depth = 160<LI>Call Chain = nwk_node_search_process &rArr; nwk_node_set_lora_param &rArr; drv_sx1278_set_sf &rArr; drv_sx1278_set_nb_trig_peaks &rArr; hal_sx1278_write_addr &rArr; hal_sx1278_write_buffer &rArr; hal_sx1278_spi_rw_byte
 </UL>
-<BR>[Calls]<UL><LI><a href="#[10e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_tea_decrypt
+<BR>[Calls]<UL><LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;printf_hex
+<LI><a href="#[10e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_tea_decrypt
 <LI><a href="#[101]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_get_rtc_counter
 <LI><a href="#[fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_find_head
 <LI><a href="#[111]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_set_lora_param
@@ -2086,6 +2087,7 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[8a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2printf
 </UL>
 <BR>[Called By]<UL><LI><a href="#[39]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_sx1278_thread_entry
+<LI><a href="#[115]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_search_process
 </UL>
 
 <P><STRONG><a name="[11d]"></a>rt_application_init</STRONG> (Thumb, 34 bytes, Stack size 16 bytes, components.o(i.rt_application_init))

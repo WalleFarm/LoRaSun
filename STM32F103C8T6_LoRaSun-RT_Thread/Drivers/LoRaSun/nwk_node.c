@@ -743,7 +743,9 @@ void nwk_node_search_process(void)
     }
     case NwkNodeSearchCadInit: //CAD初始化
     {
-      nwk_node_set_lora_param(base_freq+ptr*1000000, sf, bw);
+			u32 freq=base_freq+ptr*1000000;
+			printf("**search param (%d, %d, %d)\n", freq/1000000, sf, bw);
+      nwk_node_set_lora_param(freq, sf, bw);
       nwk_node_cad_init();
       pSearch->search_state=NwkNodeSearchCadCheck;
       break;
@@ -758,10 +760,21 @@ void nwk_node_search_process(void)
         { 
           ptr=0;
         }
-        pSearch->search_state=NwkNodeSearchCadInit;//进行下一个频段搜索
+				u32 now_time=nwk_get_rtc_counter();
+				if(now_time-pSearch->search_start_time>5)
+				{
+					printf("**** search exit!\n");
+					pSearch->search_state=NwkNodeSearchIdel;//退出
+				}
+				else
+				{
+					pSearch->search_state=NwkNodeSearchCadInit;//进行下一个频段搜索
+				}
+        
       }
       else if(result==CadResultSuccess)//搜索成功 
       {
+				printf("search into recv mode!\n");
         nwk_node_recv_init();//进入接收模式
         pSearch->search_state=NwkNodeSearchRxCheck;
       }
@@ -771,8 +784,9 @@ void nwk_node_search_process(void)
     {
       int16_t rssi;
       u8 recv_len=nwk_node_recv_check(g_sNwkNodeWork.node_rx.recv_buff, &rssi);
-      if(recv_len==8)
+      if(recv_len>0)
       {
+				printf_hex("search recv=", g_sNwkNodeWork.node_rx.recv_buff, recv_len);
         nwk_tea_decrypt(g_sNwkNodeWork.node_rx.recv_buff, recv_len, (u32*)g_sNwkNodeWork.root_key);//解密
         //数据解析,存储网关信息
         //A5 gw_sn freq  wireless
@@ -1277,7 +1291,8 @@ void nwk_node_work_check(void)
         u32 now_time=nwk_get_rtc_counter();
         static u32 wait_time=20;
         int det_time=now_time-pNodeSearch->search_start_time;
-        if(gw_cnts==0 && det_time>wait_time)
+				printf("det_time=%d\n", det_time);
+        if(gw_cnts==0)// && det_time>wait_time
         {
           wait_time*=2;
           if(wait_time>86400)
@@ -1288,7 +1303,7 @@ void nwk_node_work_check(void)
           pNodeSearch->search_start_time=now_time;
           pNodeSearch->search_state=NwkNodeSearchCadInit;
           g_sNwkNodeWork.work_state=NwkNodeWorkSearch;//进入搜索状态
-          printf("start search!\n");
+          printf("*****start search!\n");
         }
         
       } 

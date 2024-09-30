@@ -38,6 +38,7 @@ typedef enum
 {
   NwkSlaveBroadIdel=0,
   NwkSlaveBroadInit,
+  NwkSlaveBroadSniff,
   NwkSlaveBroadTxCheck,
   NwkSlaveBroadExit,
 
@@ -76,6 +77,7 @@ typedef enum
 typedef struct
 {
   u8 broad_state;
+	u8 sniff_cnts;
   u8 broad_buff[50];
   u8 broad_len;
   u8 sf,bw;
