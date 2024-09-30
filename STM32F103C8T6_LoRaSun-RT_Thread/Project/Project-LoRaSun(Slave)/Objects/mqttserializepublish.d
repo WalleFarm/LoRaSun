@@ -1,0 +1,11 @@
+.\objects\mqttserializepublish.o: ..\..\Drivers\MQTT\MQTTSerializePublish.c
+.\objects\mqttserializepublish.o: ..\..\Drivers\MQTT\MQTTPacket.h
+.\objects\mqttserializepublish.o: ..\..\Drivers\MQTT\MQTTConnect.h
+.\objects\mqttserializepublish.o: ..\..\Drivers\MQTT\MQTTPublish.h
+.\objects\mqttserializepublish.o: ..\..\Drivers\MQTT\MQTTSubscribe.h
+.\objects\mqttserializepublish.o: ..\..\Drivers\MQTT\MQTTUnsubscribe.h
+.\objects\mqttserializepublish.o: ..\..\Drivers\MQTT\MQTTFormat.h
+.\objects\mqttserializepublish.o: ..\..\Drivers\MQTT\StackTrace.h
+.\objects\mqttserializepublish.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+.\objects\mqttserializepublish.o: ..\..\Drivers\MQTT\MQTTPacket.h
+.\objects\mqttserializepublish.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h

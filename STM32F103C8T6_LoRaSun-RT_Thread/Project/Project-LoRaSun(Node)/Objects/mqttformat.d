@@ -1,0 +1,11 @@
+.\objects\mqttformat.o: ..\..\Drivers\MQTT\MQTTFormat.c
+.\objects\mqttformat.o: ..\..\Drivers\MQTT\StackTrace.h
+.\objects\mqttformat.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+.\objects\mqttformat.o: ..\..\Drivers\MQTT\MQTTPacket.h
+.\objects\mqttformat.o: ..\..\Drivers\MQTT\MQTTConnect.h
+.\objects\mqttformat.o: ..\..\Drivers\MQTT\MQTTPublish.h
+.\objects\mqttformat.o: ..\..\Drivers\MQTT\MQTTSubscribe.h
+.\objects\mqttformat.o: ..\..\Drivers\MQTT\MQTTUnsubscribe.h
+.\objects\mqttformat.o: ..\..\Drivers\MQTT\MQTTFormat.h
+.\objects\mqttformat.o: ..\..\Drivers\MQTT\MQTTPacket.h
+.\objects\mqttformat.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
