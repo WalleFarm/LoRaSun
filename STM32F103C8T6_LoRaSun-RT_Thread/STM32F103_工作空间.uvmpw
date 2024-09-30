@@ -13,4 +13,9 @@
     <NodeIsExpanded>1</NodeIsExpanded>
   </project>
 
+  <project>
+    <PathAndName>.\Project\Project-LoRaSun(Slave)\Project-LoRaSun(Slave).uvprojx</PathAndName>
+    <NodeIsExpanded>1</NodeIsExpanded>
+  </project>
+
 </ProjectWorkspace>
