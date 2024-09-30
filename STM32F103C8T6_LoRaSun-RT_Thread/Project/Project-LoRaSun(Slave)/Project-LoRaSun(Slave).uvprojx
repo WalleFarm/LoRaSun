@@ -7,7 +7,7 @@
 
   <Targets>
     <Target>
-      <TargetName>Project-LoRaSun(Node)</TargetName>
+      <TargetName>Project-LoRaSun(Slave)</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
       <pArmCC>5060422::V5.06 update 4 (build 422)::ARMCC</pArmCC>
@@ -646,11 +646,6 @@
           <GroupName>LoRaSun</GroupName>
           <Files>
             <File>
-              <FileName>nwk_node.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Drivers\LoRaSun\nwk_node.c</FilePath>
-            </File>
-            <File>
               <FileName>nwk_bsp.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Drivers\LoRaSun\nwk_bsp.c</FilePath>
@@ -659,11 +654,6 @@
               <FileName>nwk_slave.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Drivers\LoRaSun\nwk_slave.c</FilePath>
-            </File>
-            <File>
-              <FileName>nwk_master.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Drivers\LoRaSun\nwk_master.c</FilePath>
             </File>
           </Files>
         </Group>
