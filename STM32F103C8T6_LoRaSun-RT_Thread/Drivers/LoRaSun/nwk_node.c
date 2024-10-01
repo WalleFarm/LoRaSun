@@ -7,7 +7,7 @@
 
 #include "nwk_node.h" 
 
-NwkNodeSaveStruct g_sNwkNodeSave={0};
+//NwkNodeSaveStruct g_sNwkNodeSave={0};
 NwkNodeWorkStruct g_sNwkNodeWork={0};
 /*		
 ================================================================================
@@ -16,15 +16,15 @@ NwkNodeWorkStruct g_sNwkNodeWork={0};
 输出 : 
 ================================================================================
 */ 
-void nwk_node_read(void)
-{
-	nwk_eeprom_read((u8*)&g_sNwkNodeSave, sizeof(g_sNwkNodeSave));
-	if(g_sNwkNodeSave.crc_value!=nwk_crc16((u8*)&g_sNwkNodeSave, sizeof(g_sNwkNodeSave)-2))
-	{
-		memset((u8*)&g_sNwkNodeSave, 0, sizeof(g_sNwkNodeSave));
-		nwk_node_save();
-	}
-}
+//void nwk_node_read(void)
+//{
+//	nwk_eeprom_read((u8*)&g_sNwkNodeSave, sizeof(g_sNwkNodeSave));
+//	if(g_sNwkNodeSave.crc_value!=nwk_crc16((u8*)&g_sNwkNodeSave, sizeof(g_sNwkNodeSave)-2))
+//	{
+//		memset((u8*)&g_sNwkNodeSave, 0, sizeof(g_sNwkNodeSave));
+//		nwk_node_save();
+//	}
+//}
 
 
 /*		
@@ -34,11 +34,11 @@ void nwk_node_read(void)
 输出 : 
 ================================================================================
 */ 
-void nwk_node_save(void)
-{
-	g_sNwkNodeSave.crc_value=nwk_crc16((u8*)&g_sNwkNodeSave, sizeof(g_sNwkNodeSave)-2);
-	nwk_eeprom_save((u8*)&g_sNwkNodeSave, sizeof(g_sNwkNodeSave));
-}
+//void nwk_node_save(void)
+//{
+//	g_sNwkNodeSave.crc_value=nwk_crc16((u8*)&g_sNwkNodeSave, sizeof(g_sNwkNodeSave)-2);
+//	nwk_eeprom_save((u8*)&g_sNwkNodeSave, sizeof(g_sNwkNodeSave));
+//}
 
 
 /*		
@@ -48,10 +48,10 @@ void nwk_node_save(void)
 输出 : 
 ================================================================================
 */ 
-void nwk_set_node_sn(u32 node_sn)
+void nwk_node_set_sn(u32 node_sn)
 {
-	g_sNwkNodeSave.node_sn=node_sn;
-	nwk_node_save();
+	g_sNwkNodeWork.node_sn=node_sn;
+//	nwk_node_save();
 }
 
 /*		
@@ -61,7 +61,7 @@ void nwk_set_node_sn(u32 node_sn)
 输出 : 
 ================================================================================
 */ 
-void nwk_set_root_key(u8 *key)
+void nwk_node_set_root_key(u8 *key)
 {
   memcpy(g_sNwkNodeWork.root_key, key, 16);
 }
@@ -73,11 +73,11 @@ void nwk_set_root_key(u8 *key)
 输出 : 
 ================================================================================
 */ 
-void nwk_set_parent(NwkParentSaveStruct *parent)
-{
-	memcpy(&g_sNwkNodeSave.parent_save, parent, sizeof(NwkParentSaveStruct));
-	nwk_node_save();
-}
+//void nwk_node_set_parent(NwkParentSaveStruct *parent)
+//{
+//	memcpy(&g_sNwkNodeSave.parent_save, parent, sizeof(NwkParentSaveStruct));
+//	nwk_node_save();
+//}
 
 /*		
 ================================================================================
@@ -86,7 +86,7 @@ void nwk_set_parent(NwkParentSaveStruct *parent)
 输出 : 
 ================================================================================
 */ 
-void nwk_set_wake_period(u16 period)
+void nwk_node_set_wake_period(u16 period)
 {
 	g_sNwkNodeWork.wake_period=period;
 }
@@ -98,7 +98,7 @@ void nwk_set_wake_period(u16 period)
 输出 : 
 ================================================================================
 */ 
-void nwk_set_lora_dev(LoRaDevStruct *pLoRaDev)
+void nwk_node_set_lora_dev(LoRaDevStruct *pLoRaDev)
 {
 	g_sNwkNodeWork.pLoRaDev=pLoRaDev;
 }
@@ -358,7 +358,7 @@ u8 nwk_node_make_send_buff(u8 opt, u32 dst_sn, u8 *key, u8 cmd_type, u8 pack_num
 	u8 union_buff[NWK_TRANSMIT_MAX_SIZE+16]={0};
 	u8 union_len=0;
 	union_buff[union_len++]=0;
-	u32 src_sn=g_sNwkNodeSave.node_sn;
+	u32 src_sn=g_sNwkNodeWork.node_sn;
 	union_buff[union_len++]=dst_sn>>24; 
 	union_buff[union_len++]=dst_sn>>16;
 	union_buff[union_len++]=dst_sn>>8;
@@ -513,9 +513,9 @@ void nwk_node_recv_parse(u8 *recv_buff, u8 recv_len)
 				pData+=1;
 				u8 pack_num=pData[0];
 				pData+=1;
-				if(dst_sn != g_sNwkNodeSave.node_sn)
+				if(dst_sn != g_sNwkNodeWork.node_sn)
 				{
-					printf("dst_sn=0x%08X != local_sn=0x%08X\n", dst_sn, g_sNwkNodeSave.node_sn);
+					printf("dst_sn=0x%08X != local_sn=0x%08X\n", dst_sn, g_sNwkNodeWork.node_sn);
 					return;
 				}
 				if(pGateWay && pack_num==pGateWay->down_pack_num)
@@ -621,7 +621,7 @@ void nwk_node_recv_parse(u8 *recv_buff, u8 recv_len)
 */ 
 NwkParentWorkStrcut *nwk_node_search_gw(u32 gw_sn)
 {
-	for(u8 i=0; i<NWK_GateWay_NUM; i++)
+	for(u8 i=0; i<NWK_GW_NUM; i++)
 	{
 		NwkParentWorkStrcut *pGateWay=&g_sNwkNodeWork.parent_list[i];
 		if(pGateWay->gw_sn==gw_sn)
@@ -645,7 +645,7 @@ NwkParentWorkStrcut *nwk_node_select_gw(void)
 {
 	//网关质量:N信号*0.5+N(1-负载)*0.3+N(5-失败次数)*0.2   N表示归一化
   
-  for(u8 i=0; i<NWK_GateWay_NUM; i++)
+  for(u8 i=0; i<NWK_GW_NUM; i++)
   {
     NwkParentWorkStrcut *pGateWay=&g_sNwkNodeWork.parent_list[i];
     if(pGateWay->gw_sn>0)
@@ -804,7 +804,7 @@ void nwk_node_search_process(void)
           NwkParentWorkStrcut *pGateWay=nwk_node_search_gw(gw_sn);
           if(pGateWay==NULL)
           {
-            for(u8 i=0; i<NWK_GateWay_NUM; i++)
+            for(u8 i=0; i<NWK_GW_NUM; i++)
             {
               NwkParentWorkStrcut *pGateWay=&g_sNwkNodeWork.parent_list[i];
               if(pGateWay->gw_sn==0)
@@ -821,6 +821,14 @@ void nwk_node_search_process(void)
           }
         }
         pSearch->search_state=NwkNodeSearchExit;
+      }
+      else
+      {
+        u32 now_time=nwk_get_rtc_counter();
+        if(now_time-pSearch->search_start_time>11)//搜索时间到
+        {
+          pSearch->search_state=NwkNodeSearchIdel;
+        }        
       }
       break;
     }    
@@ -865,7 +873,7 @@ void nwk_node_rx_process(void)
     case NwkNodeRxInit:
     {
       u16 freq_cnts=(NWK_MAX_FREQ-NWK_MIN_FREQ)/1000000*2;
-      pNodeRx->freq=(nwk_crc16((u8*)&g_sNwkNodeSave.node_sn, 4)%freq_cnts)*500000+NWK_MIN_FREQ;//根据序列号计算频段  
+      pNodeRx->freq=(nwk_crc16((u8*)&g_sNwkNodeWork.node_sn, 4)%freq_cnts)*500000+NWK_MIN_FREQ;//根据序列号计算频段  
       pNodeRx->rx_state=NwkNodeRxCadInit;
       pNodeRx->listen_cnts=0;
       break;
@@ -1280,11 +1288,15 @@ void nwk_node_work_check(void)
       {
         //不具备有效网关就要搜索
         u8 gw_cnts=0;
-        for(u8 i=0; i<NWK_GateWay_NUM; i++)
+        for(u8 i=0; i<NWK_GW_NUM; i++)
         {
           NwkParentWorkStrcut *pGateWay=&g_sNwkNodeWork.parent_list[i];
           if(pGateWay->gw_sn>0)
           {
+            if(pGateWay->rssi<0 && pGateWay->rssi>-140)
+            {
+              
+            }
             gw_cnts++;
           }
         }
@@ -1334,7 +1346,7 @@ void nwk_node_work_check(void)
       }
 //      if(g_sNwkNodeWork.work_state==NwkNodeWorkIdel)//仍旧空闲--入网检查
 //      {
-//        for(u8 i=0; i<NWK_GateWay_NUM; i++)
+//        for(u8 i=0; i<NWK_GW_NUM; i++)
 //        {
 //          NwkParentWorkStrcut *pGateWay=&g_sNwkNodeWork.parent_list[i];
 //          if(pGateWay->gw_sn>0 && pGateWay->join_state==JoinStateNone)
@@ -1423,18 +1435,22 @@ NwkNodeRecvFromStruct *nwk_node_recv_from_check(void)
 输出 : //0~不休眠  time~唤醒节点 FFFFFFFF~全休眠
 ================================================================================
 */ 
-u32 nwk_node_main(void)
+NowkNodeReturnStruct *nwk_node_main(void)
 {
-	nwk_node_work_check();
   u32 min_alarm_time=0xFFFFFFFF;  
-
+  NowkNodeReturnStruct *pReturn=&g_sNwkNodeWork.node_return;
+	nwk_node_work_check();
+  pReturn->pRecvFrom=nwk_node_recv_from_check();
+  
   if(g_sNwkNodeWork.work_state!=NwkNodeWorkIdel)//有任务在运行
   {
-    return 0;//不休眠
+    pReturn->alarm_time=0;
+    return pReturn;//不休眠
   }
   if(g_sNwkNodeWork.wake_period==0)
   {
-    return 0;//不休眠
+    pReturn->alarm_time=0;
+    return pReturn;//不休眠
   }
   u32 curr_alarm_time=g_sNwkNodeWork.node_tx_gw.alarm_rtc_time;
   if(curr_alarm_time>0 && curr_alarm_time<min_alarm_time)
@@ -1461,8 +1477,9 @@ u32 nwk_node_main(void)
   }  
   
   g_sNwkNodeWork.alarm_rtc_time=min_alarm_time;
+  pReturn->alarm_time=min_alarm_time;
   
-  return g_sNwkNodeWork.alarm_rtc_time;
+  return pReturn;
 }
 
 

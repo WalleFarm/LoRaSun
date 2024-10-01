@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\Objects\KKK.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\Objects\KKK.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060422: Last Updated: Mon Sep 30 19:46:02 2024
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060422: Last Updated: Tue Oct 01 16:17:18 2024
 <BR><P>
 <H3>Maximum Stack Usage =       1108 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -1832,10 +1832,11 @@ Global Symbols
 <LI><a href="#[110]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_rx_process
 </UL>
 
-<P><STRONG><a name="[b1]"></a>nwk_node_main</STRONG> (Thumb, 98 bytes, Stack size 16 bytes, nwk_node.o(i.nwk_node_main))
+<P><STRONG><a name="[b1]"></a>nwk_node_main</STRONG> (Thumb, 130 bytes, Stack size 16 bytes, nwk_node.o(i.nwk_node_main))
 <BR><BR>[Stack]<UL><LI>Max Depth = 1108<LI>Call Chain = nwk_node_main &rArr; nwk_node_work_check &rArr; nwk_node_tx_gw_process &rArr; nwk_node_recv_parse &rArr; nwk_aes_decrypt &rArr; aes_decrypt_buff &rArr; mbedtls_aes_setkey_dec &rArr; mbedtls_aes_setkey_enc &rArr; aes_gen_tables
 </UL>
-<BR>[Calls]<UL><LI><a href="#[107]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_work_check
+<BR>[Calls]<UL><LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_recv_from_check
+<LI><a href="#[107]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_work_check
 </UL>
 <BR>[Called By]<UL><LI><a href="#[39]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_sx1278_thread_entry
 </UL>
@@ -1865,7 +1866,8 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[b2]"></a>nwk_node_recv_from_check</STRONG> (Thumb, 20 bytes, Stack size 0 bytes, nwk_node.o(i.nwk_node_recv_from_check))
-<BR><BR>[Called By]<UL><LI><a href="#[39]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_sx1278_thread_entry
+<BR><BR>[Called By]<UL><LI><a href="#[b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_main
+<LI><a href="#[39]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_sx1278_thread_entry
 </UL>
 
 <P><STRONG><a name="[10b]"></a>nwk_node_recv_init</STRONG> (Thumb, 22 bytes, Stack size 8 bytes, nwk_node.o(i.nwk_node_recv_init))
@@ -1984,6 +1986,10 @@ Global Symbols
 <LI><a href="#[110]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_rx_process
 </UL>
 
+<P><STRONG><a name="[aa]"></a>nwk_node_set_lora_dev</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, nwk_node.o(i.nwk_node_set_lora_dev))
+<BR><BR>[Called By]<UL><LI><a href="#[a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_sx1278_hal_init
+</UL>
+
 <P><STRONG><a name="[111]"></a>nwk_node_set_lora_param</STRONG> (Thumb, 50 bytes, Stack size 16 bytes, nwk_node.o(i.nwk_node_set_lora_param))
 <BR><BR>[Stack]<UL><LI>Max Depth = 112<LI>Call Chain = nwk_node_set_lora_param &rArr; drv_sx1278_set_sf &rArr; drv_sx1278_set_nb_trig_peaks &rArr; hal_sx1278_write_addr &rArr; hal_sx1278_write_buffer &rArr; hal_sx1278_spi_rw_byte
 </UL>
@@ -2049,10 +2055,6 @@ Global Symbols
 <LI><a href="#[8a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2printf
 </UL>
 <BR>[Called By]<UL><LI><a href="#[b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_main
-</UL>
-
-<P><STRONG><a name="[aa]"></a>nwk_set_lora_dev</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, nwk_node.o(i.nwk_set_lora_dev))
-<BR><BR>[Called By]<UL><LI><a href="#[a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_sx1278_hal_init
 </UL>
 
 <P><STRONG><a name="[10f]"></a>nwk_set_rtc_counter</STRONG> (Thumb, 12 bytes, Stack size 8 bytes, nwk_bsp.o(i.nwk_set_rtc_counter))
@@ -2669,7 +2671,7 @@ Local Symbols
 <P><STRONG><a name="[a6]"></a>app_sx1278_hal_init</STRONG> (Thumb, 230 bytes, Stack size 32 bytes, app_sx1278.o(i.app_sx1278_hal_init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 168<LI>Call Chain = app_sx1278_hal_init &rArr; drv_sx1278_init &rArr; drv_sx1278_set_default_param &rArr; drv_sx1278_set_rf_power &rArr; drv_sx1278_set_pa20dBm &rArr; hal_sx1278_write_addr &rArr; hal_sx1278_write_buffer &rArr; hal_sx1278_spi_rw_byte
 </UL>
-<BR>[Calls]<UL><LI><a href="#[aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_set_lora_dev
+<BR>[Calls]<UL><LI><a href="#[aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_set_lora_dev
 <LI><a href="#[a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1278_init
 <LI><a href="#[a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPI_Init
 <LI><a href="#[a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPI_Cmd

@@ -116,7 +116,7 @@ static void app_sx1278_hal_init(void)
 	g_sDrvSx1278.tag_hal_sx1278.sx1278_spi_rw_byte = app_sx1278_spi_rw_byte;
 	drv_sx1278_init(&g_sDrvSx1278);//初始化
 	
-	nwk_set_lora_dev(&g_sDrvSx1278);
+	nwk_node_set_lora_dev(&g_sDrvSx1278);
 	printf("app_sx1278_hal_init ok!\n");
 	
   
