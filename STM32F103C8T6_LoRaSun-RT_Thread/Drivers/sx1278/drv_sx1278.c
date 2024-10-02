@@ -486,7 +486,7 @@ void drv_sx1278_send(DrvSx1278Struct *psx1278, u8 *buff, u16 len)
 	u8 RegIrqFlagsMask=0,RegFifoTxBaseAddr=0,RegDioMapping1=0,RegDioMapping2=0;
 	drv_sx1278_set_op_mode( psx1278, RFLR_OPMODE_STANDBY );//待机模式
 	
-	printf("send start!\n");
+//	printf("send start!\n");
 	RegIrqFlagsMask = RFLR_IRQFLAGS_RXTIMEOUT |
 								RFLR_IRQFLAGS_RXDONE |
 								RFLR_IRQFLAGS_PAYLOADCRCERROR |
