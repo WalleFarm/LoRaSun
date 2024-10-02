@@ -1,7 +1,7 @@
 #ifndef __USER_OPT_H__
 #define __USER_OPT_H__
 
-#define RT_HEAP_SIZE 512  //RTT的堆栈空间  该数值*4
+#define RT_HEAP_SIZE 1024  //RTT的堆栈空间  该数值*4
 
 #define		USE_UART1
 #define		USE_UART2

@@ -486,7 +486,7 @@ void drv_sx1278_send(DrvSx1278Struct *psx1278, u8 *buff, u16 len)
 	u8 RegIrqFlagsMask=0,RegFifoTxBaseAddr=0,RegDioMapping1=0,RegDioMapping2=0;
 	drv_sx1278_set_op_mode( psx1278, RFLR_OPMODE_STANDBY );//待机模式
 	
-	printf("send start!\n");
+//	printf("send start!\n");
 	RegIrqFlagsMask = RFLR_IRQFLAGS_RXTIMEOUT |
 								RFLR_IRQFLAGS_RXDONE |
 								RFLR_IRQFLAGS_PAYLOADCRCERROR |
@@ -587,17 +587,17 @@ u8 drv_sx1278_cad_check(DrvSx1278Struct *psx1278)
   u8 result=0;
   if(( hal_sx1278_read_addr(&psx1278->tag_hal_sx1278, REG_LR_IRQFLAGS) & RFLR_IRQFLAGS_CADDONE ) == RFLR_IRQFLAGS_CADDONE)//CAD检测完成
   {
-    printf("cad done!\n");
+//    printf("cad done!\n");
     hal_sx1278_write_addr(&psx1278->tag_hal_sx1278, REG_LR_IRQFLAGS, RFLR_IRQFLAGS_CADDONE );//一次写操作清除 IRQ	
     if(( hal_sx1278_read_addr(&psx1278->tag_hal_sx1278, REG_LR_IRQFLAGS) & RFLR_IRQFLAGS_CADDETECTED ) == RFLR_IRQFLAGS_CADDETECTED)//信道检测结果
     {
       hal_sx1278_write_addr(&psx1278->tag_hal_sx1278, REG_LR_IRQFLAGS, RFLR_IRQFLAGS_CADDETECTED );//一次写操作清除 IRQ
-      printf("cad success!\n");
+//      printf("cad success!\n");
       result=2;
     }
     else
     {
-      printf("cad failed!\n");
+//      printf("cad failed!\n");
       result=1;
     }
   }

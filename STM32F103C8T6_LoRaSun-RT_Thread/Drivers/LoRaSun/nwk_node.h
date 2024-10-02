@@ -223,6 +223,7 @@ typedef struct
 void nwk_node_set_sn(u32 node_sn);
 void nwk_node_set_root_key(u8 *key);
 //void nwk_node_set_parent(NwkParentSaveStruct *parent);
+void nwk_node_add_gw(u32 gw_sn, u8 base_freq, u8 wireless_num);
 void nwk_node_set_wake_period(u16 period);
 void nwk_node_set_lora_dev(LoRaDevStruct *pLoRaDev);
 void nwk_node_set_lora_param(u32 freq, u8 sf, u8 bw);
