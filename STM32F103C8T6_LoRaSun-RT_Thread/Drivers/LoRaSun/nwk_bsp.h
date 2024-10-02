@@ -11,6 +11,9 @@ typedef unsigned          char u8;
 typedef unsigned short     int u16;
 typedef unsigned           int u32;
 
+typedef   signed          char s8;
+typedef   signed short     int s16;
+typedef   signed           int s32;
 
 //以下宏定义 在同一个网络系统中必须保持一致
 #define   NWK_RF_CHANNEL_NUM        21  //SF,BW通道数量,节点与网关要保持一致

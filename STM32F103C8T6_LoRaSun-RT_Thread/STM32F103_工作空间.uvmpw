@@ -14,8 +14,11 @@
 
   <project>
     <PathAndName>.\Project\Project-LoRaSun(Slave)\Project-LoRaSun(Slave).uvprojx</PathAndName>
+<<<<<<< HEAD
     <NodeIsActive>1</NodeIsActive>
     <NodeIsExpanded>1</NodeIsExpanded>
+=======
+>>>>>>> fd65b1274a84220bf7bf760ee5cc778059d83e17
   </project>
 
 </ProjectWorkspace>

@@ -15,3 +15,11 @@ STM32F103C8T6_LoRaSun-RT_Thread/Project/Project-LoRaSun(Slave)/Listings
 *.txt
 *.dep
 *.map
+STM32F103C8T6_LoRaSun-RT_Thread/Project/Project-LoRaSun(Node)/Project-LoRaSun(Node).uvguix.YPP
+STM32F103C8T6_LoRaSun-RT_Thread/Project/Project-LoRaSun(Node)/Listings/KKK.map
+*.YPP
+*.dep
+*.htm
+*.htm
+*.axf
+*.map

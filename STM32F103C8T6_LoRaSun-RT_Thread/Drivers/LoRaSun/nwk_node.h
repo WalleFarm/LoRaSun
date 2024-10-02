@@ -24,7 +24,7 @@
 #endif
 
 
-#define NWK_GateWay_NUM          3   //监听的网关最大数量
+#define NWK_GW_NUM          3   //监听的网关最大数量
 #define NWK_D2D_NODE_NUM        3   //D2D设备存储最大数量
 
 #define NWK_NODE_USE_AES        //是否启用AES加密,根据芯片能力和需求确定
@@ -90,19 +90,19 @@ typedef enum
 
 }NwkNodeTxD2dState;//发送D2D状态
 
-typedef struct
-{
-  u32 device_sn;//对方SN
-  u16 wake_period;//唤醒周期
-}NwkD2DSaveStruct;//D2D设备信息存储
+//typedef struct
+//{
+//  u32 device_sn;//对方SN
+//  u16 wake_period;//唤醒周期
+//}NwkD2DSaveStruct;//D2D设备信息存储
 
 
-typedef struct
-{
-	u32 gw_sn;
-  u8 base_freq;//基础频率
-  u8 wireless_num;//天线数量
-}NwkParentSaveStruct;//要连接的网关参数,配对模式使用
+//typedef struct
+//{
+//	u32 gw_sn;
+//  u8 base_freq;//基础频率
+//  u8 wireless_num;//天线数量
+//}NwkParentSaveStruct;//要连接的网关参数,配对模式使用
 
 typedef struct
 {
@@ -111,7 +111,7 @@ typedef struct
   u8 wireless_num;//天线数量
   u8 payload_percent;//网关负载百分比
   u8 err_cnts;//出错次数
-  int16_t rssi;//信号强度
+  s16 rssi;//信号强度
   u32 keep_rtc_time;//最近通信时间
 	u8 app_key[16];//应用密码
 	u8 join_state;//入网状态
@@ -179,20 +179,26 @@ typedef struct
   bool read_flag;//读取标志
 }NwkNodeRecvFromStruct;//数据接收结构体
 
+//typedef struct
+//{
+//  u32 node_sn;
+//  
+//  NwkParentSaveStruct parent_save;//配对网关信息
+//  NwkD2DSaveStruct d2d_list_save[NWK_D2D_NODE_NUM];//D2D配对信息 
+//  u16 reserved;
+//  u16 crc_value;
+//}NwkNodeSaveStruct;//节点存储信息
+
 typedef struct
 {
-  u32 node_sn;
-  
-  NwkParentSaveStruct parent_save;//配对网关信息
-  NwkD2DSaveStruct d2d_list_save[NWK_D2D_NODE_NUM];//D2D配对信息 
-  u16 reserved;
-  u16 crc_value;
-}NwkNodeSaveStruct;//节点存储信息
-
+  NwkNodeRecvFromStruct *pRecvFrom;
+  u32 alarm_time;
+}NowkNodeReturnStruct;
  
 typedef struct
 {
-  NwkParentWorkStrcut parent_list[NWK_GateWay_NUM];//网关列表
+  u32 node_sn;
+  NwkParentWorkStrcut parent_list[NWK_GW_NUM];//网关列表
   u16 wake_period;//唤醒周期,等于0表示节点无需休眠,时刻处于接收状态
   u8 work_state;//工作状态
 	u8 need_join;
@@ -200,6 +206,7 @@ typedef struct
   u32 alarm_rtc_time;//闹钟唤醒时间点
   LoRaDevStruct *pLoRaDev;
   NwkNodeRecvFromStruct recv_from;
+  NowkNodeReturnStruct node_return;
 
   NwkNodeSearchStruct node_search;
   NwkNodeTxGwStruct node_tx_gw;
@@ -211,13 +218,13 @@ typedef struct
 
 
 
-void nwk_node_read(void);
-void nwk_node_save(void);
-void nwk_set_node_sn(u32 node_sn);
-void nwk_set_root_key(u8 *key);
-void nwk_set_parent(NwkParentSaveStruct *parent);
-void nwk_set_wake_period(u16 period);
-void nwk_set_lora_dev(LoRaDevStruct *pLoRaDev);
+//void nwk_node_read(void);
+//void nwk_node_save(void);
+void nwk_node_set_sn(u32 node_sn);
+void nwk_node_set_root_key(u8 *key);
+//void nwk_node_set_parent(NwkParentSaveStruct *parent);
+void nwk_node_set_wake_period(u16 period);
+void nwk_node_set_lora_dev(LoRaDevStruct *pLoRaDev);
 void nwk_node_set_lora_param(u32 freq, u8 sf, u8 bw);
 void nwk_node_sleep_init(void);
 void nwk_node_cad_init(void);
@@ -244,7 +251,7 @@ void nwk_node_tx_d2d_process(void);
 
 void nwk_node_work_check(void);
 NwkNodeRecvFromStruct *nwk_node_recv_from_check(void);
-u32 nwk_node_main(void);
+NowkNodeReturnStruct *nwk_node_main(void);
 
 
 #endif
