@@ -587,17 +587,17 @@ u8 drv_sx1278_cad_check(DrvSx1278Struct *psx1278)
   u8 result=0;
   if(( hal_sx1278_read_addr(&psx1278->tag_hal_sx1278, REG_LR_IRQFLAGS) & RFLR_IRQFLAGS_CADDONE ) == RFLR_IRQFLAGS_CADDONE)//CAD检测完成
   {
-    printf("cad done!\n");
+//    printf("cad done!\n");
     hal_sx1278_write_addr(&psx1278->tag_hal_sx1278, REG_LR_IRQFLAGS, RFLR_IRQFLAGS_CADDONE );//一次写操作清除 IRQ	
     if(( hal_sx1278_read_addr(&psx1278->tag_hal_sx1278, REG_LR_IRQFLAGS) & RFLR_IRQFLAGS_CADDETECTED ) == RFLR_IRQFLAGS_CADDETECTED)//信道检测结果
     {
       hal_sx1278_write_addr(&psx1278->tag_hal_sx1278, REG_LR_IRQFLAGS, RFLR_IRQFLAGS_CADDETECTED );//一次写操作清除 IRQ
-      printf("cad success!\n");
+//      printf("cad success!\n");
       result=2;
     }
     else
     {
-      printf("cad failed!\n");
+//      printf("cad failed!\n");
       result=1;
     }
   }
