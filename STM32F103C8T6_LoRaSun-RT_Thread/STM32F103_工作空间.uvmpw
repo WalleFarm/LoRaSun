@@ -9,12 +9,12 @@
 
   <project>
     <PathAndName>.\Project\Project-LoRaSun(Node)\Project-LoRaSun(Node).uvprojx</PathAndName>
-    <NodeIsActive>1</NodeIsActive>
     <NodeIsExpanded>1</NodeIsExpanded>
   </project>
 
   <project>
     <PathAndName>.\Project\Project-LoRaSun(Slave)\Project-LoRaSun(Slave).uvprojx</PathAndName>
+    <NodeIsActive>1</NodeIsActive>
     <NodeIsExpanded>1</NodeIsExpanded>
   </project>
 
