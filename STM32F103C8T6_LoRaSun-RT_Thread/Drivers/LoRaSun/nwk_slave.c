@@ -580,6 +580,7 @@ void nwk_slave_rx_process(void)
     case NwkSlaveRxCadInit:
     {
       u8 sf=0, bw=0;
+      pSlaveRx->freq=NWK_GW_BASE_FREQ+pSlaveRx->chn_ptr*500000;
       nwk_get_channel(pSlaveRx->chn_ptr*3, &sf, &bw);
       pSlaveRx->curr_sf=sf;
       pSlaveRx->curr_bw=bw;      
@@ -606,7 +607,7 @@ void nwk_slave_rx_process(void)
       }
       else if(result==CadResultSuccess)//搜索到
       {
-        printf("cad OK***(%d, %d, %d)\n", pSlaveRx->freq/1000000, pSlaveRx->curr_sf, pSlaveRx->curr_bw);
+        printf("cad OK***(%.2f, %d, %d)\n", pSlaveRx->freq/1000000.0, pSlaveRx->curr_sf, pSlaveRx->curr_bw);
         pSlaveRx->rx_state=NwkSlaveRxSniff;        
       }        
       break;
@@ -617,20 +618,21 @@ void nwk_slave_rx_process(void)
       nwk_get_channel(pSlaveRx->chn_ptr*3+1, &sf, &bw);//以本通道组的第二个参数作为CAD监听参数
       pSlaveRx->curr_sf=sf;
       pSlaveRx->curr_bw=bw;
-			printf("group id=%d, rx sniff param(%d, %d, %d)\n", pSlaveRx->chn_ptr, pSlaveRx->freq/1000000, sf, bw);
+			printf("group id=%d, rx sniff param(%.2f, %d, %d)\n", pSlaveRx->chn_ptr, pSlaveRx->freq/1000000.0, sf, bw);
 			
       nwk_slave_set_lora_param(pSlaveRx->freq, sf, bw);  
       for(u8 i=0; i<20-pSlaveRx->chn_ptr*2; i++)
       {
 //        printf("sniff_%d 000\n", i);
         nwk_slave_send_sniff(sf, bw);//返回嗅探帧
+        nwk_slave_cad_init();//状态切换
 //        printf("sniff_%d 111\n", i);
       }
       printf("into recv mode!\n"); 
       nwk_slave_recv_init();//进入接收
-      u32 tx_time=nwk_slave_calcu_air_time(sf, bw, NWK_TRANSMIT_MAX_SIZE);//接收等待时间
+      u32 tx_time=nwk_slave_calcu_air_time(sf, bw, NWK_TRANSMIT_MAX_SIZE/3)*1.2;//接收等待时间
       pSlaveRx->start_rtc_time=nwk_get_rtc_counter();//记录当前时间,防止超时
-      pSlaveRx->wait_cnts=tx_time/1000+3;             
+      pSlaveRx->wait_cnts=tx_time/1000+1;             
       pSlaveRx->rx_state=NwkSlaveRxCheck;   
       break;
     }     
@@ -655,7 +657,7 @@ void nwk_slave_rx_process(void)
         pSlaveRx->wait_cnts=2;         
         pSlaveRx->rx_state=NwkSlaveRxAckWait;
       }   
-      else if(now_time-pSlaveRx->start_rtc_time>=pSlaveRx->wait_cnts)//超时
+      else if(now_time-pSlaveRx->start_rtc_time>pSlaveRx->wait_cnts)//超时
       {
         printf("recv wait time out!\n");
         pSlaveRx->chn_ptr++;//换下一组参数 
