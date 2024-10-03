@@ -1063,10 +1063,10 @@ void nwk_node_tx_gw_process(void)
       }
       else
       {
-        u8 freq_ptr=pNodeTxGw->pGateWay->base_freq_ptr + pNodeTxGw->wireless_ptr;//计算频率序号
+        u8 freq_ptr=pNodeTxGw->pGateWay->base_freq_ptr + pNodeTxGw->wireless_ptr*3+pNodeTxGw->chn_ptr;//计算频率序号
         u8 sf=0, bw=0;
         nwk_get_channel(pNodeTxGw->chn_ptr*3, &sf, &bw);
-        pNodeTxGw->freq=NWK_GW_BASE_FREQ+freq_ptr*2000000;//目标天线监听频率,间隔2M
+        pNodeTxGw->freq=NWK_GW_BASE_FREQ+freq_ptr*500000;//目标天线监听频率,间隔2M
         nwk_node_set_lora_param(pNodeTxGw->freq, sf, bw);
 //        nwk_node_cad_init(); 
 //        pNodeTxGw->tx_state=NwkNodeTxGwLBTCheck;
@@ -1099,15 +1099,16 @@ void nwk_node_tx_gw_process(void)
       nwk_get_channel(pNodeTxGw->chn_ptr*3, &sf, &bw); //嗅探参数
       nwk_node_set_lora_param(pNodeTxGw->freq, sf, bw);
 			 
-			for(u8 i=0; i<10-pNodeTxGw->chn_ptr; i++)
+			for(u8 i=0; i<8-pNodeTxGw->chn_ptr; i++)
 			{
 //				printf("sniff_%d 000\n", i);	
 				nwk_node_send_sniff(sf, bw);//发送嗅探帧
 				nwk_node_cad_init();//状态切换
+				delay_ms(5);
 //				printf("sniff_%d 111\n", i);
 			}
       pNodeTxGw->sniff_cnts++;
-      printf("***group id=%d, send sniff (%d, %d, %d), cnts=%d\n", pNodeTxGw->chn_ptr, pNodeTxGw->freq/1000000, sf, bw, pNodeTxGw->sniff_cnts);
+      printf("***group id=%d, send sniff (%.2f, %d, %d), cnts=%d\n", pNodeTxGw->chn_ptr, pNodeTxGw->freq/1000000.0, sf, bw, pNodeTxGw->sniff_cnts);
       nwk_get_channel(pNodeTxGw->chn_ptr*3+1, &sf, &bw);//以本通道组的第二个参数作为CAD监听参数
       nwk_node_set_lora_param(pNodeTxGw->freq, sf, bw);
       nwk_node_cad_init(); //开始监听返回
@@ -1123,7 +1124,7 @@ void nwk_node_tx_gw_process(void)
       if(result==CadResultFailed)//没搜索到
       {
         pNodeTxGw->cad_cnts++;
-				if(pNodeTxGw->cad_cnts<30)
+				if(pNodeTxGw->cad_cnts<50-pNodeTxGw->chn_ptr*5)
 				{
 					nwk_node_cad_init();//继续监听
 				}
@@ -1140,7 +1141,7 @@ void nwk_node_tx_gw_process(void)
       else if(result==CadResultSuccess)//搜索成功 
       {
 				printf("************cad ack!\n");
-        nwk_delay_ms(1000);//适当延时,等待对方准备好
+        nwk_delay_ms(pNodeTxGw->chn_ptr*150+400);//适当延时,等待对方准备好
 				printf("tx len=%d\n", make_len);
         nwk_node_send_buff(pMakeBuff, make_len);//发送数据包
         u32 tx_time=nwk_node_calcu_air_time(pNodeTxGw->sf, pNodeTxGw->bw, make_len)*1.2;//发送时间,冗余
