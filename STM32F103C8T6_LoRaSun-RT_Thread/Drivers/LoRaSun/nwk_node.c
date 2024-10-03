@@ -1100,16 +1100,12 @@ void nwk_node_tx_gw_process(void)
       nwk_node_set_lora_param(pNodeTxGw->freq, sf, bw);
 			nwk_node_cad_init(); 
 			nwk_node_send_sniff(sf, bw);//发送嗅探帧
-//			for(u8 i=0; i<10; i++)
-//			{
-//				
-//				
-//			}
-      
+      pNodeTxGw->sniff_cnts++;
       printf("send sniff sf=%d, bw=%d, cnts=%d\n", sf, bw, pNodeTxGw->sniff_cnts+1);
       nwk_get_channel(pNodeTxGw->chn_ptr*3+1, &sf, &bw);//以本通道组的第二个参数作为CAD监听参数
       nwk_node_set_lora_param(pNodeTxGw->freq, sf, bw);
       nwk_node_cad_init(); //开始监听返回
+			pNodeTxGw->cad_cnts=0;
       pNodeTxGw->sf=sf;
       pNodeTxGw->bw=bw; //记录监听参数,发送时候再次使用      
       pNodeTxGw->tx_state=NwkNodeTxGwSniffCheck;
@@ -1120,8 +1116,12 @@ void nwk_node_tx_gw_process(void)
       u8 result=nwk_node_cad_check();
       if(result==CadResultFailed)//没搜索到
       {
-        pNodeTxGw->sniff_cnts++;
-        if(pNodeTxGw->sniff_cnts<10-pNodeTxGw->chn_ptr)//同一组参数嗅探多次,根据通道不同,次数不同
+        pNodeTxGw->cad_cnts++;
+				if(pNodeTxGw->cad_cnts<30)
+				{
+					nwk_node_cad_init();//继续监听
+				}
+        else if(pNodeTxGw->sniff_cnts<10-pNodeTxGw->chn_ptr)//同一组参数嗅探多次,根据通道不同,次数不同
         {
           pNodeTxGw->tx_state=NwkNodeTxGwSniffInit;//继续嗅探
         }

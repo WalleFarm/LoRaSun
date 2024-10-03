@@ -145,6 +145,7 @@ typedef struct
   u8 tx_state;
   u8 sf, bw;
   u8 sniff_cnts;
+	u8 cad_cnts;
   u8 wait_cnts, tx_len;
   u8 wireless_ptr;//选中的天线序号
   u8 chn_ptr;
