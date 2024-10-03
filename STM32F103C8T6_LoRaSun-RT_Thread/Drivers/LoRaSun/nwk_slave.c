@@ -571,7 +571,7 @@ void nwk_slave_rx_process(void)
     }
     case NwkSlaveRxInit:
     {
-      pSlaveRx->freq=NWK_GW_BASE_FREQ+pSlaveRx->freq_ptr*2000000;
+//      pSlaveRx->freq=NWK_GW_BASE_FREQ+pSlaveRx->freq_ptr*2000000;
       pSlaveRx->rx_state=NwkSlaveRxCadInit;
       pSlaveRx->chn_ptr=0;
 //      printf("###### NwkSlaveRxInit!\n");        
@@ -584,7 +584,7 @@ void nwk_slave_rx_process(void)
       nwk_get_channel(pSlaveRx->chn_ptr*3, &sf, &bw);
       pSlaveRx->curr_sf=sf;
       pSlaveRx->curr_bw=bw;      
-//			printf("cad param(%d, %d, %d)\n", pSlaveRx->freq/1000000, sf, bw);
+//			printf("cad param(%.2f, %d, %d)\n", pSlaveRx->freq/1000000.0, sf, bw);
       nwk_slave_set_lora_param(pSlaveRx->freq, sf, bw);
       nwk_slave_cad_init();  
       pSlaveRx->rx_state=NwkSlaveRxCadCheck;      
