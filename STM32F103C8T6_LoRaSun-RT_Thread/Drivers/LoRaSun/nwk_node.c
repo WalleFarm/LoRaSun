@@ -338,7 +338,7 @@ void nwk_node_send_sniff(u8 sf, u8 bw)
 		return;	
   u8 buff[1]={0x01};
   u32 tx_time=nwk_node_calcu_air_time(sf, bw, 1);
-  u8 loops=(tx_time*0.5)/2+1;//计算循环次数
+  u8 loops=(tx_time*0.1)/2+5;//计算循环次数
 #if defined(LORA_SX1278)  
 	drv_sx1278_send(g_sNwkNodeWork.pLoRaDev, buff, 1); 
 	while(loops--)
@@ -1055,7 +1055,7 @@ void nwk_node_tx_gw_process(void)
     }    
     case NwkNodeTxGwLBTInit://传输前监听
     { 
-      if(pNodeTxGw->chn_ptr>=3)//所有通道都无法到达 NWK_RF_GROUP_NUM
+      if(pNodeTxGw->chn_ptr>=NWK_RF_GROUP_NUM)//所有通道都无法到达 NWK_RF_GROUP_NUM
       {
         pNodeTxGw->pGateWay->err_cnts++;
         pNodeTxGw->tx_state=NwkNodeTxGwExit;//退出,重新开始
@@ -1098,10 +1098,16 @@ void nwk_node_tx_gw_process(void)
       u8 sf=0, bw=0;
       nwk_get_channel(pNodeTxGw->chn_ptr*3, &sf, &bw); //嗅探参数
       nwk_node_set_lora_param(pNodeTxGw->freq, sf, bw);
-			nwk_node_cad_init(); 
-			nwk_node_send_sniff(sf, bw);//发送嗅探帧
+			 
+			for(u8 i=0; i<10-pNodeTxGw->chn_ptr; i++)
+			{
+//				printf("sniff_%d 000\n", i);	
+				nwk_node_send_sniff(sf, bw);//发送嗅探帧
+				nwk_node_cad_init();//状态切换
+//				printf("sniff_%d 111\n", i);
+			}
       pNodeTxGw->sniff_cnts++;
-      printf("send sniff sf=%d, bw=%d, cnts=%d\n", sf, bw, pNodeTxGw->sniff_cnts+1);
+      printf("***group id=%d, send sniff (%d, %d, %d), cnts=%d\n", pNodeTxGw->chn_ptr, pNodeTxGw->freq/1000000, sf, bw, pNodeTxGw->sniff_cnts);
       nwk_get_channel(pNodeTxGw->chn_ptr*3+1, &sf, &bw);//以本通道组的第二个参数作为CAD监听参数
       nwk_node_set_lora_param(pNodeTxGw->freq, sf, bw);
       nwk_node_cad_init(); //开始监听返回
