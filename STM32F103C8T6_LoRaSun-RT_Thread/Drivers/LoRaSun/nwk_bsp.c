@@ -4,9 +4,9 @@
 #include "drv_encrypt.h"
 
 static const u8 rf_table[][2]={  //SF,BW
-7, 8,//112ms
-9, 9,
-8, 8,
+//7, 8,//112ms
+//9, 9,
+//8, 8,
   
 10, 9,//296ms
 9, 8,
