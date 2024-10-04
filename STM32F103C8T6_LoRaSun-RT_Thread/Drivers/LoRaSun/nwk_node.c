@@ -889,26 +889,26 @@ void nwk_node_rx_process(void)
     }
     case NwkNodeRxInit:
     {
-      u16 freq_cnts=(NWK_MAX_FREQ-NWK_MIN_FREQ)/1000000*2;
+      u16 freq_cnts=(NWK_MAX_FREQ-NWK_MIN_FREQ)/1000000*2;//频点数量,0.5M间隔
       pNodeRx->freq=(nwk_crc16((u8*)&g_sNwkNodeWork.node_sn, 4)%freq_cnts)*500000+NWK_MIN_FREQ;//根据序列号计算频段  
+			printf("node freq=%.2fMHz\n", pNodeRx->freq/1000000.f);
       pNodeRx->rx_state=NwkNodeRxCadInit;
       pNodeRx->listen_cnts=0;
       break;
     }
     case NwkNodeRxCadInit:
     {
-      if(pNodeRx->listen_cnts==0 && pNodeRx->sf1>0 && pNodeRx->bw1>0)//上一次通讯参数
+      if(pNodeRx->listen_cnts==0 && pNodeRx->sf1>0 && pNodeRx->bw1>0)//最近成功通讯参数
       {
         pNodeRx->curr_sf=pNodeRx->sf1;
         pNodeRx->curr_bw=pNodeRx->bw1;
-        
       }
       else//最远通讯参数
       {
-        pNodeRx->curr_sf=12;
+        pNodeRx->curr_sf=11;
         pNodeRx->curr_bw=NWK_MIN_BW;        
       }
-//			printf("cad param=(%d, %d, %d)\n", pNodeRx->freq/1000000, pNodeRx->curr_sf, pNodeRx->curr_bw);
+			printf("rx cad param=(%.2f, %d, %d)\n", pNodeRx->freq/1000000.f, pNodeRx->curr_sf, pNodeRx->curr_bw);
       nwk_node_set_lora_param(pNodeRx->freq, pNodeRx->curr_sf, pNodeRx->curr_bw);
       nwk_node_cad_init(); 
       pNodeRx->rx_state=NwkNodeRxCadCheck;
@@ -932,7 +932,7 @@ void nwk_node_rx_process(void)
       }
       else if(result==CadResultSuccess)//搜索到
       {
-//        printf("rx cad ok!\n");
+        printf("rx cad ok!\n");
         nwk_node_send_sniff(pNodeRx->curr_sf, pNodeRx->curr_bw);//发送嗅探帧
         nwk_node_recv_init();//进入接收,等待回复
         u32 tx_time=nwk_node_calcu_air_time(pNodeRx->curr_sf, pNodeRx->curr_bw, NWK_TRANSMIT_MAX_SIZE);//接收等待时间
@@ -951,6 +951,7 @@ void nwk_node_rx_process(void)
       {
         //数据解析
         g_sNwkNodeWork.recv_rssi=rssi;
+				printf_hex("recv=", pNodeRx->recv_buff, recv_len);
         nwk_node_recv_parse(pNodeRx->recv_buff, recv_len);
         if(pNodeRx->ack_len>0)//有回复包
         {
@@ -1141,13 +1142,22 @@ void nwk_node_tx_gw_process(void)
       else if(result==CadResultSuccess)//搜索成功 
       {
 				printf("************cad ack!\n");
-        nwk_delay_ms(pNodeTxGw->chn_ptr*20+100);//适当延时,等待对方准备好
-				printf("tx len=%d\n", make_len);
-        nwk_node_send_buff(pMakeBuff, make_len);//发送数据包
-        u32 tx_time=nwk_node_calcu_air_time(pNodeTxGw->sf, pNodeTxGw->bw, make_len)*1.2;//发送时间,冗余
+        nwk_delay_ms(pNodeTxGw->chn_ptr*20+100);//适当延时,等待对方嗅探帧发送完
+				pNodeTxGw->tx_step=0;
+				u8 will_buff[5]={0};
+				u8 will_len=0;
+				will_buff[will_len++]=0xA8;
+				will_buff[will_len++]=make_len;
+				u16 crcValue=nwk_crc16(will_buff, 2);
+				will_buff[will_len++]=crcValue>>8;
+				will_buff[will_len++]=crcValue;
+				
+        nwk_node_send_buff(will_buff, will_len);//发送长度包
+        u32 tx_time=nwk_node_calcu_air_time(pNodeTxGw->sf, pNodeTxGw->bw, will_len)*1.2;//发送时间,冗余
         pNodeTxGw->start_rtc_time=nwk_get_rtc_counter();//记录当前时间,防止超时
-        pNodeTxGw->wait_cnts=tx_time/1000+2;//等待秒数
+        pNodeTxGw->wait_cnts=tx_time/1000+1;//等待秒数
         pNodeTxGw->tx_state=NwkNodeTxGwRunning;
+				printf("send will buff\n");
       }      
       break;
     }
@@ -1158,13 +1168,25 @@ void nwk_node_tx_gw_process(void)
       if(result)//发送完成
       {
 				printf("tx ok!\n");
-        nwk_node_recv_init();//进入接收,等待回复
-        u32 tx_time=nwk_node_calcu_air_time(pNodeTxGw->sf, pNodeTxGw->bw, 20)*1.2;//接收回复包等待时间
-        pNodeTxGw->start_rtc_time=nwk_get_rtc_counter();//记录当前时间,防止超时
-        pNodeTxGw->wait_cnts=tx_time/1000+2;
-        pNodeTxGw->tx_state=NwkNodeTxGwAck;
+				if(pNodeTxGw->tx_step==0)//正式数据包
+				{
+					pNodeTxGw->tx_step++;
+					nwk_node_send_buff(pMakeBuff, make_len);//发送数据包
+					u32 tx_time=nwk_node_calcu_air_time(pNodeTxGw->sf, pNodeTxGw->bw, make_len)*1.2;//发送时间,冗余
+					pNodeTxGw->start_rtc_time=nwk_get_rtc_counter();//记录当前时间,防止超时
+					pNodeTxGw->wait_cnts=tx_time/1000+2;//等待秒数	
+					printf("send app buff\n");					
+				}
+				else
+				{
+					nwk_node_recv_init();//进入接收,等待回复
+					u32 tx_time=nwk_node_calcu_air_time(pNodeTxGw->sf, pNodeTxGw->bw, 20)*1.2;//接收回复包等待时间
+					pNodeTxGw->start_rtc_time=nwk_get_rtc_counter();//记录当前时间,防止超时
+					pNodeTxGw->wait_cnts=tx_time/1000+2;
+					pNodeTxGw->tx_state=NwkNodeTxGwAck;					
+				}
       }
-      else if(now_time-pNodeTxGw->start_rtc_time>=pNodeTxGw->wait_cnts)//发送超时
+      else if(now_time-pNodeTxGw->start_rtc_time>pNodeTxGw->wait_cnts)//发送超时
       {
         //这里要加入故障跟踪,经常超时说明硬件有问题
         printf("tx buff time out! wait time=%ds\n", pNodeTxGw->wait_cnts);
@@ -1381,6 +1403,7 @@ void nwk_node_work_check(void)
           u32 now_time=nwk_get_rtc_counter();
           if(now_time%g_sNwkNodeWork.wake_period==0 && now_time!=last_wake_time)
           {
+						printf("wake!!!\n");
             pNodeRx->rx_state=NwkNodeRxInit;
       			g_sNwkNodeWork.work_state=NwkNodeWorkRX;//进入接收监听  
             last_wake_time=now_time;

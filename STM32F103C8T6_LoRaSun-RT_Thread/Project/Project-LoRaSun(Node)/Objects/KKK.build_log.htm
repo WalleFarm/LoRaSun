@@ -5,7 +5,7 @@
 <h2>Tool Versions:</h2>
 IDE-Version: ¦ÌVision V5.23.0.0
 Copyright (C) 2017 ARM Ltd and ARM Germany GmbH. All rights reserved.
-License Information: ypp 2401240, HP Inc., LIC=P6F5U-SQYGG-UMF9A-1GMU7-CML3T-1A93Z
+License Information: qq Microsoft, Microsoft, LIC=1WSKC-7X79K-AW02F-63WQC-0VQYY-5D1VI
  
 Tool Versions:
 Toolchain:       MDK-ARM Professional  Version: 5.23
@@ -21,19 +21,19 @@ Target DLL:      Segger\JL2CM3.dll V2.99.23.0
 Dialog DLL:      TCM.DLL V1.27.0.0
  
 <h2>Project:</h2>
-D:\filesave\GitHub\LoRaSun\STM32F103C8T6_LoRaSun-RT_Thread\Project\Project-LoRaSun(Node)\Project-LoRaSun(Node).uvprojx
+D:\GitHub\LoRaSun\STM32F103C8T6_LoRaSun-RT_Thread\Project\Project-LoRaSun(Node)\Project-LoRaSun(Node).uvprojx
 Project File Date:  09/30/2024
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 4 (build 422)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
-Build Project 'Project-LoRaSun(Node)' - Target 'Project-LoRaSun(Node)'
-compiling user_app.c...
-compiling app_sx1278.c...
-compiling nwk_bsp.c...
+Build target 'Project-LoRaSun(Node)'
 compiling nwk_node.c...
+..\..\Drivers\LoRaSun\nwk_node.c(1370): warning:  #177-D: variable "det_time"  was declared but never referenced
+          int det_time=now_time-pNodeSearch->search_start_time;
+..\..\Drivers\LoRaSun\nwk_node.c: 1 warning, 0 errors
 linking...
-Program Size: Code=25976 RO-data=1128 RW-data=280 ZI-data=15896  
-".\Objects\KKK.axf" - 0 Error(s), 0 Warning(s).
+Program Size: Code=27604 RO-data=1124 RW-data=280 ZI-data=17944  
+".\Objects\KKK.axf" - 0 Error(s), 1 Warning(s).
 
 <h2>Collection of Component include folders:</h2>
   .\RTE\_Project-LoRaSun_Node_

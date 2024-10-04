@@ -159,7 +159,7 @@
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>&lt;1&gt;..\..\Drivers\LoRaSun\nwk_node.c</Filename>
+          <Filename>..\..\Drivers\LoRaSun\nwk_node.c</Filename>
           <ExecCommand></ExecCommand>
           <Expression>\\\../../Drivers/LoRaSun/nwk_node.c\1268</Expression>
         </Bp>
@@ -175,7 +175,7 @@
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>0</BreakIfRCount>
-          <Filename>&lt;1&gt;..\..\Drivers\LoRaSun\nwk_node.c</Filename>
+          <Filename>..\..\Drivers\LoRaSun\nwk_node.c</Filename>
           <ExecCommand></ExecCommand>
           <Expression></Expression>
         </Bp>

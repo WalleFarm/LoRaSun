@@ -149,6 +149,7 @@ typedef struct
   u8 wait_cnts, tx_len;
   u8 wireless_ptr;//选中的天线序号
   u8 chn_ptr;
+	u8 tx_step;
   u8 tx_cmd,try_cnts;
   u8 tx_buff[NWK_TRANSMIT_MAX_SIZE];//缓存应用数据
   u32 freq;

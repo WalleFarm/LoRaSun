@@ -117,7 +117,9 @@ static void app_sx1278_hal_init(void)
 	drv_sx1278_init(&g_sDrvSx1278);//初始化
 	
 	nwk_node_set_lora_dev(&g_sDrvSx1278);
-	nwk_node_add_gw(0xC1011234, 0, 1);
+	nwk_node_add_gw(0xC1011234, 0, 1);//添加目标网关
+	nwk_node_set_sn(0x12345678);
+	nwk_node_set_wake_period(10);
 	printf("app_sx1278_hal_init ok!\n");
 	
   
