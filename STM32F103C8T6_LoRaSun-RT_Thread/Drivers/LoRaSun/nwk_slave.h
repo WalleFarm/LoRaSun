@@ -106,6 +106,7 @@ typedef struct
   u8 tx_len;
   u8 sniff_cnts;
   u8 try_cnts, curr_cnts;
+  u8 cad_cnts;
   u8 sfs[2],bws[2];
   u8 curr_sf, curr_bw;
   u16 wait_cnts;

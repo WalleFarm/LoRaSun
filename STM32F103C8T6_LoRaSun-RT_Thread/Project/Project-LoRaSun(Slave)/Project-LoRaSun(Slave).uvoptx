@@ -117,6 +117,10 @@
       <TargetDriverDllRegistry>
         <SetRegEntry>
           <Number>0</Number>
+          <Key>DLGUARM</Key>
+        </SetRegEntry>
+        <SetRegEntry>
+          <Number>0</Number>
           <Key>ARMRTXEVENTFLAGS</Key>
           <Name>-L70 -Z18 -C0 -M0 -T1</Name>
         </SetRegEntry>
@@ -145,39 +149,39 @@
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
-          <LineNumber>10</LineNumber>
+          <LineNumber>924</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134231572</Address>
+          <Address>134234170</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>D:\BaiduNetdiskWorkspace\Keil\STM32F103C8T6_鐗╄仈缃戝伐浣滅┖闂?RT_Thread\Project\Project-LoRaSun\Applications\main.c</Filename>
+          <Filename>..\..\Drivers\LoRaSun\nwk_slave.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\KKK\Applications/main.c\10</Expression>
+          <Expression>\\KKK\../../Drivers/LoRaSun/nwk_slave.c\924</Expression>
         </Bp>
         <Bp>
           <Number>1</Number>
           <Type>0</Type>
-          <LineNumber>77</LineNumber>
+          <LineNumber>793</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134228040</Address>
+          <Address>134232536</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>D:\BaiduNetdiskWorkspace\Keil\STM32F103C8T6_鐗╄仈缃戝伐浣滅┖闂?RT_Thread\Project\Project-LoRaSun\Applications\app_sx1278.c</Filename>
+          <Filename>..\..\Drivers\LoRaSun\nwk_slave.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\KKK\Applications/app_sx1278.c\77</Expression>
+          <Expression>\\KKK\../../Drivers/LoRaSun/nwk_slave.c\793</Expression>
         </Bp>
         <Bp>
           <Number>2</Number>
           <Type>0</Type>
-          <LineNumber>1282</LineNumber>
+          <LineNumber>794</LineNumber>
           <EnabledFlag>1</EnabledFlag>
           <Address>0</Address>
           <ByteObject>0</ByteObject>
@@ -186,7 +190,23 @@
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>0</BreakIfRCount>
-          <Filename>&lt;1&gt;..\..\Drivers\LoRaSun\nwk_node.c</Filename>
+          <Filename>..\..\Drivers\LoRaSun\nwk_slave.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression></Expression>
+        </Bp>
+        <Bp>
+          <Number>3</Number>
+          <Type>0</Type>
+          <LineNumber>940</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>0</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>0</BreakIfRCount>
+          <Filename>..\..\Drivers\LoRaSun\nwk_slave.c</Filename>
           <ExecCommand></ExecCommand>
           <Expression></Expression>
         </Bp>
@@ -376,7 +396,7 @@
 
   <Group>
     <GroupName>Drivers</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
