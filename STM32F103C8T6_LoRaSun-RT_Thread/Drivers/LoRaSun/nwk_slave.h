@@ -51,7 +51,6 @@ typedef enum
   NwkSlaveRxInit,
   NwkSlaveRxCadInit,
   NwkSlaveRxCadCheck,
-  NwkSlaveRxSniff,
   NwkSlaveRxCheck,
   NwkSlaveRxAckWait,//等待主机的回复包
   NwkSlaveRxAckCheck,//回复节点
@@ -92,7 +91,7 @@ typedef struct
   u8 recv_buff[255];
   u8 recv_len;
   u8 freq_ptr;
-  u8 chn_ptr;
+  u8 group_id;
   u16 wait_cnts;
   u32 freq;
   u8 curr_sf, curr_bw;

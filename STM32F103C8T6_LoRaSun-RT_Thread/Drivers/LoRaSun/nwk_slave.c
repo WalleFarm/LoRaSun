@@ -575,15 +575,15 @@ void nwk_slave_rx_process(void)
     {
 //      pSlaveRx->freq=NWK_GW_BASE_FREQ+pSlaveRx->freq_ptr*2000000;
       pSlaveRx->rx_state=NwkSlaveRxCadInit;
-      pSlaveRx->chn_ptr=0;
+      pSlaveRx->group_id=0;
 //      printf("###### NwkSlaveRxInit!\n");        
       break;
     }
     case NwkSlaveRxCadInit:
     {
       u8 sf=0, bw=0;
-      pSlaveRx->freq=NWK_GW_BASE_FREQ+pSlaveRx->chn_ptr*500000;
-      nwk_get_channel(pSlaveRx->chn_ptr*3, &sf, &bw);
+      pSlaveRx->freq=NWK_GW_BASE_FREQ+pSlaveRx->group_id*500000;
+      nwk_get_channel(pSlaveRx->group_id*2, &sf, &bw);
       pSlaveRx->curr_sf=sf;
       pSlaveRx->curr_bw=bw;      
 //			printf("cad param(%.2f, %d, %d)\n", pSlaveRx->freq/1000000.0, sf, bw);
@@ -597,8 +597,8 @@ void nwk_slave_rx_process(void)
       u8 result=nwk_slave_cad_check();
       if(result==CadResultFailed)//没搜索到
       {
-        pSlaveRx->chn_ptr++;
-        if(pSlaveRx->chn_ptr>=NWK_RF_GROUP_NUM)//NWK_RF_GROUP_NUM
+        pSlaveRx->group_id++;
+        if(pSlaveRx->group_id>=NWK_RF_GROUP_NUM)//NWK_RF_GROUP_NUM
         {
           pSlaveRx->rx_state=NwkSlaveRxIdel;//结束本回合
         } 
@@ -610,58 +610,26 @@ void nwk_slave_rx_process(void)
       else if(result==CadResultSuccess)//搜索到
       {
         printf("cad OK***(%.2f, %d, %d)\n", pSlaveRx->freq/1000000.0, pSlaveRx->curr_sf, pSlaveRx->curr_bw);
-        pSlaveRx->rx_state=NwkSlaveRxSniff;        
-        if(1)
+        u8 sf=0, bw=0;
+        nwk_get_channel(pSlaveRx->group_id*2+1, &sf, &bw);//以本通道组的第二个参数作为CAD监听参数
+        pSlaveRx->curr_sf=sf;
+        pSlaveRx->curr_bw=bw;
+        printf("group id=%d, rx sniff param(%.2f, %d, %d)\n", pSlaveRx->group_id, pSlaveRx->freq/1000000.0, sf, bw);
+        
+        nwk_slave_set_lora_param(pSlaveRx->freq, sf, bw);  
+        for(u8 i=0; i<3+NWK_RF_GROUP_NUM-pSlaveRx->group_id; i++)//8-pSlaveRx->group_id
         {
-          u8 sf=0, bw=0;
-          nwk_get_channel(pSlaveRx->chn_ptr*3+1, &sf, &bw);//以本通道组的第二个参数作为CAD监听参数
-          pSlaveRx->curr_sf=sf;
-          pSlaveRx->curr_bw=bw;
-          printf("group id=%d, rx sniff param(%.2f, %d, %d)\n", pSlaveRx->chn_ptr, pSlaveRx->freq/1000000.0, sf, bw);
-          
-          nwk_slave_set_lora_param(pSlaveRx->freq, sf, bw);  
-          for(u8 i=0; i<3+NWK_RF_GROUP_NUM-pSlaveRx->chn_ptr; i++)//8-pSlaveRx->chn_ptr
-          {
-    //        printf("sniff_%d 000\n", i);
-            nwk_slave_send_sniff(sf, bw);//返回嗅探帧
-            nwk_slave_cad_init();//状态切换
-    //        printf("sniff_%d 111\n", i);
-          }
-          printf("into recv mode!\n"); 
-          nwk_slave_recv_init();//进入接收
-          u32 tx_time=nwk_slave_calcu_air_time(sf, bw, 4)*1.2;//接收等待时间
-          pSlaveRx->start_rtc_time=nwk_get_rtc_counter();//记录当前时间,防止超时
-          pSlaveRx->wait_cnts=tx_time/1000+1;             
-          pSlaveRx->rx_state=NwkSlaveRxCheck; 
-          printf("will wait time=%ds\n", pSlaveRx->wait_cnts);          
+          nwk_slave_send_sniff(sf, bw);//返回嗅探帧
+          nwk_slave_cad_init();//状态切换
         }
+        printf("into recv mode!\n"); 
+        nwk_slave_recv_init();//进入接收
+        u32 tx_time=nwk_slave_calcu_air_time(sf, bw, 4)*1.2;//接收等待时间
+        pSlaveRx->start_rtc_time=nwk_get_rtc_counter();//记录当前时间,防止超时
+        pSlaveRx->wait_cnts=tx_time/1000+1;             
+        pSlaveRx->rx_state=NwkSlaveRxCheck; 
+        printf("will wait time=%ds\n", pSlaveRx->wait_cnts);  
       }        
-      break;
-    }
-    case NwkSlaveRxSniff:
-    {
-      printf("NwkSlaveRxSniff***\n");
-//      u8 sf=0, bw=0;
-//      nwk_get_channel(pSlaveRx->chn_ptr*3+1, &sf, &bw);//以本通道组的第二个参数作为CAD监听参数
-//      pSlaveRx->curr_sf=sf;
-//      pSlaveRx->curr_bw=bw;
-//			printf("group id=%d, rx sniff param(%.2f, %d, %d)\n", pSlaveRx->chn_ptr, pSlaveRx->freq/1000000.0, sf, bw);
-//			
-//      nwk_slave_set_lora_param(pSlaveRx->freq, sf, bw);  
-//      for(u8 i=0; i<20-pSlaveRx->chn_ptr*2; i++)
-//      {
-////        printf("sniff_%d 000\n", i);
-//        nwk_slave_send_sniff(sf, bw);//返回嗅探帧
-//        nwk_slave_cad_init();//状态切换
-////        printf("sniff_%d 111\n", i);
-//      }
-//      printf("into recv mode!\n"); 
-//      nwk_slave_recv_init();//进入接收
-//      u32 tx_time=nwk_slave_calcu_air_time(sf, bw, 4)*1.2;//接收等待时间
-//      pSlaveRx->start_rtc_time=nwk_get_rtc_counter();//记录当前时间,防止超时
-//      pSlaveRx->wait_cnts=tx_time/1000+1;             
-//      pSlaveRx->rx_state=NwkSlaveRxCheck;   
-//      printf("will wait time=%ds\n", pSlaveRx->wait_cnts);
       break;
     }     
     case NwkSlaveRxCheck:
@@ -693,7 +661,7 @@ void nwk_slave_rx_process(void)
           }
         }
         
-        //数据解析
+        //应用数据解析
         g_sNwkSlaveWork.recv_rssi=rssi; 
         RfParamStruct rf;
         rf.rssi=rssi;
@@ -712,13 +680,13 @@ void nwk_slave_rx_process(void)
         u32 tx_time=nwk_slave_calcu_air_time(pSlaveRx->curr_sf, pSlaveRx->curr_bw, 2)*1.2;//接收等待时间
         pSlaveRx->start_rtc_time=nwk_get_rtc_counter();//记录当前时间,防止超时
         pSlaveRx->wait_cnts=tx_time/1000+1;             
-        pSlaveRx->rx_state=NwkSlaveRxAckCheck;          
+        pSlaveRx->rx_state=NwkSlaveRxAckCheck;//测试, 回复包发送检测          
       }   
       else if(now_time-pSlaveRx->start_rtc_time>pSlaveRx->wait_cnts)//超时
       {
         printf("recv wait time out!\n");
-        pSlaveRx->chn_ptr++;//换下一组参数 
-        if(pSlaveRx->chn_ptr>=NWK_RF_GROUP_NUM)
+        pSlaveRx->group_id++;//换下一组参数 
+        if(pSlaveRx->group_id>=NWK_RF_GROUP_NUM)
         {
           pSlaveRx->rx_state=NwkSlaveRxIdel;//结束本回合
         } 
