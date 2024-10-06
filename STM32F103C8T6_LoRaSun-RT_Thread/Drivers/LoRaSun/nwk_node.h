@@ -58,8 +58,11 @@ typedef enum
   NwkNodeRxInit,
   NwkNodeRxCadInit,
   NwkNodeRxCadCheck,
-  NwkNodeRxCheck,
-  NwkNodeRxAck,
+  NwkNodeRxSnCheck,
+	NwkNodeRxAdrInit,
+	NwkNodeRxAdrCadCheck,
+	NwkNodeRxAppCheck,
+  NwkNodeRxAppAck,
   
   NwkNodeRxExit=100,
 
@@ -132,6 +135,8 @@ typedef struct
   u8 wait_cnts;
   u8 sf1, bw1;
   u8 curr_sf, curr_bw;
+	u8 will_len;
+	u8 group_id;
   u32 freq;
   u32 start_rtc_time;
   u32 alarm_rtc_time;//闹钟唤醒时间点
@@ -148,7 +153,7 @@ typedef struct
 	u8 cad_cnts;
   u8 wait_cnts, tx_len;
   u8 wireless_ptr;//选中的天线序号
-  u8 chn_ptr;
+  u8 group_id;
 	u8 tx_step;
   u8 tx_cmd,try_cnts;
   u8 tx_buff[NWK_TRANSMIT_MAX_SIZE];//缓存应用数据
