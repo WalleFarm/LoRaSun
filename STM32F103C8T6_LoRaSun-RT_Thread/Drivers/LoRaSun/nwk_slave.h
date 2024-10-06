@@ -61,10 +61,14 @@ typedef enum
 {
   NwkSlaveTxIdel=0,
   NwkSlaveTxInit,
-  NwkSlaveTxLBTInit,
-  NwkSlaveTxLBTCheck,
-  NwkSlaveTxSniffInit,//嗅探
-  NwkSlaveTxSniffCheck,
+//  NwkSlaveTxLBTInit,
+//  NwkSlaveTxLBTCheck,
+  NwkSlaveTxWake,
+  NwkSlaveTxSnCheck,
+  
+  NwkSlaveTxAdrSniffInit,//嗅探
+  NwkSlaveTxAdrSniffCheck,
+  
   NwkSlaveTxRunning,
   NwkSlaveTxAck,
 	
@@ -104,11 +108,13 @@ typedef struct
   u8 tx_buff[NWK_TRANSMIT_MAX_SIZE+30];
   u8 tx_len;
   u8 sniff_cnts;
-  u8 try_cnts, curr_cnts;
+  u8 group_id;
+//  u8 try_cnts, curr_cnts;
   u8 cad_cnts;
   u8 sfs[2],bws[2];
   u8 curr_sf, curr_bw;
   u16 wait_cnts;
+  u32 dst_sn;
   u32 freq;
   u32 start_rtc_time;
 }NwkSlaveTxStruct;//从机发送结构体

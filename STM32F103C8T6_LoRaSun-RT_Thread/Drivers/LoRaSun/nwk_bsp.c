@@ -1,5 +1,8 @@
 
 #include "nwk_bsp.h"
+
+
+//以下头文件是为了引入自定义的延时和加密等函数,根据自己的工程修改
 #include "drv_common.h"
 #include "drv_encrypt.h"
 
@@ -13,7 +16,7 @@ static const u8 rf_table[][2]={  //SF,BW  无线参数表,可根据自己的需�
   11, 7,  //471.25M
   10, 6,
   
-  11, 6,  //471.75M 理论上是12,7, 为了兼容LLCC68
+  11, 6,  //471.75M 理论上是12,7更合理, 此处为了兼容LLCC68(没有SF12)
   11, 6,  
     
 };
