@@ -1,7 +1,7 @@
 
 #include "nwk_slave.h"
 
-NwkSlaveSaveStruct g_sNwkSlaveSave={0};
+//NwkSlaveSaveStruct g_sNwkSlaveSave={0};
 NwkSlaveWorkStruct g_sNwkSlaveWork={0};
 
 /*		
@@ -26,7 +26,7 @@ void nwk_slave_uart_parse(u8 *recv_buff, u16 recv_len)
       pData+=1;
       u8 cmd_type=pData[0];
       pData+=1;
-      if(slave_addr!=g_sNwkSlaveSave.slave_addr && slave_addr!=0xFF)
+      if(slave_addr!=g_sNwkSlaveWork.slave_addr && slave_addr!=0xFF)
       {
         return;
       }
@@ -137,7 +137,7 @@ void nwk_slave_uart_send_level(u8 cmd_type, u8 *in_buff, u16 in_len)
   make_buff[make_len++]=0x55;
   make_buff[make_len++]=data_len>>8;
   make_buff[make_len++]=data_len;
-  make_buff[make_len++]=g_sNwkSlaveSave.slave_addr;
+  make_buff[make_len++]=g_sNwkSlaveWork.slave_addr;
   make_buff[make_len++]=cmd_type;
   memcpy(&make_buff[make_len], in_buff, in_len);
   make_len+=in_len;
@@ -189,37 +189,6 @@ void nwk_slave_send_rx(u8 *buff, u8 len, RfParamStruct *rf)
   nwk_slave_uart_send_level(MSCmdRxData, in_buff, in_len);
 }
 
-/*		
-================================================================================
-描述 : 从机参数读取
-输入 : 
-输出 : 
-================================================================================
-*/ 
-void nwk_slave_read(void)
-{
-	nwk_eeprom_read((u8*)&g_sNwkSlaveSave, sizeof(g_sNwkSlaveSave));
-	if(g_sNwkSlaveSave.crc_value!=nwk_crc16((u8*)&g_sNwkSlaveSave, sizeof(g_sNwkSlaveSave)-2))
-	{
-		memset((u8*)&g_sNwkSlaveSave, 0, sizeof(g_sNwkSlaveSave));
-		nwk_slave_save();
-	}
-}
-
-
-/*		
-================================================================================
-描述 : 从机参数存储
-输入 : 
-输出 : 
-================================================================================
-*/ 
-void nwk_slave_save(void)
-{
-	g_sNwkSlaveSave.crc_value=nwk_crc16((u8*)&g_sNwkSlaveSave, sizeof(g_sNwkSlaveSave)-2);
-	nwk_eeprom_save((u8*)&g_sNwkSlaveSave, sizeof(g_sNwkSlaveSave));
-}
-
 
 /*		
 ================================================================================
@@ -230,8 +199,7 @@ void nwk_slave_save(void)
 */ 
 void nwk_slave_set_addr(u8 slave_addr)
 {
-	g_sNwkSlaveSave.slave_addr=slave_addr;
-	nwk_slave_save();
+	g_sNwkSlaveWork.slave_addr=slave_addr;
 }
 
 
@@ -1006,7 +974,7 @@ void nwk_slave_work_state_check(void)
 void nwk_slave_main(void)
 {
   nwk_slave_work_state_check();
-  if(g_sNwkSlaveWork.ack_tickets==(g_sNwkSlaveSave.slave_addr-1)*10)
+  if(g_sNwkSlaveWork.ack_tickets==(g_sNwkSlaveWork.slave_addr-1)*10)
   {
     
   }

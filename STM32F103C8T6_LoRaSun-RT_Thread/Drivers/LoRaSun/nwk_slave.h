@@ -119,16 +119,17 @@ typedef struct
   u32 start_rtc_time;
 }NwkSlaveTxStruct;//从机发送结构体
 
-typedef struct
-{
-	u8 slave_addr;
-	
-	u8 reserved;
-	u16 crc_value;
-}NwkSlaveSaveStruct;
+//typedef struct
+//{
+//	u8 slave_addr;
+//	
+//	u8 reserved;
+//	u16 crc_value;
+//}NwkSlaveSaveStruct;
 
 typedef struct
 {
+	u8 slave_addr;
   u8 work_state;
   int recv_rssi;
   LoRaDevStruct *pLoRaDev;
@@ -142,9 +143,6 @@ typedef struct
   void (*fun_send)(u8 *buff, u16 len);
 }NwkSlaveWorkStruct;
 
-
-void nwk_slave_read(void);
-void nwk_slave_save(void);
 void nwk_slave_set_lora_dev(LoRaDevStruct *pLoRaDev);
 void nwk_slave_set_lora_param(u32 freq, u8 sf, u8 bw);
 void nwk_slave_fun_send_register(void (*fun_send)(u8 *buff, u16 len));
