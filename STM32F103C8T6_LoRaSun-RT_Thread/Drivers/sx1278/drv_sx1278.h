@@ -1,6 +1,6 @@
 
-#ifndef __DRV_SX1278B_H__
-#define __DRV_SX1278B_H__
+#ifndef __DRV_SX1278_H__
+#define __DRV_SX1278_H__
 
 #include "sx1278_reg.h"
 #include "hal_sx1278.h"

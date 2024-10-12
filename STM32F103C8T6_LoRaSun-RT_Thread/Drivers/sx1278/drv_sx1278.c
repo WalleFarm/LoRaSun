@@ -1,6 +1,5 @@
 
 #include "drv_sx1278.h"
-#include "drv_uart.h"
  
 
 /*		
@@ -15,7 +14,7 @@ void drv_sx1278_init(DrvSx1278Struct *psx1278)
 	hal_sx1278_rst(&psx1278->tag_hal_sx1278);//复位 
 	drv_sx1278_set_on(psx1278);
 	drv_sx1278_set_default_param(psx1278);
-	printf("drv_sx1278b version=0x%02X\n", drv_sx1278_get_version(psx1278));
+	printf("drv_sx1278 version=0x%02X\n", drv_sx1278_get_version(psx1278));
 }
 
 
@@ -212,7 +211,6 @@ int16_t drv_sx1278_read_rssi( DrvSx1278Struct *psx1278 )
 输出 : 
 ================================================================================
 */
-
 void drv_sx1278_set_rf_power( DrvSx1278Struct *psx1278, int8_t power )
 {
 	uint8_t RegPaConfig;

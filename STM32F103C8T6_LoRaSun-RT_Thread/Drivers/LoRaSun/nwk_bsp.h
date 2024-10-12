@@ -7,6 +7,10 @@
 #include <string.h>
 #include <stdlib.h>
 
+//以下头文件是为了引入自定义的延时和加密等函数,根据自己的工程修改
+#include "drv_common.h"
+#include "drv_encrypt.h"
+
 typedef unsigned          char u8;
 typedef unsigned short     int u16;
 typedef unsigned           int u32;
