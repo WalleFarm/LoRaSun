@@ -1,6 +1,8 @@
 
 #include "app_sx1278.h"  
-DrvSx1278Struct g_sDrvSx1278={0};
+ 
+//DrvSx1278Struct g_sDrvSx1278={0};
+DrvSx1268Struct g_sDrvSx1268={0};
 
 /*		
 ================================================================================
@@ -110,15 +112,24 @@ static void app_sx1278_hal_init(void)
 
 	SPI_Cmd(SPI1,ENABLE);
 	
-	g_sDrvSx1278.tag_hal_sx1278.sx1278_reset = app_sx1278_reset;
-	g_sDrvSx1278.tag_hal_sx1278.sx1278_cs_0 = app_sx1278_cs0;
-	g_sDrvSx1278.tag_hal_sx1278.sx1278_cs_1 = app_sx1278_cs1;
-	g_sDrvSx1278.tag_hal_sx1278.sx1278_spi_rw_byte = app_sx1278_spi_rw_byte;
-	drv_sx1278_init(&g_sDrvSx1278);//初始化
-	
-	nwk_slave_set_lora_dev(&g_sDrvSx1278);
-	printf("app_sx1278_hal_init ok!\n");
-	
+//	g_sDrvSx1278.tag_hal_sx1278.sx1278_reset = app_sx1278_reset;
+//	g_sDrvSx1278.tag_hal_sx1278.sx1278_cs_0 = app_sx1278_cs0;
+//	g_sDrvSx1278.tag_hal_sx1278.sx1278_cs_1 = app_sx1278_cs1;
+//	g_sDrvSx1278.tag_hal_sx1278.sx1278_spi_rw_byte = app_sx1278_spi_rw_byte;
+//	drv_sx1278_init(&g_sDrvSx1278);//初始化
+//	
+//	nwk_slave_set_lora_dev(&g_sDrvSx1278);
+//	printf("app_sx1278_hal_init ok!\n");
+
+	g_sDrvSx1268.tag_hal_sx1268.sx1268_reset = app_sx1278_reset;
+	g_sDrvSx1268.tag_hal_sx1268.sx1268_cs_0 = app_sx1278_cs0;
+	g_sDrvSx1268.tag_hal_sx1268.sx1268_cs_1 = app_sx1278_cs1;
+	g_sDrvSx1268.tag_hal_sx1268.sx1268_spi_rw_byte = app_sx1278_spi_rw_byte;
+	drv_sx1268_init(&g_sDrvSx1268);//初始化
+	 
+  nwk_slave_set_lora_dev(&g_sDrvSx1268); 
+	printf("app_sx12768_hal_init ok!\n");
+  
   
   /*   接线
   *    PB14--复位reset
@@ -144,7 +155,7 @@ void app_sx1278_init(void)
 {
 	app_sx1278_hal_init();
 
-  bsp_sx1278_set_param(434000000, 12, 9);//无线参数初始化
+//  bsp_sx1278_set_param(434000000, 12, 9);//无线参数初始化
 }
 
 /*		
@@ -157,7 +168,7 @@ void app_sx1278_init(void)
 void app_sx1278_thread_entry(void *parameter) 
 {
   app_sx1278_init();
-//#define   LORA_NODE
+
   while(1)
   {
     nwk_slave_main(); 
@@ -175,9 +186,9 @@ void app_sx1278_thread_entry(void *parameter)
 */
 void bsp_sx1278_set_param(u32 freq, u8 sf, u8 bw)
 {
-	drv_sx1278_set_rf_freq(&g_sDrvSx1278, freq);
-	drv_sx1278_set_sf(&g_sDrvSx1278, sf);
-	drv_sx1278_set_bw(&g_sDrvSx1278, bw);  
+//	drv_sx1278_set_rf_freq(&g_sDrvSx1278, freq);
+//	drv_sx1278_set_sf(&g_sDrvSx1278, sf);
+//	drv_sx1278_set_bw(&g_sDrvSx1278, bw);  
 }
 
 

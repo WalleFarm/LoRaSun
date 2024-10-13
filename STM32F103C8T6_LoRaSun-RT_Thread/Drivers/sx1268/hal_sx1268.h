@@ -19,7 +19,7 @@ void hal_sx1268_rst(HalSx1268Struct *psx1268);
 u8 hal_sx1268_spi_rw_byte(HalSx1268Struct *psx1268, u8 byte);
 
 void hal_sx1268_write_cmd(HalSx1268Struct *psx1268, u8 cmd, u8 *buff, u8 size);
-void hal_sx1268_read_cmd(HalSx1268Struct *psx1268, u8 cmd, u8 *buff, u8 size);
+u8 hal_sx1268_read_cmd(HalSx1268Struct *psx1268, u8 cmd, u8 *buff, u8 size);
 void hal_sx1268_write_regs(HalSx1268Struct *psx1268, u16 addr, u8 *buff, u8 size);
 void hal_sx1268_read_regs(HalSx1268Struct *psx1268, u16 addr, u8 *buff, u8 size);
 
@@ -27,7 +27,7 @@ void hal_sx1268_write_reg(HalSx1268Struct *psx1268, u16 addr, u8 data);
 u8 hal_sx1268_read_reg(HalSx1268Struct *psx1268, u16 addr);
 
 void hal_sx1268_write_fifo(HalSx1268Struct *psx1268, u8 *buff, u8 size);
-void hal_sx1268_read_fifo(HalSx1268Struct *psx1268, u8 *buff, u8 size);
+void hal_sx1268_read_fifo(HalSx1268Struct *psx1268, u8 offset, u8 *buff, u8 size);
 
 
 #endif

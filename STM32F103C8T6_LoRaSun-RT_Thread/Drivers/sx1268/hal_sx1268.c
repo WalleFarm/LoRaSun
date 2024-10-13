@@ -57,17 +57,19 @@ void hal_sx1268_write_cmd(HalSx1268Struct *psx1268, u8 cmd, u8 *buff, u8 size)
 输出 : 
 ================================================================================
 */
-void hal_sx1268_read_cmd(HalSx1268Struct *psx1268, u8 cmd, u8 *buff, u8 size)
+u8 hal_sx1268_read_cmd(HalSx1268Struct *psx1268, u8 cmd, u8 *buff, u8 size)
 {
 	u8 i;
 	psx1268->sx1268_cs_0();//选中
 	hal_sx1268_spi_rw_byte(psx1268, cmd);
+  u8 status=hal_sx1268_spi_rw_byte(psx1268, 0);
 	for(i=0;i<size;i++)
 	{
 		buff[i]=hal_sx1268_spi_rw_byte(psx1268, 0);
 	}	
 	
 	psx1268->sx1268_cs_1();//取消选择
+  return status;
 }
 
 /*		  
@@ -171,14 +173,13 @@ void hal_sx1268_write_fifo(HalSx1268Struct *psx1268, u8 *buff, u8 size)
 输出 : 
 ================================================================================
 */
-void hal_sx1268_read_fifo(HalSx1268Struct *psx1268, u8 *buff, u8 size)
+void hal_sx1268_read_fifo(HalSx1268Struct *psx1268, u8 offset, u8 *buff, u8 size)
 {
-	u8 i,offset=0;
 	psx1268->sx1268_cs_0();//选中	  
 	hal_sx1268_spi_rw_byte(psx1268, SX1268_READ_BUFFER);
 	hal_sx1268_spi_rw_byte(psx1268, offset);
 	hal_sx1268_spi_rw_byte(psx1268, 0);
-	for(i=0;i<size;i++)
+	for(u8 i=0;i<size;i++)
 	{
 		hal_sx1268_spi_rw_byte(psx1268, buff[i]);
 	}		

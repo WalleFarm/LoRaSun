@@ -629,14 +629,14 @@ u8 drv_sx1278_send_check(DrvSx1278Struct *psx1278)
 输出 : 
 ================================================================================
 */ 
-static u32 bsp_pow2(u8 n)
-{
-    u8 i;
-    u16 sum=1;
-    for(i=0;i<n;i++)
-        sum=sum*2;
-    return sum;
-}
+//static u32 bsp_pow2(u8 n)
+//{
+////    u8 i;
+//    u32 sum=1;
+////    for(i=0;i<n;i++)
+////        sum=sum*2;
+//    return sum<<n;
+//}
 
 
 /*		
@@ -690,7 +690,7 @@ u32 drv_sx1278_calcu_air_time(u8 sf, u8 bw, u16 data_len)
 	{
 		return 0;
 	}
-	t_s=1.f*bsp_pow2(sf)/bw_value;
+	t_s=1.f*(1<<sf)/bw_value;
 	
 	int payload_nb=0;
 	int k1=8*data_len-4*sf+24;
