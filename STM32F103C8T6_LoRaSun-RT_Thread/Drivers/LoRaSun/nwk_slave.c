@@ -80,7 +80,7 @@ void nwk_slave_uart_parse(u8 *recv_buff, u16 recv_len)
               memcpy(pSlaveTx->tx_buff, pData, tx_len);
               u16 freq_cnts=(NWK_MAX_FREQ-NWK_MIN_FREQ)/500000;
               pSlaveTx->freq=(nwk_crc16((u8*)&dst_sn, 4)%freq_cnts)*500000+NWK_MIN_FREQ;//根据序列号计算频段  
-              printf("dst_sn=0x%08X, (%.2f, %d, %d)\n", dst_sn, pSlaveTx->freq/1000000.f, pSlaveTx->sfs[0], pSlaveTx->bws[0]);              
+              printf("dst_sn=0x%08X, (%.2f, %d, %d), tx_len=%d\n", dst_sn, pSlaveTx->freq/1000000.f, pSlaveTx->sfs[0], pSlaveTx->bws[0], tx_len);              
             }
             else
             {
@@ -189,7 +189,7 @@ void nwk_slave_send_rx(u8 *buff, u8 len, RfParamStruct *rf)
   nwk_slave_uart_send_level(MSCmdRxData, in_buff, in_len);
 }
 
-
+ 
 /*		
 ================================================================================
 描述 : 设置从机地址码
@@ -233,6 +233,9 @@ void nwk_slave_set_lora_param(u32 freq, u8 sf, u8 bw)
 		drv_sx1278_set_bw(g_sNwkSlaveWork.pLoRaDev, bw);
 
 #elif defined(LORA_SX1268)
+		drv_sx1268_set_freq(g_sNwkSlaveWork.pLoRaDev, freq);
+		drv_sx1268_set_sf_bw(g_sNwkSlaveWork.pLoRaDev, sf, bw);
+  
 
 #elif defined(LORA_LLCC68)
 
@@ -268,7 +271,8 @@ void nwk_slave_cad_init(void)
 	drv_sx1278_cad_init(g_sNwkSlaveWork.pLoRaDev);
 	
 #elif defined(LORA_SX1268)
-
+  drv_sx1268_cad_init(g_sNwkSlaveWork.pLoRaDev);
+  
 #elif defined(LORA_LLCC68)
 
 #endif	
@@ -290,6 +294,7 @@ void nwk_slave_recv_init(void)
 	drv_sx1278_recv_init(g_sNwkSlaveWork.pLoRaDev); 
 	
 #elif defined(LORA_SX1268)
+  drv_sx1268_recv_init(g_sNwkSlaveWork.pLoRaDev); 
 
 #elif defined(LORA_LLCC68)
 
@@ -312,6 +317,7 @@ u8 nwk_slave_cad_check(void)
 	return drv_sx1278_cad_check(g_sNwkSlaveWork.pLoRaDev);  
 	
 #elif defined(LORA_SX1268)
+  return drv_sx1268_cad_check(g_sNwkSlaveWork.pLoRaDev);
 
 #elif defined(LORA_LLCC68)
 
@@ -339,7 +345,12 @@ u8 nwk_slave_recv_check(u8 *buff, int16_t *rssi)
 		*rssi=drv_sx1278_read_rssi(g_sNwkSlaveWork.pLoRaDev);
 	}
 #elif defined(LORA_SX1268)
-
+	read_size=drv_sx1268_recv_check(g_sNwkSlaveWork.pLoRaDev, buff, 256); 
+	if(read_size>0)
+	{
+		*rssi=drv_sx1268_get_rssi_inst(g_sNwkSlaveWork.pLoRaDev);
+	}
+  
 #elif defined(LORA_LLCC68)
 
 #endif		
@@ -360,9 +371,9 @@ u32 nwk_slave_calcu_air_time(u8 sf, u8 bw, u16 data_len)
 	
 	tx_time=drv_sx1278_calcu_air_time(sf, bw, data_len);
 #elif defined(LORA_SX1268)
-
+  tx_time=drv_sx1268_calcu_air_time(sf, bw, data_len);
 #elif defined(LORA_LLCC68)
-
+ 
 #endif	
 return tx_time;  
 }
@@ -383,6 +394,7 @@ void nwk_slave_send_buff(u8 *buff, u16 len)
 	drv_sx1278_send(g_sNwkSlaveWork.pLoRaDev, buff, len); 
 	
 #elif defined(LORA_SX1268)
+  drv_sx1268_send(g_sNwkSlaveWork.pLoRaDev, buff, len); 
 
 #elif defined(LORA_LLCC68)
 
@@ -406,6 +418,7 @@ u8 nwk_slave_send_check(void)
 	return drv_sx1278_send_check(g_sNwkSlaveWork.pLoRaDev); 
 	
 #elif defined(LORA_SX1268)
+  return drv_sx1268_send_check(g_sNwkSlaveWork.pLoRaDev); 
 
 #elif defined(LORA_LLCC68)
 
@@ -429,15 +442,18 @@ void nwk_slave_send_sniff(u8 sf, u8 bw)
 //  u8 loops=2;//计算循环次数
 #if defined(LORA_SX1278)  
 	drv_sx1278_send(g_sNwkSlaveWork.pLoRaDev, buff, 1); 
-	while(loops--)
-  {
-    nwk_delay_ms(2);
-  }
+
 #elif defined(LORA_SX1268)
+  drv_sx1268_send(g_sNwkSlaveWork.pLoRaDev, buff, 1);
 
 #elif defined(LORA_LLCC68)
 
-#endif	
+#endif
+
+	while(loops--)
+  {
+    nwk_delay_ms(2);
+  }	
 }
 
 
@@ -531,7 +547,7 @@ void nwk_slave_rx_process(void)
 //      pSlaveRx->freq=NWK_GW_BASE_FREQ+pSlaveRx->freq_ptr*2000000;
       pSlaveRx->rx_state=NwkSlaveRxCadInit;
       pSlaveRx->group_id=0;
-//      printf("###### NwkSlaveRxInit!\n");        
+      printf("###### NwkSlaveRxInit!\n");        
       break;
     }
     case NwkSlaveRxCadInit:

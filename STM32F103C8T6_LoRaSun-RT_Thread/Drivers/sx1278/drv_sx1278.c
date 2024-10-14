@@ -1,6 +1,5 @@
 
 #include "drv_sx1278.h"
-#include "drv_uart.h"
  
 
 /*		
@@ -15,7 +14,7 @@ void drv_sx1278_init(DrvSx1278Struct *psx1278)
 	hal_sx1278_rst(&psx1278->tag_hal_sx1278);//复位 
 	drv_sx1278_set_on(psx1278);
 	drv_sx1278_set_default_param(psx1278);
-	printf("drv_sx1278b version=0x%02X\n", drv_sx1278_get_version(psx1278));
+	printf("drv_sx1278 version=0x%02X\n", drv_sx1278_get_version(psx1278));
 }
 
 
@@ -212,7 +211,6 @@ int16_t drv_sx1278_read_rssi( DrvSx1278Struct *psx1278 )
 输出 : 
 ================================================================================
 */
-
 void drv_sx1278_set_rf_power( DrvSx1278Struct *psx1278, int8_t power )
 {
 	uint8_t RegPaConfig;
@@ -631,14 +629,14 @@ u8 drv_sx1278_send_check(DrvSx1278Struct *psx1278)
 输出 : 
 ================================================================================
 */ 
-static u32 bsp_pow2(u8 n)
-{
-    u8 i;
-    u16 sum=1;
-    for(i=0;i<n;i++)
-        sum=sum*2;
-    return sum;
-}
+//static u32 bsp_pow2(u8 n)
+//{
+////    u8 i;
+//    u32 sum=1;
+////    for(i=0;i<n;i++)
+////        sum=sum*2;
+//    return sum<<n;
+//}
 
 
 /*		
@@ -692,7 +690,7 @@ u32 drv_sx1278_calcu_air_time(u8 sf, u8 bw, u16 data_len)
 	{
 		return 0;
 	}
-	t_s=1.f*bsp_pow2(sf)/bw_value;
+	t_s=1.f*(1<<sf)/bw_value;
 	
 	int payload_nb=0;
 	int k1=8*data_len-4*sf+24;

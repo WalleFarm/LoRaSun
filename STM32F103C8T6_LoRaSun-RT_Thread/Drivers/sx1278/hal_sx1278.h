@@ -1,8 +1,11 @@
 #ifndef __HAL_SX1278B_H__
 #define __HAL_SX1278B_H__
 
-#include "drv_common.h"
-
+#include <stdio.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <string.h>
+#include <stdlib.h>
 typedef struct
 {
 	void (*sx1278_reset)(void);//复位函数
