@@ -1,9 +1,14 @@
 
 #include "app_sx1278.h"  
  
-//DrvSx1278Struct g_sDrvSx1278={0};
-DrvSx1268Struct g_sDrvSx1268={0};
+ 
+#ifdef  LORA_SX1278 
+DrvSx1278Struct g_sDrvSx1278={0};
+#endif
 
+#ifdef  LORA_SX1268 
+DrvSx1268Struct g_sDrvSx1268={0};
+#endif
 /*		
 ================================================================================
 描述 : 硬件复位
@@ -111,25 +116,29 @@ static void app_sx1278_hal_init(void)
 	SPI_Init(SPI1,&SPI_InitStructure);
 
 	SPI_Cmd(SPI1,ENABLE);
-	
-//	g_sDrvSx1278.tag_hal_sx1278.sx1278_reset = app_sx1278_reset;
-//	g_sDrvSx1278.tag_hal_sx1278.sx1278_cs_0 = app_sx1278_cs0;
-//	g_sDrvSx1278.tag_hal_sx1278.sx1278_cs_1 = app_sx1278_cs1;
-//	g_sDrvSx1278.tag_hal_sx1278.sx1278_spi_rw_byte = app_sx1278_spi_rw_byte;
-//	drv_sx1278_init(&g_sDrvSx1278);//初始化
-//	
-//	nwk_slave_set_lora_dev(&g_sDrvSx1278);
-//	printf("app_sx1278_hal_init ok!\n");
 
+#ifdef  LORA_SX1278 
+	g_sDrvSx1278.tag_hal_sx1278.sx1278_reset = app_sx1278_reset;
+	g_sDrvSx1278.tag_hal_sx1278.sx1278_cs_0 = app_sx1278_cs0;
+	g_sDrvSx1278.tag_hal_sx1278.sx1278_cs_1 = app_sx1278_cs1;
+	g_sDrvSx1278.tag_hal_sx1278.sx1278_spi_rw_byte = app_sx1278_spi_rw_byte;
+	drv_sx1278_init(&g_sDrvSx1278);//初始化
+	
+	nwk_slave_set_lora_dev(&g_sDrvSx1278);
+	printf("app_sx1278_hal_init ok!\n");
+#endif
+
+#ifdef  LORA_SX1268 
 	g_sDrvSx1268.tag_hal_sx1268.sx1268_reset = app_sx1278_reset;
 	g_sDrvSx1268.tag_hal_sx1268.sx1268_cs_0 = app_sx1278_cs0;
 	g_sDrvSx1268.tag_hal_sx1268.sx1268_cs_1 = app_sx1278_cs1;
 	g_sDrvSx1268.tag_hal_sx1268.sx1268_spi_rw_byte = app_sx1278_spi_rw_byte;
+  g_sDrvSx1268.tag_hal_sx1268.delay_ms=delay_ms;
 	drv_sx1268_init(&g_sDrvSx1268);//初始化
 	 
   nwk_slave_set_lora_dev(&g_sDrvSx1268); 
 	printf("app_sx12768_hal_init ok!\n");
-  
+#endif  
   
   /*   接线
   *    PB14--复位reset

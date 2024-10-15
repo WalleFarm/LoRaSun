@@ -60,6 +60,13 @@ typedef enum
     SX1268_STDBY_XOSC                              = 0x01,
 }Sx1268StandbyMode;
 
+typedef enum
+{
+    SX1268_CR_4_5                             = 0x01,
+    SX1268_CR_4_6                             = 0x02,
+    SX1268_CR_4_7                             = 0x03,
+    SX1268_CR_4_8                             = 0x04,
+}Sx1268CodingRate;
 
 typedef enum
 {
