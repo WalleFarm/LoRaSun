@@ -198,8 +198,9 @@ typedef struct
 
 typedef struct
 {
+	u8 event;//事件  
   NwkNodeRecvFromStruct *pRecvFrom;
-  u32 alarm_time;
+  u32 alarm_time;  //闹钟时间
 }NowkNodeReturnStruct;
  
 typedef struct
@@ -225,11 +226,8 @@ typedef struct
 
 
 
-//void nwk_node_read(void);
-//void nwk_node_save(void);
 void nwk_node_set_sn(u32 node_sn);
 void nwk_node_set_root_key(u8 *key);
-//void nwk_node_set_parent(NwkParentSaveStruct *parent);
 void nwk_node_add_gw(u32 gw_sn, u8 base_freq, u8 wireless_num);
 void nwk_node_set_wake_period(u16 period);
 void nwk_node_set_lora_dev(LoRaDevStruct *pLoRaDev);

@@ -7,39 +7,7 @@
 
 #include "nwk_node.h" 
 
-//NwkNodeSaveStruct g_sNwkNodeSave={0};
 NwkNodeWorkStruct g_sNwkNodeWork={0};
-/*		
-================================================================================
-描述 : 节点参数读取
-输入 : 
-输出 : 
-================================================================================
-*/ 
-//void nwk_node_read(void)
-//{
-//	nwk_eeprom_read((u8*)&g_sNwkNodeSave, sizeof(g_sNwkNodeSave));
-//	if(g_sNwkNodeSave.crc_value!=nwk_crc16((u8*)&g_sNwkNodeSave, sizeof(g_sNwkNodeSave)-2))
-//	{
-//		memset((u8*)&g_sNwkNodeSave, 0, sizeof(g_sNwkNodeSave));
-//		nwk_node_save();
-//	}
-//}
-
-
-/*		
-================================================================================
-描述 : 节点参数存储
-输入 : 
-输出 : 
-================================================================================
-*/ 
-//void nwk_node_save(void)
-//{
-//	g_sNwkNodeSave.crc_value=nwk_crc16((u8*)&g_sNwkNodeSave, sizeof(g_sNwkNodeSave)-2);
-//	nwk_eeprom_save((u8*)&g_sNwkNodeSave, sizeof(g_sNwkNodeSave));
-//}
-
 
 /*		
 ================================================================================
@@ -51,7 +19,6 @@ NwkNodeWorkStruct g_sNwkNodeWork={0};
 void nwk_node_set_sn(u32 node_sn)
 {
 	g_sNwkNodeWork.node_sn=node_sn;
-//	nwk_node_save();
 }
 
 /*		
@@ -68,17 +35,11 @@ void nwk_node_set_root_key(u8 *key)
 
 /*		
 ================================================================================
-描述 : 配网网关参数
+描述 : 手动添加网关
 输入 : 
 输出 : 
 ================================================================================
 */ 
-//void nwk_node_set_parent(NwkParentSaveStruct *parent)
-//{
-//	memcpy(&g_sNwkNodeSave.parent_save, parent, sizeof(NwkParentSaveStruct));
-//	nwk_node_save();
-//}
-
 void nwk_node_add_gw(u32 gw_sn, u8 base_freq, u8 wireless_num)
 {
   for(u8 i=0; i<NWK_GW_NUM; i++)
@@ -924,7 +885,7 @@ void nwk_node_rx_process(void)
       }
       else if(result==CadResultSuccess)//搜索到
       {
-        printf("rx cad ok!\n");
+        printf("rx cad ok! awake!\n");
         nwk_node_recv_init();//进入接收,等待回复
         u32 tx_time=nwk_node_calcu_air_time(pNodeRx->curr_sf, pNodeRx->curr_bw, 8)*1.2;//接收等待时间
         pNodeRx->start_rtc_time=nwk_get_rtc_counter();//记录当前时间,防止超时
@@ -1001,7 +962,7 @@ void nwk_node_rx_process(void)
         if(pNodeRx->group_id>=NWK_RF_GROUP_NUM)//NWK_RF_GROUP_NUM
         {
 					pNodeRx->listen_cnts++;
-					if(pNodeRx->listen_cnts<30)//监听轮次
+					if(pNodeRx->listen_cnts<30)//扫描轮次
 					{
 						pNodeRx->group_id=0;
 						pNodeRx->rx_state=NwkNodeRxAdrInit;//继续监听	
@@ -1053,7 +1014,8 @@ void nwk_node_rx_process(void)
         printf("recv rssi=%ddbm\n", rssi);
         u8 *pBuff=g_sNwkNodeWork.node_rx.recv_buff;
         printf_hex("recv=", pBuff, recv_len);
-
+				nwk_node_recv_parse(pBuff, recv_len);
+				
         //测试
         u8 ack_buff[]={0xAA, 0x55};
         delay_ms(300);
@@ -1203,7 +1165,6 @@ void nwk_node_tx_gw_process(void)
 			for(u8 i=0; i<3+NWK_RF_GROUP_NUM-pNodeTxGw->group_id; i++)//8-pNodeTxGw->group_id
 			{
 				nwk_node_send_sniff(sf, bw);//发送嗅探帧
-//				nwk_node_cad_init();//状态切换
 			}
       pNodeTxGw->sniff_cnts++;
       printf("***group id=%d, send sniff (%.2f, %d, %d), cnts=%d\n", pNodeTxGw->group_id, pNodeTxGw->freq/1000000.0, sf, bw, pNodeTxGw->sniff_cnts);
