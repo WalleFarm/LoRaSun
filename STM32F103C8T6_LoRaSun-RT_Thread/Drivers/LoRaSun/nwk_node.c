@@ -989,7 +989,7 @@ void nwk_node_rx_process(void)
         printf("group id=%d, rx sniff param(%.2f, %d, %d)\n", pNodeRx->group_id, freq/1000000.0, sf, bw);
         
         nwk_node_set_lora_param(freq, sf, bw);  
-        for(u8 i=0; i<3+NWK_RF_GROUP_NUM-pNodeRx->group_id; i++)
+        for(u8 i=0; i<10+NWK_RF_GROUP_NUM-pNodeRx->group_id; i++)
         {
           nwk_node_send_sniff(sf, bw);//返回嗅探帧
         }
@@ -1285,7 +1285,7 @@ void nwk_node_tx_gw_process(void)
     {
       pNodeTxGw->try_cnts++;
         printf("try_cnts=%d\n", pNodeTxGw->try_cnts);        
-      if(pNodeTxGw->try_cnts>=3)//结束发送
+      if(pNodeTxGw->try_cnts>=1)//结束发送
       {
         memset(pNodeTxGw->tx_buff, 0, sizeof(pNodeTxGw->tx_buff));
         pNodeTxGw->tx_len=0; 
@@ -1561,6 +1561,61 @@ NwkNodeRecvFromStruct *nwk_node_recv_from_check(void)
 */ 
 NowkNodeReturnStruct *nwk_node_main(void)
 {
+//	if(1)
+//	{
+//		static bool flag=false;
+//		if(flag==false)
+//		{
+//			flag=true;
+//			u8 sf=11,bw=6;
+//      nwk_node_set_lora_param(475000000, sf, bw);
+//      nwk_node_recv_init(); 			
+//		}
+//		int16_t rssi;
+//		u8 recv_len=nwk_node_recv_check(g_sNwkNodeWork.node_rx.recv_buff, &rssi);
+//		if(recv_len>0)
+//		{
+//			//数据解析
+//			g_sNwkNodeWork.recv_rssi=rssi;
+//			printf("recv rssi=%ddbm\n", rssi);
+//			printf_hex("recv=", g_sNwkNodeWork.node_rx.recv_buff, recv_len);
+//		} 		
+//		return NULL;
+//	}
+//	else
+//	{
+//    static u32 last_time=0;
+//    u32 now_time=nwk_get_rtc_counter();
+//    if(now_time-last_time>=5)
+//    {
+//      u8 test_buff[]={"0123456789012345678901234"};
+//      u8 sf=11,bw=6;
+//      nwk_node_set_lora_param(475000000, sf, bw);
+//      nwk_node_send_buff(test_buff, sizeof(test_buff));//发送数据包
+//      u32 tx_time=nwk_node_calcu_air_time(sf, bw, sizeof(test_buff))*1.2;//发送时间,冗余
+//      printf("send start***\ntx_time=%dms\n", tx_time);
+//      s8 loop_cnts=tx_time/100+1;
+//      while(loop_cnts--)
+//      {
+//        u8 result=nwk_node_send_check();//发送完成检测
+//        if(result)//发送完成
+//        {
+//          loop_cnts=1;
+//          printf("send test ok!\n");
+//          break;
+//        }
+//        delay_os(100);
+//      }
+//      if(loop_cnts<=0)
+//      {
+//        printf("send test timeout!\n");
+//      }
+//      
+//      last_time=now_time;
+//    }		
+//		return NULL;
+//	}
+	
   u32 min_alarm_time=0xFFFFFFFF;  
   NowkNodeReturnStruct *pReturn=&g_sNwkNodeWork.node_return;
 	nwk_node_work_check();
