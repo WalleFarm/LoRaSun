@@ -13,20 +13,58 @@
 void drv_sx1268_init(DrvSx1268Struct *psx1268)
 {
   hal_sx1268_rst(&psx1268->tag_hal_sx1268);
+
+//  drv_sx1268_wakeup(psx1268);
   
   drv_sx1268_set_standby(psx1268, SX1268_STDBY_RC);
-  drv_sx1268_set_regulator_mode(psx1268, SX1268_USE_DCDC);
-  drv_sx1268_set_mode(psx1268, SX1268_MODEM_LORA);
   drv_sx1268_set_dio2_switchctrl(psx1268, true);//射频自动切换
-  drv_sx1268_calibrate_image(psx1268, 472000000);//470M频段校准
-  drv_sx1268_set_pack_params(psx1268);//包格式初始化
+
+  drv_sx1268_set_standby(psx1268, SX1268_STDBY_RC);
+  drv_sx1268_set_regulator_mode(psx1268, SX1268_USE_DCDC);  
   drv_sx1268_set_buff_base_addr(psx1268, 0, 0);//FIFO基地址初始化
-  drv_sx1268_set_pa(psx1268, 4);//设置PA输出 高功率
-  drv_sx1268_set_power(psx1268, 17);//22dbm输出
+  
+  drv_sx1268_set_irq_parsms(psx1268, 
+                           SX1268_IRQ_RADIO_ALL, 
+                           SX1268_IRQ_RADIO_ALL, 
+                           SX1268_IRQ_RADIO_NONE,
+                           SX1268_IRQ_RADIO_NONE );  
+  u32 freq=475000000;
+  u8 sf=12, bw=9;
+  drv_sx1268_calibrate_image(psx1268, freq);//470M频段校准
+  drv_sx1268_set_freq(psx1268, freq);
+  
+  drv_sx1268_set_standby(psx1268, SX1268_STDBY_RC);
+  drv_sx1268_set_mode(psx1268, SX1268_MODEM_LORA);
+
+  drv_sx1268_set_sf_bw(psx1268, sf, bw);
+  drv_sx1268_set_pack_params(psx1268, 25);//包格式初始化,前导码等  
+//  drv_sx1268_set_cad_params(psx1268, SX1268_CAD_08_SYMBOL, 24, 20, SX1268_CAD_ONLY, 100);  
+  
+  u8 reg=hal_sx1268_read_reg(&psx1268->tag_hal_sx1268, 0x0889);
+  hal_sx1268_write_reg(&psx1268->tag_hal_sx1268, 0x0889, reg | ( 1 << 2 ));
+  drv_sx1268_set_power(psx1268, 22);//22dbm输出  
   
   u8 status=hal_sx1268_read_cmd(&psx1268->tag_hal_sx1268, SX1268_GET_STATUS, NULL, 0);
+    
   printf("status=0x%0X\n", status);
+
   
+}
+
+/*		
+================================================================================
+描述 : 唤醒
+输入 : 
+输出 : 
+================================================================================
+*/
+void drv_sx1268_wakeup(DrvSx1268Struct *psx1268)
+{
+	psx1268->tag_hal_sx1268.sx1268_cs_0();//选中	  
+	hal_sx1268_read_cmd(&psx1268->tag_hal_sx1268, SX1268_GET_STATUS, NULL, 0);
+	hal_sx1268_spi_rw_byte(&psx1268->tag_hal_sx1268, 0);
+  delay_ms(10);
+	psx1268->tag_hal_sx1268.sx1268_cs_1();//取消选择	  
 }
 
 /*		
@@ -57,24 +95,6 @@ void drv_sx1268_set_sleep(DrvSx1268Struct *psx1268)
 
 /*		
 ================================================================================
-描述 : CAD初始化
-输入 : 
-输出 : 
-================================================================================
-*/
-void drv_sx1268_cad_init(DrvSx1268Struct *psx1268)
-{
-  drv_sx1268_set_irq_parsms(psx1268, 
-                           SX1268_IRQ_CAD_DONE | SX1268_IRQ_CAD_ACTIVITY_DETECTED, 
-                           SX1268_IRQ_CAD_DONE | SX1268_IRQ_CAD_ACTIVITY_DETECTED, 
-                           SX1268_IRQ_RADIO_NONE,
-                           SX1268_IRQ_RADIO_NONE );  
-  drv_sx1268_set_cad_params(psx1268, SX1268_CAD_08_SYMBOL, 54, 40, SX1268_CAD_ONLY, 100);
-  hal_sx1268_write_cmd(&psx1268->tag_hal_sx1268, SX1268_SET_CAD, NULL, 0);
-}
-
-/*		
-================================================================================
 描述 : 设置运行模式, FSK或LORA
 输入 : 
 输出 : 
@@ -94,9 +114,9 @@ void drv_sx1268_set_mode(DrvSx1268Struct *psx1268, u8 mode)
 */
 void drv_sx1268_set_freq(DrvSx1268Struct *psx1268, u32 freq)
 {
-  u8 buff[4]={0};
-  
+  u8 buff[4]={0};  
   u32 freqInPllSteps = 0;
+//  drv_sx1268_calibrate_image(psx1268, freq);
   freqInPllSteps = drv_sx1268_convert_freqinhz2pllstep( freq );
 //  printf("in freq=%uHz, freqInPllSteps=%uHz\n", freq, freqInPllSteps);
   buff[0]=freqInPllSteps>>24;
@@ -117,8 +137,8 @@ void drv_sx1268_set_sf_bw(DrvSx1268Struct *psx1268, u8 sf, u8 bw)
 {
   u8 buff[4]={0};
   buff[0]=sf;
-  buff[1]=bw-3;//为了与SX1278保持一致
-  buff[2]=1;//编码率
+  buff[1]=bw-3;//为了与SX1278保持一致,SX1268: 3~4~5~6
+  buff[2]=SX1268_CR_4_5;//编码率
   buff[3]=true;//低速率优化
   hal_sx1268_write_cmd(&psx1268->tag_hal_sx1268, SX1268_SET_MODULATIONPARAMS, buff, 4); 
   
@@ -131,17 +151,17 @@ void drv_sx1268_set_sf_bw(DrvSx1268Struct *psx1268, u8 sf, u8 bw)
 输出 : 
 ================================================================================
 */
-void drv_sx1268_set_pack_params(DrvSx1268Struct *psx1268)
+void drv_sx1268_set_pack_params(DrvSx1268Struct *psx1268, u8 payload_len)
 {
   u8 buff[10]={0};
   u16 PreambleLength=12;//前导码长度
   buff[0]=PreambleLength>>8;
   buff[1]=PreambleLength;
   buff[2]=0;//可变长度数据包（显式报头）
-  buff[3]=0xFF;//负载长度
+  buff[3]=payload_len;//负载长度
   buff[4]=0x01;//CRC ON
   buff[5]=0;//标准IQ极性
-  hal_sx1268_write_cmd(&psx1268->tag_hal_sx1268, SX1268_SET_MODULATIONPARAMS, buff, 6); 
+  hal_sx1268_write_cmd(&psx1268->tag_hal_sx1268, SX1268_SET_PACKETPARAMS, buff, 6); 
 
   u8 reg_val=hal_sx1268_read_reg(&psx1268->tag_hal_sx1268, 0x0736);
   hal_sx1268_write_reg(&psx1268->tag_hal_sx1268, 0x0736, reg_val | ( 1 << 2 ) );//使用标准IQ极性是第2位置1  
@@ -157,12 +177,13 @@ void drv_sx1268_set_pack_params(DrvSx1268Struct *psx1268)
 void drv_sx1268_set_dio2_switchctrl(DrvSx1268Struct *psx1268, u8 enable)
 {
   u8 buff[1]={0};
+  buff[0]=enable;
   hal_sx1268_write_cmd(&psx1268->tag_hal_sx1268, SX1268_SET_RFSWITCHMODE, buff, 1); 
 }
 
 /*		
 ================================================================================
-描述 : DIO2设置为射频自动切换开关
+描述 : 电源模式
 输入 : 
 输出 : 
 ================================================================================
@@ -247,7 +268,7 @@ void drv_sx1268_set_power(DrvSx1268Struct *psx1268, int8_t power)
   u8 reg_val=hal_sx1268_read_reg(&psx1268->tag_hal_sx1268, 0x08D8);
   hal_sx1268_write_reg(&psx1268->tag_hal_sx1268, 0x08D8, reg_val | ( 0x0F << 1 ) );
   
-//  drv_sx1268_set_pa(psx1268, 4);
+  drv_sx1268_set_pa(psx1268, 4);
   if( power > 22 )
   {
     power = 22;
@@ -256,8 +277,8 @@ void drv_sx1268_set_power(DrvSx1268Struct *psx1268, int8_t power)
   {
     power = -9;
   }  
-    buff[0] = power;
-    buff[1] = SX1268_RAMP_40_US;  //PA爬坡时间
+  buff[0] = power;
+  buff[1] = SX1268_RAMP_40_US;  //PA爬坡时间
   hal_sx1268_write_cmd(&psx1268->tag_hal_sx1268, SX1268_SET_TXPARAMS, buff, 2); 
 }
 
@@ -316,7 +337,7 @@ void drv_sx1268_clr_irq_status(DrvSx1268Struct *psx1268, u16 irq)
 
 /*		
 ================================================================================
-描述 : 
+描述 : 频率数值转化为寄存器格式数值
 输入 : 
 输出 : 
 ================================================================================
@@ -453,6 +474,11 @@ void drv_sx1268_get_rx_buff_status(DrvSx1268Struct *psx1268, uint8_t *payloadLen
   *rxStartBufferPointer = status[1];
 }
 
+void drv_sx1268_set_stop_rxtimer_onpreamble_detect(DrvSx1268Struct *psx1268, bool enable)
+{
+  hal_sx1268_write_cmd(&psx1268->tag_hal_sx1268, SX1268_SET_STOPRXTIMERONPREAMBLE, ( uint8_t* )&enable, 1 );
+}
+
 /*		
 ================================================================================
 描述 : 
@@ -463,12 +489,35 @@ void drv_sx1268_get_rx_buff_status(DrvSx1268Struct *psx1268, uint8_t *payloadLen
 void drv_sx1268_recv_init(DrvSx1268Struct *psx1268)
 {
   u8 timeout[3]={0xFF, 0xFF, 0xFF}; 
+  drv_sx1268_set_standby(psx1268, SX1268_STDBY_RC);
+  drv_sx1268_set_stop_rxtimer_onpreamble_detect(psx1268, false);
   drv_sx1268_set_irq_parsms(psx1268, 
-                           SX1268_IRQ_RADIO_ALL, 
-                           SX1268_IRQ_RADIO_ALL, 
+                           SX1268_IRQ_RX_DONE, 
+                           SX1268_IRQ_RX_DONE, 
                            SX1268_IRQ_RADIO_NONE,
                            SX1268_IRQ_RADIO_NONE );
   hal_sx1268_write_cmd(&psx1268->tag_hal_sx1268, SX1268_SET_RX, timeout, 3);//连续接收
+  
+  u8 reg=hal_sx1268_read_reg(&psx1268->tag_hal_sx1268, 0x0736);
+  hal_sx1268_write_reg(&psx1268->tag_hal_sx1268, 0x0736, reg | ( 1 << 2 ));  
+}
+
+/*		
+================================================================================
+描述 : CAD初始化
+输入 : 
+输出 : 
+================================================================================
+*/
+void drv_sx1268_cad_init(DrvSx1268Struct *psx1268)
+{
+  drv_sx1268_set_standby(psx1268, SX1268_STDBY_RC);
+  drv_sx1268_set_irq_parsms(psx1268, 
+                           SX1268_IRQ_CAD_DONE | SX1268_IRQ_CAD_ACTIVITY_DETECTED, 
+                           SX1268_IRQ_CAD_DONE | SX1268_IRQ_CAD_ACTIVITY_DETECTED, 
+                           SX1268_IRQ_RADIO_NONE,
+                           SX1268_IRQ_RADIO_NONE );  
+  hal_sx1268_write_cmd(&psx1268->tag_hal_sx1268, SX1268_SET_CAD, NULL, 0);
 }
 
 /*		
@@ -481,14 +530,17 @@ void drv_sx1268_recv_init(DrvSx1268Struct *psx1268)
 void drv_sx1268_send(DrvSx1268Struct *psx1268, u8 *buff, u16 len)
 {
   u8 timeout[3]={0};//不设置超时
+  drv_sx1268_set_standby(psx1268, SX1268_STDBY_RC);
   drv_sx1268_set_irq_parsms(psx1268, 
-                           SX1268_IRQ_TX_DONE, 
-                           SX1268_IRQ_TX_DONE, 
+                           SX1268_IRQ_TX_DONE | SX1268_IRQ_RX_TX_TIMEOUT, 
+                           SX1268_IRQ_TX_DONE | SX1268_IRQ_RX_TX_TIMEOUT, 
                            SX1268_IRQ_RADIO_NONE,
                            SX1268_IRQ_RADIO_NONE );  
-  
+  drv_sx1268_set_pack_params(psx1268, len);//设置负载长度 
   hal_sx1268_write_fifo(&psx1268->tag_hal_sx1268, buff, len);
+  
   hal_sx1268_write_cmd(&psx1268->tag_hal_sx1268, SX1268_SET_TX, timeout, 3);//启动发送
+  
 }
 
 
@@ -507,6 +559,7 @@ u8 drv_sx1268_recv_check(DrvSx1268Struct *psx1268, u8 *buff, u16 size)
   {
     u8 payload_len=0, offset=0;
     drv_sx1268_get_rx_buff_status(psx1268, &payload_len, &offset);
+//    printf("offset=%d, payload_len=%d\n", offset, payload_len);
     if(payload_len>size)
     {
       printf("error payload_len>size!\n");
@@ -531,7 +584,7 @@ u8 drv_sx1268_send_check(DrvSx1268Struct *psx1268)
   drv_sx1268_clr_irq_status(psx1268, irqRegs);//清除标志
   if( ( irqRegs & SX1268_IRQ_TX_DONE ) == SX1268_IRQ_TX_DONE )
   {
-    printf("sx1268 send ok!\n");
+//    printf("sx1268 send ok!\n");
     return 1;
   }    
   return 0;
@@ -548,6 +601,7 @@ u8 drv_sx1268_cad_check(DrvSx1268Struct *psx1268)
 {
 //  u8 result=0;
   u16 irqRegs=drv_sx1268_get_irq_status(psx1268);
+//  printf("cad reg=0x%04X\n", irqRegs);
   drv_sx1268_clr_irq_status(psx1268, irqRegs);//清除标志
   if((irqRegs & SX1268_IRQ_CAD_DONE) == SX1268_IRQ_CAD_DONE)
   {

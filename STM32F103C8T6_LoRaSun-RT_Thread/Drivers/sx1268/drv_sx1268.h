@@ -27,13 +27,13 @@ typedef struct
 
 
 void drv_sx1268_init(DrvSx1268Struct *psx1268);
+void drv_sx1268_wakeup(DrvSx1268Struct *psx1268);
 void drv_sx1268_set_standby(DrvSx1268Struct *psx1268, u8 standby_mode);
 void drv_sx1268_set_sleep(DrvSx1268Struct *psx1268);
-void drv_sx1268_cad_init(DrvSx1268Struct *psx1268);
 void drv_sx1268_set_mode(DrvSx1268Struct *psx1268, u8 mode);
 void drv_sx1268_set_freq(DrvSx1268Struct *psx1268, u32 freq);
 void drv_sx1268_set_sf_bw(DrvSx1268Struct *psx1268, u8 sf, u8 bw);
-void drv_sx1268_set_pack_params(DrvSx1268Struct *psx1268);
+void drv_sx1268_set_pack_params(DrvSx1268Struct *psx1268, u8 payload_len);
 void drv_sx1268_set_dio2_switchctrl(DrvSx1268Struct *psx1268, u8 enable);
 void drv_sx1268_set_regulator_mode(DrvSx1268Struct *psx1268, u8 mode);
 void drv_sx1268_calibrate_image(DrvSx1268Struct *psx1268, u32 freq);
@@ -49,9 +49,12 @@ void drv_sx1268_set_symbnum_timeout(DrvSx1268Struct *psx1268, u8 symbNum);
 int8_t drv_sx1268_get_rssi_inst(DrvSx1268Struct *psx1268);
 void drv_sx1268_get_pack_status(DrvSx1268Struct *psx1268, Sx1268PacketStatusStruct *pPacketStatus);
 void drv_sx1268_get_rx_buff_status(DrvSx1268Struct *psx1268, uint8_t *payloadLength, uint8_t *rxStartBufferPointer);
+void drv_sx1268_set_stop_rxtimer_onpreamble_detect(DrvSx1268Struct *psx1268, bool enable);
 
 void drv_sx1268_recv_init(DrvSx1268Struct *psx1268);
 void drv_sx1268_send(DrvSx1268Struct *psx1268, u8 *buff, u16 len);
+void drv_sx1268_cad_init(DrvSx1268Struct *psx1268);
+
 u8 drv_sx1268_recv_check(DrvSx1268Struct *psx1268, u8 *buff, u16 size);
 u8 drv_sx1268_send_check(DrvSx1268Struct *psx1268);
 u8 drv_sx1268_cad_check(DrvSx1268Struct *psx1268);
