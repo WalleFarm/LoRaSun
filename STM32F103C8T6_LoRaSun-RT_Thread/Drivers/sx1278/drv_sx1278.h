@@ -41,6 +41,7 @@ void drv_sx1278_set_rf_freq( DrvSx1278Struct *psx1278, uint32_t freq );
 uint32_t drv_sx1278_get_rf_freq( DrvSx1278Struct *psx1278 );
 void drv_sx1278_set_sf( DrvSx1278Struct *psx1278, uint8_t factor );
 int16_t drv_sx1278_read_rssi( DrvSx1278Struct *psx1278 );
+int8_t drv_sx1278_read_snr( DrvSx1278Struct *psx1278 );
 void drv_sx1278_set_rf_power( DrvSx1278Struct *psx1278, int8_t power );
 void drv_sx1278_set_bw( DrvSx1278Struct *psx1278, uint8_t bw );
 void drv_sx1278_set_error_coding( DrvSx1278Struct *psx1278, uint8_t value );

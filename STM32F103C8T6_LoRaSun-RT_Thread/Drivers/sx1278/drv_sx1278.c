@@ -203,6 +203,22 @@ int16_t drv_sx1278_read_rssi( DrvSx1278Struct *psx1278 )
 	return RxPacketRssiValue;
 }
 
+/*		
+================================================================================
+描述 :
+输入 : 
+输出 : 
+================================================================================
+*/
+int8_t drv_sx1278_read_snr( DrvSx1278Struct *psx1278 )
+{
+	uint8_t rxSnrEstimate;
+	int8_t RxPacketSnrEstimate;
+
+	rxSnrEstimate = hal_sx1278_read_addr(&psx1278->tag_hal_sx1278, REG_LR_PKTSNRVALUE );
+	RxPacketSnrEstimate = ((int8_t)rxSnrEstimate ) >> 2;
+  return RxPacketSnrEstimate;
+}
 
 /*		
 ================================================================================

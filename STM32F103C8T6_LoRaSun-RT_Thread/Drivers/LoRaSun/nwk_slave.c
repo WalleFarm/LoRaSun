@@ -341,12 +341,17 @@ u8 nwk_slave_recv_check(u8 *buff, int16_t *rssi)
 	if(read_size>0)
 	{
 		*rssi=drv_sx1278_read_rssi(g_sNwkSlaveWork.pLoRaDev);
+    s8 snr=drv_sx1278_read_snr(g_sNwkSlaveWork.pLoRaDev);
+    printf("snr=%d dbm\n", snr);
 	}
 #elif defined(LORA_SX1268)
 	read_size=drv_sx1268_recv_check(g_sNwkSlaveWork.pLoRaDev, buff, 256); 
 	if(read_size>0)
 	{
 		*rssi=drv_sx1268_get_rssi_inst(g_sNwkSlaveWork.pLoRaDev);
+    Sx1268PacketStatusStruct status;
+    drv_sx1268_get_pack_status(g_sNwkSlaveWork.pLoRaDev, &status);
+    printf("rssi=%d dbm, snr=%ddbm\n", status.RssiPkt, status.SnrPkt);
 	}
   
 #elif defined(LORA_LLCC68)
