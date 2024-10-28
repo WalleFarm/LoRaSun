@@ -158,7 +158,7 @@ void nwk_slave_uart_send_level(u8 cmd_type, u8 *in_buff, u16 in_len)
 输出 : 
 ================================================================================
 */ 
-void nwk_slave_send_heart(void)
+void nwk_slave_uart_send_heart(void)
 {
   nwk_slave_uart_send_level(MSCmdHeart, NULL, 0);
 }
@@ -170,7 +170,7 @@ void nwk_slave_send_heart(void)
 输出 : 
 ================================================================================
 */ 
-void nwk_slave_send_rx(u8 *buff, u8 len, RfParamStruct *rf)
+void nwk_slave_uart_send_rx(u8 *buff, u8 len, RfParamStruct *rf)
 {
   u8 in_buff[300]={0};
   u16 in_len=0;
@@ -197,7 +197,7 @@ void nwk_slave_send_rx(u8 *buff, u8 len, RfParamStruct *rf)
 输出 : 
 ================================================================================
 */ 
-void nwk_slave_set_addr(u8 slave_addr)
+void nwk_slave_uart_set_addr(u8 slave_addr)
 {
 	g_sNwkSlaveWork.slave_addr=slave_addr;
 }
@@ -243,12 +243,12 @@ void nwk_slave_set_lora_param(u32 freq, u8 sf, u8 bw)
 
 /*		
 ================================================================================
-描述 : 发送函数注册
+描述 : 串口发送函数注册
 输入 : 
 输出 : 
 ================================================================================
 */ 
-void nwk_slave_fun_send_register(void (*fun_send)(u8 *buff, u16 len))
+void nwk_slave_uart_send_register(void (*fun_send)(u8 *buff, u16 len))
 {
   g_sNwkSlaveWork.fun_send=fun_send; 
 }
@@ -642,7 +642,7 @@ void nwk_slave_rx_process(void)
         rf.freq=pSlaveRx->freq;
         rf.sf=pSlaveRx->curr_sf;
         rf.bw=pSlaveRx->curr_bw;
-        nwk_slave_send_rx(pBuff, recv_len, &rf);//无线数据发送到主机
+        nwk_slave_uart_send_rx(pBuff, recv_len, &rf);//无线数据发送到主机
         pSlaveRx->start_rtc_time=nwk_get_rtc_counter();//记录当前时间,防止超时
         pSlaveRx->wait_cnts=2;         
         pSlaveRx->rx_state=NwkSlaveRxAckWait;
@@ -903,7 +903,7 @@ void nwk_slave_tx_process(void)
         rf.sf=pSlaveTx->curr_sf;
         rf.bw=pSlaveTx->curr_bw;
         rf.rssi=rssi;
-        nwk_slave_send_rx(g_sNwkSlaveWork.slave_rx.recv_buff, recv_len, &rf);//无线数据发送到主机
+        nwk_slave_uart_send_rx(g_sNwkSlaveWork.slave_rx.recv_buff, recv_len, &rf);//无线数据发送到主机
         pSlaveTx->tx_state=NwkSlaveTxIdel;
       }   
       else if(now_time-pSlaveTx->start_rtc_time>pSlaveTx->wait_cnts)//超时

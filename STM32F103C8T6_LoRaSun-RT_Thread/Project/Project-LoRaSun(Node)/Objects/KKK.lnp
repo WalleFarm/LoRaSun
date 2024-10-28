@@ -40,11 +40,13 @@
 ".\objects\mqttsubscribeserver.o"
 ".\objects\mqttunsubscribeclient.o"
 ".\objects\mqttunsubscribeserver.o"
-".\objects\hal_sx1278.o"
-".\objects\drv_sx1278.o"
 ".\objects\aes.o"
 ".\objects\nwk_node.o"
 ".\objects\nwk_bsp.o"
+".\objects\hal_sx1278.o"
+".\objects\drv_sx1278.o"
+".\objects\drv_sx1268.o"
+".\objects\hal_sx1268.o"
 --library_type=microlib --strict --scatter ".\Objects\KKK.sct"
 --summary_stderr --info summarysizes --map --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers

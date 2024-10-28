@@ -164,7 +164,7 @@ void nwk_node_recv_init(void)
 	drv_sx1278_recv_init(g_sNwkNodeWork.pLoRaDev); 
 	
 #elif defined(LORA_SX1268)
-
+  drv_sx1268_recv_init(g_sNwkNodeWork.pLoRaDev); 
 #elif defined(LORA_LLCC68)
 
 #endif	
@@ -186,10 +186,11 @@ u8 nwk_node_cad_check(void)
 	return drv_sx1278_cad_check(g_sNwkNodeWork.pLoRaDev);  
 	
 #elif defined(LORA_SX1268)
-
+  return drv_sx1268_cad_check(g_sNwkNodeWork.pLoRaDev);  
 #elif defined(LORA_LLCC68)
 
 #endif	
+  
 }
 
 /*		
@@ -213,7 +214,11 @@ u8 nwk_node_recv_check(u8 *buff, int16_t *rssi)
 		*rssi=drv_sx1278_read_rssi(g_sNwkNodeWork.pLoRaDev);
 	}
 #elif defined(LORA_SX1268)
-
+	read_size=drv_sx1268_recv_check(g_sNwkNodeWork.pLoRaDev, buff, 255); 
+	if(read_size>0)
+	{
+		*rssi=drv_sx1268_get_rssi_inst(g_sNwkNodeWork.pLoRaDev);
+	}
 #elif defined(LORA_LLCC68)
 
 #endif		
@@ -234,7 +239,7 @@ u32 nwk_node_calcu_air_time(u8 sf, u8 bw, u16 data_len)
 	
 	tx_time=drv_sx1278_calcu_air_time(sf, bw, data_len);
 #elif defined(LORA_SX1268)
-
+  tx_time=drv_sx1268_calcu_air_time(sf, bw, data_len);
 #elif defined(LORA_LLCC68)
 
 #endif	
@@ -257,7 +262,7 @@ void nwk_node_send_buff(u8 *buff, u16 len)
 	drv_sx1278_send(g_sNwkNodeWork.pLoRaDev, buff, len); 
 	
 #elif defined(LORA_SX1268)
-
+  drv_sx1268_send(g_sNwkNodeWork.pLoRaDev, buff, len); 
 #elif defined(LORA_LLCC68)
 
 #endif	
@@ -280,7 +285,7 @@ u8 nwk_node_send_check(void)
 	return drv_sx1278_send_check(g_sNwkNodeWork.pLoRaDev); 
 	
 #elif defined(LORA_SX1268)
-
+  return drv_sx1268_send_check(g_sNwkNodeWork.pLoRaDev); 
 #elif defined(LORA_LLCC68)
 
 #endif	
@@ -302,15 +307,16 @@ void nwk_node_send_sniff(u8 sf, u8 bw)
   u8 loops=(tx_time*0.1)/2+5;//计算循环次数
 #if defined(LORA_SX1278)  
 	drv_sx1278_send(g_sNwkNodeWork.pLoRaDev, buff, 1); 
-	while(loops--)
-  {
-    nwk_delay_ms(2);
-  }
-#elif defined(LORA_SX1268)
 
+#elif defined(LORA_SX1268)
+  drv_sx1268_send(g_sNwkNodeWork.pLoRaDev, buff, 1); 
 #elif defined(LORA_LLCC68)
 
 #endif	
+	while(loops--)
+  {
+    nwk_delay_ms(2);
+  }  
 }
 
 /*		

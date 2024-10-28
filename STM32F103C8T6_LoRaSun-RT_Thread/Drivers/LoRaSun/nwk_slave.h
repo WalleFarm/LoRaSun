@@ -145,7 +145,7 @@ typedef struct
 
 void nwk_slave_set_lora_dev(LoRaDevStruct *pLoRaDev);
 void nwk_slave_set_lora_param(u32 freq, u8 sf, u8 bw);
-void nwk_slave_fun_send_register(void (*fun_send)(u8 *buff, u16 len));
+void nwk_slave_uart_send_register(void (*fun_send)(u8 *buff, u16 len));
 void nwk_slave_cad_init(void);
 void nwk_slave_recv_init(void);
 u8 nwk_slave_cad_check(void);
@@ -157,9 +157,9 @@ void nwk_slave_send_sniff(u8 sf, u8 bw);
 
 void nwk_slave_uart_parse(u8 *recv_buff, u16 recv_len);
 void nwk_slave_uart_send_level(u8 cmd_type, u8 *in_buff, u16 in_len);
-void nwk_slave_send_heart(void);
-void nwk_slave_send_rx(u8 *buff, u8 len, RfParamStruct *rf);
-void nwk_slave_set_addr(u8 slave_addr);
+void nwk_slave_uart_send_heart(void);
+void nwk_slave_uart_send_rx(u8 *buff, u8 len, RfParamStruct *rf);
+void nwk_slave_uart_set_addr(u8 slave_addr);
 
 void nwk_slave_broad_process(void);
 void nwk_slave_rx_process(void);

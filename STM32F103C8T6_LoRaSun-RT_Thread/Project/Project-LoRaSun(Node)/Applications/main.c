@@ -17,6 +17,7 @@ int main(void)
 	{
 		drv_wdog_feed();//喂狗
 		printf("app sec counter=%ds\n", drv_get_sec_counter());
+    printf("app rtc counter=%ds\n", drv_get_rtc_counter());
 		delay_os(5000);
 
 	}

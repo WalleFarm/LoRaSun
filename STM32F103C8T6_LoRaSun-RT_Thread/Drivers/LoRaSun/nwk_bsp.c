@@ -180,8 +180,8 @@ u16 nwk_tea_decrypt(u8 *buff, u16 len, u32* key)
 */
 u32 nwk_get_rtc_counter(void)
 {
-//  return drv_get_rtc_counter();
-	return drv_get_sec_counter();
+  return drv_get_rtc_counter();
+//	return drv_get_sec_counter();
 }
 
 /*		

@@ -336,7 +336,7 @@
               <MiscControls></MiscControls>
               <Define>USE_STDPERIPH_DRIVER</Define>
               <Undefine></Undefine>
-              <IncludePath>.\Applications;.\Applications\sys;..\..\RT-Thread\include;..\..\RT-Thread\libcpu\arm\cortex-m3;..\..\RT-Thread\include\libc;..\..\RT-Thread\components\drivers;..\..\Libraries\CMSIS\CoreSupport;..\..\Libraries\CMSIS\DeviceSupport;..\..\Libraries\StdPeriph_Driver\inc;.;..\..\Drivers;..\..\Drivers\MQTT;..\..\Drivers\sx1278;..\..\Drivers\encrypt;..\..\Drivers\LoRaSun</IncludePath>
+              <IncludePath>.\Applications;.\Applications\sys;..\..\RT-Thread\include;..\..\RT-Thread\libcpu\arm\cortex-m3;..\..\RT-Thread\include\libc;..\..\RT-Thread\components\drivers;..\..\Libraries\CMSIS\CoreSupport;..\..\Libraries\CMSIS\DeviceSupport;..\..\Libraries\StdPeriph_Driver\inc;.;..\..\Drivers;..\..\Drivers\MQTT;..\..\Drivers\sx1278;..\..\Drivers\encrypt;..\..\Drivers\LoRaSun;..\..\Drivers\sx1268</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -618,21 +618,6 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>SX1278</GroupName>
-          <Files>
-            <File>
-              <FileName>hal_sx1278.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Drivers\sx1278\hal_sx1278.c</FilePath>
-            </File>
-            <File>
-              <FileName>drv_sx1278.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Drivers\sx1278\drv_sx1278.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
           <GroupName>Encrypt</GroupName>
           <Files>
             <File>
@@ -654,6 +639,36 @@
               <FileName>nwk_bsp.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Drivers\LoRaSun\nwk_bsp.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>SX1278</GroupName>
+          <Files>
+            <File>
+              <FileName>hal_sx1278.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Drivers\sx1278\hal_sx1278.c</FilePath>
+            </File>
+            <File>
+              <FileName>drv_sx1278.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Drivers\sx1278\drv_sx1278.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>SX1268</GroupName>
+          <Files>
+            <File>
+              <FileName>drv_sx1268.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Drivers\sx1268\drv_sx1268.c</FilePath>
+            </File>
+            <File>
+              <FileName>hal_sx1268.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Drivers\sx1268\hal_sx1268.c</FilePath>
             </File>
           </Files>
         </Group>
