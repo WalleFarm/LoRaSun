@@ -12,7 +12,7 @@ NwkMasterWorkStruct g_sNwkMasterWork={0};
 输出 : 
 ================================================================================
 */ 
-void nwk_master_fun_send_register(u8 index, u8 slave_adddr, void (*fun_send)(u8 *buff, u16 len))
+void nwk_master_uart_send_register(u8 index, u8 slave_adddr, void (*fun_send)(u8 *buff, u16 len))
 {
   if(index<NWK_GW_WIRELESS_NUM)
   {
@@ -44,7 +44,7 @@ void nwk_master_uart_parse(u8 *recv_buff, u16 recv_len)
       pData+=1;
       u8 cmd_type=pData[0];
       pData+=1;
-
+      printf("slave_addr=%d\n", slave_addr);
       switch(cmd_type)
       {
         case MSCmdHeart://
@@ -64,6 +64,7 @@ void nwk_master_uart_parse(u8 *recv_buff, u16 recv_len)
         }
         case MSCmdRxData://接收数据
         {
+          printf("MSCmdRxData ###\n");
           RfParamStruct rf;
           rf.rssi=pData[0]<<8|pData[1];
           pData+=2;

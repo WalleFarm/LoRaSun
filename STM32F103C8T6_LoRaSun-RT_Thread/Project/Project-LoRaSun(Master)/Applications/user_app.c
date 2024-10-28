@@ -75,7 +75,7 @@ void app_uart_thread_entry(void *parameter)
       }
 			else
 			{
-				nwk_slave_uart_parse(pUART->pBuff, pUART->iRecv);
+				
 			}
       
 

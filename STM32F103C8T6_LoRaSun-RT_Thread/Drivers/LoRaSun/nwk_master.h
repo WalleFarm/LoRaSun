@@ -47,7 +47,7 @@ typedef struct
 }NwkMasterWorkStruct;
 
 
-void nwk_master_fun_send_register(u8 index, u8 slave_adddr, void (*fun_send)(u8 *buff, u16 len));
+void nwk_master_uart_send_register(u8 index, u8 slave_adddr, void (*fun_send)(u8 *buff, u16 len));
 void nwk_master_uart_parse(u8 *recv_buff, u16 recv_len);
 void nwk_master_uart_send_level(u8 index, u8 cmd_type, u8 *in_buff, u16 in_len);
 u8 nwk_master_make_lora_buff(u8 opt, u32 dst_sn, u8 *key, u8 cmd_type, u8 pack_num, u8 *in_buff, u8 in_len, u8 *out_buff, u8 out_size);

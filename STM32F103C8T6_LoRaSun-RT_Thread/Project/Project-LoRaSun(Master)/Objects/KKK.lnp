@@ -42,7 +42,7 @@
 ".\objects\mqttunsubscribeserver.o"
 ".\objects\aes.o"
 ".\objects\nwk_bsp.o"
-".\objects\nwk_slave.o"
+".\objects\nwk_master.o"
 ".\objects\hal_sx1268.o"
 ".\objects\drv_sx1268.o"
 ".\objects\hal_sx1278.o"

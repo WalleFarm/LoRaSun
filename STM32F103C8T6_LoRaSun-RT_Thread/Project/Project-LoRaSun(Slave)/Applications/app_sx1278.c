@@ -187,20 +187,17 @@ void app_uart_recv_check(void)
 	static UART_Struct *pUART=&g_sUART2; 
 	u16 recv_len;
 
-	while(1)
-	{
-		if(pUART->iRecv>0)
-		{
-			recv_len=0;
-			while(recv_len<pUART->iRecv)
-			{
-				recv_len=pUART->iRecv;
-				delay_ms(5);
-			}
-      nwk_slave_uart_parse(pUART->pBuff, pUART->iRecv);
-      UART_Clear(pUART);
+  if(pUART->iRecv>0)
+  {
+    recv_len=0;
+    while(recv_len<pUART->iRecv)
+    {
+      recv_len=pUART->iRecv;
+      delay_ms(5);
     }
-  }    
+    nwk_slave_uart_parse(pUART->pBuff, pUART->iRecv);
+    UART_Clear(pUART);
+  }  
 }
 
 /*		

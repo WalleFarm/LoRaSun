@@ -1,8 +1,8 @@
 #ifndef __APP_SX1278_H__
 #define __APP_SX1278_H__
 //#include "nwk_node.h" 
-#include "nwk_slave.h" 
-//#include "nwk_master.h" 
+//#include "nwk_slave.h" 
+#include "nwk_master.h" 
 #include "drv_uart.h"
 
 

@@ -636,9 +636,9 @@
               <FilePath>..\..\Drivers\LoRaSun\nwk_bsp.c</FilePath>
             </File>
             <File>
-              <FileName>nwk_slave.c</FileName>
+              <FileName>nwk_master.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\Drivers\LoRaSun\nwk_slave.c</FilePath>
+              <FilePath>..\..\Drivers\LoRaSun\nwk_master.c</FilePath>
             </File>
           </Files>
         </Group>
