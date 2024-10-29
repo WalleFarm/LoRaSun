@@ -13,6 +13,7 @@ typedef struct
 	void (*sx1268_cs_0)(void);//片选0
 	void (*sx1268_cs_1)(void);//片选1
   void (*delay_ms)(u32 dlyms);//延时
+	void (*wait_on_busy)(void);
 }HalSx1268Struct;
 
  

@@ -47,7 +47,8 @@ void hal_sx1268_write_cmd(HalSx1268Struct *psx1268, u8 cmd, u8 *buff, u8 size)
 		hal_sx1268_spi_rw_byte(psx1268, buff[i]);
 	}		
 	psx1268->sx1268_cs_1();//取消选择	
-  psx1268->delay_ms(1);//这个延时是必须的,等待操作成功
+//  psx1268->delay_ms(5);//这个延时是必须的,等待操作成功
+	psx1268->wait_on_busy();
 }
 
 /*		
@@ -69,7 +70,8 @@ u8 hal_sx1268_read_cmd(HalSx1268Struct *psx1268, u8 cmd, u8 *buff, u8 size)
 	}	
 	
 	psx1268->sx1268_cs_1();//取消选择
-  psx1268->delay_ms(1);
+//  psx1268->delay_ms(1);
+	psx1268->wait_on_busy();
   return status;
 }
 
@@ -92,7 +94,8 @@ void hal_sx1268_write_regs(HalSx1268Struct *psx1268, u16 addr, u8 *buff, u8 size
 		hal_sx1268_spi_rw_byte(psx1268, buff[i]);
 	}		
 	psx1268->sx1268_cs_1();//取消选择	
-  psx1268->delay_ms(1);
+//  psx1268->delay_ms(1);
+	psx1268->wait_on_busy();
 }
 
 /*		
@@ -117,7 +120,8 @@ void hal_sx1268_read_regs(HalSx1268Struct *psx1268, u16 addr, u8 *buff, u8 size)
 	}	
 	
 	psx1268->sx1268_cs_1();//取消选择
-  psx1268->delay_ms(1);
+//  psx1268->delay_ms(1);
+	psx1268->wait_on_busy();
 }
 
 
@@ -168,7 +172,8 @@ void hal_sx1268_write_fifo(HalSx1268Struct *psx1268, u8 *buff, u8 size)
 		hal_sx1268_spi_rw_byte(psx1268, buff[i]);
 	}		
 	psx1268->sx1268_cs_1();//取消选择	
-  psx1268->delay_ms(1);
+//  psx1268->delay_ms(1);
+	psx1268->wait_on_busy();
 }
 
 /*		
@@ -189,7 +194,8 @@ void hal_sx1268_read_fifo(HalSx1268Struct *psx1268, u8 offset, u8 *buff, u8 size
 		buff[i]=hal_sx1268_spi_rw_byte(psx1268, 0);
 	}		
 	psx1268->sx1268_cs_1();//取消选择	
-  psx1268->delay_ms(1);
+//  psx1268->delay_ms(1);
+	psx1268->wait_on_busy();
   
 }
 

@@ -35,6 +35,7 @@ static void app_sx1278_reset(void)
 static void app_sx1278_cs0(void)
 {
 	GPIO_ResetBits(GPIOA, GPIO_Pin_4);
+	delay_ms(1);
 }
 
 /*		
@@ -62,6 +63,27 @@ static u8 app_sx1278_spi_rw_byte(u8 byte)
 	SPI_I2S_SendData(SPI1,byte);
 	while(SPI_I2S_GetFlagStatus(SPI1,SPI_I2S_FLAG_RXNE)==RESET);
 	return SPI_I2S_ReceiveData(SPI1);  
+}
+
+/*		
+================================================================================
+描述 : 忙检测
+输入 : 
+输出 : 
+================================================================================
+*/
+void app_node_wait_on_busy(void)
+{
+	u32 counts=0;
+	while(GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_12)>0)
+	{
+		if(counts++>1000)
+		{
+			printf("busy line wait time out!\n");
+			return;
+		}
+		delay_ms(1);
+	}
 }
 
 /*		
@@ -306,11 +328,18 @@ static void app_sx1278_hal_init(void)
 #endif
 
 #ifdef  LORA_SX1268 
+
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
+	GPIO_InitStructure.GPIO_Speed=GPIO_Speed_50MHz;
+	GPIO_Init(GPIOB, &GPIO_InitStructure);//BUSY
+	
 	g_sDrvSx1268.tag_hal_sx1268.sx1268_reset = app_sx1278_reset;
 	g_sDrvSx1268.tag_hal_sx1268.sx1268_cs_0 = app_sx1278_cs0;
 	g_sDrvSx1268.tag_hal_sx1268.sx1268_cs_1 = app_sx1278_cs1;
 	g_sDrvSx1268.tag_hal_sx1268.sx1268_spi_rw_byte = app_sx1278_spi_rw_byte;
   g_sDrvSx1268.tag_hal_sx1268.delay_ms=delay_ms;
+	g_sDrvSx1268.tag_hal_sx1268.wait_on_busy=app_node_wait_on_busy;
 	drv_sx1268_init(&g_sDrvSx1268);//初始化
 	 
   nwk_node_set_lora_dev(&g_sDrvSx1268); 
@@ -383,7 +412,7 @@ void app_sx1278_thread_entry(void *parameter)
       led_state=!led_state;
       app_led_set_blue(led_state);
       app_led_set_green(led_state);
-      app_temp_update();//温度更新
+//      app_temp_update();//温度更新
     }
     delay_os(5);
   }

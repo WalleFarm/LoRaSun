@@ -39,7 +39,8 @@ void drv_sx1268_init(DrvSx1268Struct *psx1268)
   drv_sx1268_set_sf_bw(psx1268, sf, bw);
   drv_sx1268_set_pack_params(psx1268, 25);//包格式初始化,前导码等  
 //  drv_sx1268_set_cad_params(psx1268, SX1268_CAD_08_SYMBOL, 24, 20, SX1268_CAD_ONLY, 100);  
-  
+	drv_sx1268_set_cad_params(psx1268, SX1268_CAD_01_SYMBOL, 44, 30, SX1268_CAD_ONLY, 100);   
+	
   u8 reg=hal_sx1268_read_reg(&psx1268->tag_hal_sx1268, 0x0889);
   hal_sx1268_write_reg(&psx1268->tag_hal_sx1268, 0x0889, reg | ( 1 << 2 ));
   drv_sx1268_set_power(psx1268, 22);//22dbm输出  
@@ -513,8 +514,8 @@ void drv_sx1268_cad_init(DrvSx1268Struct *psx1268)
 {
   drv_sx1268_set_standby(psx1268, SX1268_STDBY_RC);
   drv_sx1268_set_irq_parsms(psx1268, 
-                           SX1268_IRQ_CAD_DONE | SX1268_IRQ_CAD_ACTIVITY_DETECTED, 
-                           SX1268_IRQ_CAD_DONE | SX1268_IRQ_CAD_ACTIVITY_DETECTED, 
+                           SX1268_IRQ_RADIO_ALL, //SX1268_IRQ_CAD_DONE | SX1268_IRQ_CAD_ACTIVITY_DETECTED
+                           SX1268_IRQ_RADIO_ALL, 
                            SX1268_IRQ_RADIO_NONE,
                            SX1268_IRQ_RADIO_NONE );  
   hal_sx1268_write_cmd(&psx1268->tag_hal_sx1268, SX1268_SET_CAD, NULL, 0);
