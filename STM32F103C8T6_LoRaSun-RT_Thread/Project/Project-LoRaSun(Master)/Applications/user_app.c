@@ -1,6 +1,7 @@
 
 #include "user_app.h"
-#include "app_sx1278.h" 
+#include "app_master.h" 
+
 
 
 /*		
@@ -21,7 +22,7 @@ void APP_Init(void)
 	rt_thread_startup(tid);		
 		
 	
-	tid = rt_thread_create("sx1278", app_sx1278_thread_entry, RT_NULL,  
+	tid = rt_thread_create("master", app_master_thread_entry, RT_NULL,  
 												 1024, RT_THREAD_PRIORITY_MAX - 15, 20);
 	RT_ASSERT(tid != RT_NULL);	
 	rt_thread_startup(tid);	

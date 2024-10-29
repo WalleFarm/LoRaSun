@@ -22,7 +22,7 @@
 
 #define		UART_LEN			256
 #define		UART1_LEN			UART_LEN
-#define		UART2_LEN			UART_LEN
+#define		UART2_LEN			512
 #define		UART3_LEN			UART_LEN
 
 

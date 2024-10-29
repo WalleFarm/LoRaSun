@@ -67,6 +67,8 @@ typedef enum
 {
   JoinStateNone=0,
   JoinStateOK,
+  JoinStateAccept,
+  JoinStateRefuse,
 }JoinState;
 
 typedef enum

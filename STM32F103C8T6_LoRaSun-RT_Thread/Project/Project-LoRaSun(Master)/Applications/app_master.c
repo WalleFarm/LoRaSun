@@ -1,14 +1,7 @@
 
-#include "app_sx1278.h"  
- 
- 
-#ifdef  LORA_SX1278 
-DrvSx1278Struct g_sDrvSx1278={0};
-#endif
+#include "app_master.h" 
 
-#ifdef  LORA_SX1268 
-DrvSx1268Struct g_sDrvSx1268={0};
-#endif
+
 
 /*		
 ================================================================================
@@ -17,7 +10,7 @@ DrvSx1268Struct g_sDrvSx1268={0};
 输出 : 
 ================================================================================
 */
-void app_led_init(void)
+void app_master_led_init(void)
 {
   GPIO_InitTypeDef GPIO_InitStructure;
 
@@ -33,12 +26,12 @@ void app_led_init(void)
 
 /*		
 ================================================================================
-描述 : 绿灯
+描述 : 指示灯
 输入 : 
 输出 : 
 ================================================================================
 */
-void app_led_set_green(bool state)
+void app_master_led_set(bool state)
 {
   if(state)//亮灯
   {
@@ -57,7 +50,7 @@ void app_led_set_green(bool state)
 输出 : 
 ================================================================================
 */
-void app_uart_master_send(u8 *buff, u16 len)
+void app_master_uart_send(u8 *buff, u16 len)
 {
   UART_Send(2, buff, len);
 }
@@ -69,7 +62,7 @@ void app_uart_master_send(u8 *buff, u16 len)
 输出 : 
 ================================================================================
 */
-void app_uart_recv_check(void)
+void app_master_uart_recv_check(void)
 {
 	static UART_Struct *pUART=&g_sUART2; 
 	u16 recv_len;
@@ -89,30 +82,31 @@ void app_uart_recv_check(void)
 
 /*		
 ================================================================================
-描述 : sx1278线程
+描述 : master线程
 输入 : 
 输出 : 
 ================================================================================
 */
-void app_sx1278_thread_entry(void *parameter) 
+void app_master_thread_entry(void *parameter) 
 {
   static u32 run_cnts=0;
   static bool led_state=false;
 
-  app_led_init();
-  nwk_master_uart_send_register(0, 1, app_uart_master_send);
-  nwk_master_uart_send_register(1, 2, app_uart_master_send);
-  nwk_master_uart_send_register(2, 3, app_uart_master_send);
-  nwk_master_uart_send_register(3, 4, app_uart_master_send);
+  app_master_led_init();
+  u8 wireless=0, slave_addr=1;
+  nwk_master_uart_send_register(wireless++, slave_addr++, app_master_uart_send);
+  nwk_master_uart_send_register(wireless++, slave_addr++, app_master_uart_send);
+  nwk_master_uart_send_register(wireless++, slave_addr++, app_master_uart_send);
+  nwk_master_uart_send_register(wireless++, slave_addr++, app_master_uart_send);
   while(1)
   {
-    app_uart_recv_check();//串口接收检查
-//    nwk_master_main(); 
+    app_master_uart_recv_check();//串口接收检查
+    nwk_master_main(); 
     
     if(run_cnts++%100==0)//指示灯运行
     {
       led_state=!led_state;
-      app_led_set_green(led_state);
+      app_master_led_set(led_state);
     } 
 
     delay_os(10);
@@ -121,13 +115,6 @@ void app_sx1278_thread_entry(void *parameter)
 
 
 
-/*		
-================================================================================
-描述 : 
-输入 : 
-输出 : 
-================================================================================
-*/
 
 
 

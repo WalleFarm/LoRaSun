@@ -304,13 +304,13 @@ void nwk_master_lora_parse(u8 *recv_buff, u8 recv_len, u8 slave_addr, RfParamStr
 			if(nwk_crc16(union_buff, union_len)==crcValue)
 			{
 				pData+=1;
-				u8 dst_sn=pData[0]<<24|pData[1]<<16|pData[2]<<8|pData[3];
+				u32 dst_sn=pData[0]<<24|pData[1]<<16|pData[2]<<8|pData[3];
 				pData+=4;
 				u8 cmd_type=pData[0];
 				pData+=1;
 				u8 pack_num=pData[0];
 				pData+=1;
-				if(dst_sn != g_sNwkMasterWork.gw_sn)
+				if(dst_sn != g_sNwkMasterWork.gw_sn && dst_sn!=0xFFFFFFFF)
 				{
 					printf("dst_sn=0x%08X != local_sn=0x%08X\n", dst_sn, g_sNwkMasterWork.gw_sn);
 					return;
@@ -348,50 +348,32 @@ void nwk_master_lora_parse(u8 *recv_buff, u8 recv_len, u8 slave_addr, RfParamStr
             }
 						break;
 					}					
-//					case NwkCmdJoin://入网
-//					{
-//						printf("src_sn=0x%08X NwkCmdJoin!\n", src_sn);
-//            if(pGateWay)
-//            {
-//              u8 key_tmp[16]={0x45,0xEF,0x09,0x3E,0xA2,0xC8,0xB1,0x4A,0x90,0x75,0xD9,0x63,0x7B,0x3B,0x82,0x96};//解算密码,应用时注意混淆
-//              nwk_tea_encrypt(pData, 16, (u32 *)key_tmp);//把网关下发的16字节随机数进行加密作为APP_KEY
-//              memcpy(pGateWay->app_key, pData, 16); 
-//              pGateWay->join_state=JoinStateOK;//入网成功
-//            }
-//						break;
-//					}
-					case NwkCmdDataOnce://单包数据
+					case NwkCmdJoin://入网
 					{
-						printf("src_sn=0x%08X NwkCmdDataOnce!\n", src_sn);
-            NwkMasterRecvFromStruct *pRecvFrom=&g_sNwkMasterWork.recv_from;
-            pRecvFrom->data_len=union_len-7;//应用数据长度
-            pRecvFrom->app_data=pData;
-            pRecvFrom->src_sn=src_sn;
-            pRecvFrom->read_flag=true;//通知应用层读取
-            
-            //需要回复NwkCmdAck指令    
-            u8 opt=NwkRoleGateWay | (encrypt_mode<<2) | (key_type<<4);//组合配置
-            //组合回复包
+						printf("src_sn=0x%08X NwkCmdJoin!\n", src_sn);
+						u8 key_tmp[16]={0x45,0xEF,0x09,0x3E,0xA2,0xC8,0xB1,0x4A,0x90,0x75,0xD9,0x63,0x7B,0x3B,0x82,0x96};//解算密码,应用时注意混淆						
+						pNodeToken->join_state=JoinStateOK;//入网成功
+            u8 opt=NwkRoleGateWay | (encrypt_mode<<2) | (KeyTypeRoot<<4);//组合配置
+            //组合LoRa回复包
             u8 lora_buff[50]={0};
-            u8 lora_len=0;
-            lora_buff[lora_len++]=NwkCmdDataOnce;
+            u8 lora_len=0;						
+            lora_buff[lora_len++]=NwkCmdJoin;
+            lora_buff[lora_len++]=JoinStateAccept;
             lora_buff[lora_len++]=now_time>>24;
             lora_buff[lora_len++]=now_time>>16;
             lora_buff[lora_len++]=now_time>>8;
-            lora_buff[lora_len++]=now_time;
-            lora_buff[lora_len++]=pNodeToken->join_state;
-            if(pNodeToken->join_state==JoinStateNone)//未入网,发送app_key种子
-            {
-              u8 key_tmp[16]={0x45,0xEF,0x09,0x3E,0xA2,0xC8,0xB1,0x4A,0x90,0x75,0xD9,0x63,0x7B,0x3B,0x82,0x96};//解算密码,应用时注意混淆
-              u8 app_key[16]={0};
-              for(u8 i=0; i<16; i++)
-              {
-                app_key[i]=nwk_get_rand()%255;
-              }
-              nwk_tea_encrypt(app_key, 16, (u32 *)key_tmp);//把16字节随机数进行加密作为APP_KEY
-              memcpy(&lora_buff[lora_len], app_key, 16); 
-              lora_len+=16;
-            }       
+            lora_buff[lora_len++]=now_time;			
+						u8 app_key[16]={0};
+						for(u8 i=0; i<16; i++)//生成随机应用密码种子
+						{
+							app_key[i]=nwk_get_rand()%255;
+						}			
+						memcpy(&lora_buff[lora_len], app_key, 16); 
+						lora_len+=16;						
+						nwk_tea_encrypt(app_key, 16, (u32 *)key_tmp);//把16字节随机数进行加密作为APP_KEY
+						memcpy(pNodeToken->app_key, pData, 16); 
+						
+						//组合从机数据
             u8 uart_buff[100]={0};
             u8 uart_len=0;   
             uart_buff[uart_len++]=rf->freq>>24;
@@ -407,7 +389,42 @@ void nwk_master_lora_parse(u8 *recv_buff, u8 recv_len, u8 slave_addr, RfParamStr
               uart_buff[uart_len++]=make_len;
               memcpy(&uart_buff[uart_len], make_buff, make_len);
               uart_len+=make_len;
-              nwk_master_uart_send_level(slave_addr, MSCmdRxData, uart_buff, uart_len);//发送到从机
+              nwk_master_uart_send_level(slave_addr, MSCmdTxData, uart_buff, uart_len);//发送到从机
+            }						
+						break;
+					}
+					case NwkCmdDataOnce://单包数据
+					{
+						printf("src_sn=0x%08X NwkCmdDataOnce!\n", src_sn);
+            NwkMasterRecvFromStruct *pRecvFrom=&g_sNwkMasterWork.recv_from;
+            pRecvFrom->data_len=union_len-7;//应用数据长度
+            pRecvFrom->app_data=pData;
+            pRecvFrom->src_sn=src_sn;
+            pRecvFrom->read_flag=true;//通知应用层读取
+            
+            //需要回复NwkCmdAck指令    
+            u8 opt=NwkRoleGateWay | (encrypt_mode<<2) | (key_type<<4);//组合配置
+            //组合回复包
+            u8 lora_buff[50]={0};
+            u8 lora_len=0;
+            lora_buff[lora_len++]=NwkCmdDataOnce;
+       
+            u8 uart_buff[100]={0};
+            u8 uart_len=0;   
+            uart_buff[uart_len++]=rf->freq>>24;
+            uart_buff[uart_len++]=rf->freq>>16;
+            uart_buff[uart_len++]=rf->freq>>8;
+            uart_buff[uart_len++]=rf->freq;
+            uart_buff[uart_len++]=rf->sf;
+            uart_buff[uart_len++]=rf->bw;
+            u8 make_buff[80]={0};
+            u8 make_len=nwk_master_make_lora_buff(opt, src_sn, pKey, NwkCmdAck, pNodeToken->down_pack_num++, lora_buff, lora_len, make_buff, sizeof(make_buff));
+            if(make_len>0)
+            {
+              uart_buff[uart_len++]=make_len;
+              memcpy(&uart_buff[uart_len], make_buff, make_len);
+              uart_len+=make_len;
+              nwk_master_uart_send_level(slave_addr, MSCmdTxData, uart_buff, uart_len);//发送到从机
             }
             break;
 					}
@@ -422,6 +439,49 @@ void nwk_master_lora_parse(u8 *recv_buff, u8 recv_len, u8 slave_addr, RfParamStr
 	}
 	
 }
+
+/*		
+================================================================================
+描述 : 
+输入 : 
+输出 : 
+================================================================================
+*/
+void nwk_master_send_broad(u32 freq, u8 sf, u8 bw)
+{
+	u8 uart_buff[100]={0};
+	u8 uart_len=0; 	
+	uart_buff[uart_len++]=freq>>24;
+	uart_buff[uart_len++]=freq>>16;
+	uart_buff[uart_len++]=freq>>8;
+	uart_buff[uart_len++]=freq;
+	uart_buff[uart_len++]=sf;
+	uart_buff[uart_len++]=bw;	
+		
+	
+	u8 make_buff[20]={0};
+	u8 make_len=0;
+	u32 gw_sn=g_sNwkMasterWork.gw_sn;
+	make_buff[make_len++]=0xA5;
+	make_buff[make_len++]=gw_sn>>24;
+	make_buff[make_len++]=gw_sn>>16;
+	make_buff[make_len++]=gw_sn>>8;
+	make_buff[make_len++]=gw_sn;
+	make_buff[make_len++]=g_sNwkMasterWork.freq_ptr;//起始频段
+	make_buff[make_len++]=NWK_GW_WIRELESS_NUM;//天线数量
+	make_buff[make_len++]=nwk_get_rand();//保留
+	make_len=nwk_tea_encrypt(make_buff, make_len, (u32 *)g_sNwkMasterWork.root_key);//加密广播数据
+	if(make_len>0)
+	{
+		uart_buff[uart_len++]=make_len;
+		memcpy(&uart_buff[uart_len], make_buff, make_len);
+		uart_len+=make_len;
+		nwk_master_uart_send_level(1, MSCmdBroad, uart_buff, uart_len);//发送到从机
+		printf("nwk_master_send_broad ###\n");
+	}	
+
+}
+
 
 /*		
 ================================================================================
@@ -556,13 +616,14 @@ void nwk_master_del_token(u32 node_sn)
 */ 
 void nwk_master_main(void)
 {
-  nwk_master_uart_parse(0, 0);
-//  for(u8 i=0; i<NWK_GW_WIRELESS_NUM; i++)
-//  {
-//    NwkSlaveTokenStruct *pSlaveToken=&g_sNwkMasterWork.slave_token_list[i];
-//    
-//    
-//  }
+  static u32 last_rtc_time=0;
+	u32 now_rtc_time=nwk_get_rtc_counter();
+	
+	if(now_rtc_time-last_rtc_time>=20)
+	{
+		nwk_master_send_broad(NWK_BEACON_BASE_FREQ, 12, 7);//广播
+		last_rtc_time=now_rtc_time;
+	}
 }
 
 

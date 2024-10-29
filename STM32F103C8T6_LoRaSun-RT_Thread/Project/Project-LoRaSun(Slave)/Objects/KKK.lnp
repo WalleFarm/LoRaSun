@@ -6,7 +6,7 @@
 ".\objects\system_stm32f10x.o"
 ".\objects\main.o"
 ".\objects\user_app.o"
-".\objects\app_sx1278.o"
+".\objects\app_slave.o"
 ".\objects\drv_common.o"
 ".\objects\drv_uart.o"
 ".\objects\board.o"

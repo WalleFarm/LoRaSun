@@ -325,8 +325,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>.\Applications\app_sx1278.c</PathWithFileName>
-      <FilenameWithoutPath>app_sx1278.c</FilenameWithoutPath>
+      <PathWithFileName>.\Applications\app_slave.c</PathWithFileName>
+      <FilenameWithoutPath>app_slave.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>

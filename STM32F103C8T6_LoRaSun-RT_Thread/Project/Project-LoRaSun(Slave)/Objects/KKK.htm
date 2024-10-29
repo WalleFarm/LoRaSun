@@ -3,11 +3,11 @@
 <title>Static Call Graph - [.\Objects\KKK.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\Objects\KKK.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060422: Last Updated: Mon Oct 28 22:04:33 2024
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060422: Last Updated: Tue Oct 29 11:19:33 2024
 <BR><P>
 <H3>Maximum Stack Usage =        496 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
-app_sx1278_thread_entry &rArr; nwk_slave_main &rArr; nwk_slave_work_state_check &rArr; nwk_slave_rx_process &rArr; nwk_slave_uart_send_rx &rArr; nwk_slave_uart_send_level &rArr; nwk_crc16 &rArr; drv_crc16
+app_slave_thread_entry &rArr; nwk_slave_main &rArr; nwk_slave_work_state_check &rArr; nwk_slave_rx_process &rArr; nwk_slave_uart_send_rx &rArr; nwk_slave_uart_send_level &rArr; nwk_crc16 &rArr; drv_crc16
 <P>
 <H3>
 Mutually Recursive functions
@@ -72,14 +72,14 @@ Function Pointers
  <LI><a href="#[5]">UsageFault_Handler</a> from stm32f10x_it.o(i.UsageFault_Handler) referenced from startup_stm32f10x_md.o(RESET)
  <LI><a href="#[a]">WWDG_IRQHandler</a> from startup_stm32f10x_md.o(.text) referenced from startup_stm32f10x_md.o(RESET)
  <LI><a href="#[37]">__main</a> from entry.o(.ARM.Collect$$$$00000000) referenced from startup_stm32f10x_md.o(.text)
- <LI><a href="#[3e]">app_sx1278_cs0</a> from app_sx1278.o(i.app_sx1278_cs0) referenced from app_sx1278.o(i.app_sx1278_hal_init)
- <LI><a href="#[3f]">app_sx1278_cs1</a> from app_sx1278.o(i.app_sx1278_cs1) referenced from app_sx1278.o(i.app_sx1278_hal_init)
- <LI><a href="#[3d]">app_sx1278_reset</a> from app_sx1278.o(i.app_sx1278_reset) referenced from app_sx1278.o(i.app_sx1278_hal_init)
- <LI><a href="#[40]">app_sx1278_spi_rw_byte</a> from app_sx1278.o(i.app_sx1278_spi_rw_byte) referenced from app_sx1278.o(i.app_sx1278_hal_init)
- <LI><a href="#[39]">app_sx1278_thread_entry</a> from app_sx1278.o(i.app_sx1278_thread_entry) referenced from user_app.o(i.APP_Init)
- <LI><a href="#[42]">app_uart_slave_send</a> from app_sx1278.o(i.app_uart_slave_send) referenced from app_sx1278.o(i.app_sx1278_thread_entry)
+ <LI><a href="#[3e]">app_slave_lora_cs0</a> from app_slave.o(i.app_slave_lora_cs0) referenced from app_slave.o(i.app_slave_lora_init)
+ <LI><a href="#[3f]">app_slave_lora_cs1</a> from app_slave.o(i.app_slave_lora_cs1) referenced from app_slave.o(i.app_slave_lora_init)
+ <LI><a href="#[3d]">app_slave_lora_reset</a> from app_slave.o(i.app_slave_lora_reset) referenced from app_slave.o(i.app_slave_lora_init)
+ <LI><a href="#[40]">app_slave_lora_spi_rw_byte</a> from app_slave.o(i.app_slave_lora_spi_rw_byte) referenced from app_slave.o(i.app_slave_lora_init)
+ <LI><a href="#[39]">app_slave_thread_entry</a> from app_slave.o(i.app_slave_thread_entry) referenced from user_app.o(i.APP_Init)
+ <LI><a href="#[42]">app_slave_uart_send</a> from app_slave.o(i.app_slave_uart_send) referenced from app_slave.o(i.app_slave_thread_entry)
  <LI><a href="#[38]">app_uart_thread_entry</a> from user_app.o(i.app_uart_thread_entry) referenced from user_app.o(i.APP_Init)
- <LI><a href="#[41]">delay_ms</a> from drv_common.o(i.delay_ms) referenced from app_sx1278.o(i.app_sx1278_hal_init)
+ <LI><a href="#[41]">delay_ms</a> from drv_common.o(i.delay_ms) referenced from app_slave.o(i.app_slave_lora_init)
  <LI><a href="#[3a]">fputc</a> from drv_uart.o(i.fputc) referenced from printfa.o(i.__0printf)
  <LI><a href="#[35]">main</a> from components.o(i.$Sub$$main) referenced from entry9a.o(.ARM.Collect$$$$0000000B)
  <LI><a href="#[43]">main_thread_entry</a> from components.o(i.main_thread_entry) referenced from components.o(i.rt_application_init)
@@ -321,11 +321,11 @@ Global Symbols
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f10x_md.o(RESET)
 </UL>
 <P><STRONG><a name="[ba]"></a>rand</STRONG> (Thumb, 20 bytes, Stack size 0 bytes, rand.o(.text))
-<BR><BR>[Called By]<UL><LI><a href="#[42]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_uart_slave_send
+<BR><BR>[Called By]<UL><LI><a href="#[42]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_uart_send
 </UL>
 
 <P><STRONG><a name="[b9]"></a>srand</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, rand.o(.text))
-<BR><BR>[Called By]<UL><LI><a href="#[42]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_uart_slave_send
+<BR><BR>[Called By]<UL><LI><a href="#[42]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_uart_send
 </UL>
 
 <P><STRONG><a name="[111]"></a>__aeabi_memcpy</STRONG> (Thumb, 36 bytes, Stack size 0 bytes, memcpya.o(.text))
@@ -656,10 +656,10 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[8b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART3_Init
 <LI><a href="#[89]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART2_Init
 <LI><a href="#[84]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART1_Init
-<LI><a href="#[b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_uart_init
-<LI><a href="#[b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_uart_cts_set_mode
-<LI><a href="#[a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_led_init
-<LI><a href="#[a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_sx1278_hal_init
+<LI><a href="#[af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_uart_init
+<LI><a href="#[b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_uart_cts_set_mode
+<LI><a href="#[a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_led_init
+<LI><a href="#[a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_lora_init
 <LI><a href="#[6b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HSI_Config
 </UL>
 
@@ -670,21 +670,21 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[b7]"></a>GPIO_ReadInputDataBit</STRONG> (Thumb, 18 bytes, Stack size 0 bytes, stm32f10x_gpio.o(i.GPIO_ReadInputDataBit))
-<BR><BR>[Called By]<UL><LI><a href="#[42]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_uart_slave_send
+<BR><BR>[Called By]<UL><LI><a href="#[42]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_uart_send
 </UL>
 
 <P><STRONG><a name="[7b]"></a>GPIO_ResetBits</STRONG> (Thumb, 4 bytes, Stack size 0 bytes, stm32f10x_gpio.o(i.GPIO_ResetBits))
-<BR><BR>[Called By]<UL><LI><a href="#[b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_uart_cts_set_mode
-<LI><a href="#[a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_led_set_green
-<LI><a href="#[3d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_sx1278_reset
-<LI><a href="#[3e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_sx1278_cs0
+<BR><BR>[Called By]<UL><LI><a href="#[b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_uart_cts_set_mode
+<LI><a href="#[a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_led_set
+<LI><a href="#[3d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_lora_reset
+<LI><a href="#[3e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_lora_cs0
 <LI><a href="#[6b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HSI_Config
 </UL>
 
 <P><STRONG><a name="[a6]"></a>GPIO_SetBits</STRONG> (Thumb, 4 bytes, Stack size 0 bytes, stm32f10x_gpio.o(i.GPIO_SetBits))
-<BR><BR>[Called By]<UL><LI><a href="#[a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_led_set_green
-<LI><a href="#[3d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_sx1278_reset
-<LI><a href="#[3f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_sx1278_cs1
+<BR><BR>[Called By]<UL><LI><a href="#[a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_led_set
+<LI><a href="#[3d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_lora_reset
+<LI><a href="#[3f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_lora_cs1
 </UL>
 
 <P><STRONG><a name="[6b]"></a>HSI_Config</STRONG> (Thumb, 152 bytes, Stack size 8 bytes, system_stm32f10x.o(i.HSI_Config))
@@ -739,9 +739,9 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[8b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART3_Init
 <LI><a href="#[89]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART2_Init
 <LI><a href="#[84]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART1_Init
-<LI><a href="#[b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_uart_init
-<LI><a href="#[a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_led_init
-<LI><a href="#[a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_sx1278_hal_init
+<LI><a href="#[af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_uart_init
+<LI><a href="#[a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_led_init
+<LI><a href="#[a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_lora_init
 <LI><a href="#[6b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HSI_Config
 </UL>
 
@@ -756,8 +756,8 @@ Global Symbols
 <P><STRONG><a name="[96]"></a>RCC_GetClocksFreq</STRONG> (Thumb, 192 bytes, Stack size 12 bytes, stm32f10x_rcc.o(i.RCC_GetClocksFreq))
 <BR><BR>[Stack]<UL><LI>Max Depth = 12<LI>Call Chain = RCC_GetClocksFreq
 </UL>
-<BR>[Called By]<UL><LI><a href="#[be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_common_init
-<LI><a href="#[85]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART_Init
+<BR>[Called By]<UL><LI><a href="#[85]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART_Init
+<LI><a href="#[be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_common_init
 </UL>
 
 <P><STRONG><a name="[6e]"></a>RCC_GetFlagStatus</STRONG> (Thumb, 56 bytes, Stack size 8 bytes, stm32f10x_rcc.o(i.RCC_GetFlagStatus))
@@ -861,25 +861,25 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[a9]"></a>SPI_Cmd</STRONG> (Thumb, 24 bytes, Stack size 0 bytes, stm32f10x_spi.o(i.SPI_Cmd))
-<BR><BR>[Called By]<UL><LI><a href="#[a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_sx1278_hal_init
+<BR><BR>[Called By]<UL><LI><a href="#[a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_lora_init
 </UL>
 
-<P><STRONG><a name="[ad]"></a>SPI_I2S_GetFlagStatus</STRONG> (Thumb, 18 bytes, Stack size 0 bytes, stm32f10x_spi.o(i.SPI_I2S_GetFlagStatus))
-<BR><BR>[Called By]<UL><LI><a href="#[40]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_sx1278_spi_rw_byte
+<P><STRONG><a name="[ac]"></a>SPI_I2S_GetFlagStatus</STRONG> (Thumb, 18 bytes, Stack size 0 bytes, stm32f10x_spi.o(i.SPI_I2S_GetFlagStatus))
+<BR><BR>[Called By]<UL><LI><a href="#[40]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_lora_spi_rw_byte
 </UL>
 
-<P><STRONG><a name="[af]"></a>SPI_I2S_ReceiveData</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, stm32f10x_spi.o(i.SPI_I2S_ReceiveData))
-<BR><BR>[Called By]<UL><LI><a href="#[40]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_sx1278_spi_rw_byte
+<P><STRONG><a name="[ae]"></a>SPI_I2S_ReceiveData</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, stm32f10x_spi.o(i.SPI_I2S_ReceiveData))
+<BR><BR>[Called By]<UL><LI><a href="#[40]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_lora_spi_rw_byte
 </UL>
 
-<P><STRONG><a name="[ae]"></a>SPI_I2S_SendData</STRONG> (Thumb, 4 bytes, Stack size 0 bytes, stm32f10x_spi.o(i.SPI_I2S_SendData))
-<BR><BR>[Called By]<UL><LI><a href="#[40]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_sx1278_spi_rw_byte
+<P><STRONG><a name="[ad]"></a>SPI_I2S_SendData</STRONG> (Thumb, 4 bytes, Stack size 0 bytes, stm32f10x_spi.o(i.SPI_I2S_SendData))
+<BR><BR>[Called By]<UL><LI><a href="#[40]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_lora_spi_rw_byte
 </UL>
 
 <P><STRONG><a name="[a8]"></a>SPI_Init</STRONG> (Thumb, 60 bytes, Stack size 8 bytes, stm32f10x_spi.o(i.SPI_Init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = SPI_Init
 </UL>
-<BR>[Called By]<UL><LI><a href="#[a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_sx1278_hal_init
+<BR>[Called By]<UL><LI><a href="#[a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_lora_init
 </UL>
 
 <P><STRONG><a name="[6]"></a>SVC_Handler</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, stm32f10x_it.o(i.SVC_Handler))
@@ -910,12 +910,12 @@ Global Symbols
 <P><STRONG><a name="[84]"></a>UART1_Init</STRONG> (Thumb, 182 bytes, Stack size 32 bytes, drv_uart.o(i.UART1_Init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 100<LI>Call Chain = UART1_Init &rArr; USART_Init &rArr; RCC_GetClocksFreq
 </UL>
-<BR>[Calls]<UL><LI><a href="#[86]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;NVIC_Init
-<LI><a href="#[78]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RCC_APB2PeriphClockCmd
-<LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_Init
-<LI><a href="#[85]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART_Init
+<BR>[Calls]<UL><LI><a href="#[85]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART_Init
 <LI><a href="#[87]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART_ITConfig
 <LI><a href="#[88]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART_Cmd
+<LI><a href="#[86]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;NVIC_Init
+<LI><a href="#[78]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RCC_APB2PeriphClockCmd
+<LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_Init
 </UL>
 <BR>[Called By]<UL><LI><a href="#[8d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_Init
 </UL>
@@ -923,13 +923,13 @@ Global Symbols
 <P><STRONG><a name="[89]"></a>UART2_Init</STRONG> (Thumb, 178 bytes, Stack size 32 bytes, drv_uart.o(i.UART2_Init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 100<LI>Call Chain = UART2_Init &rArr; USART_Init &rArr; RCC_GetClocksFreq
 </UL>
-<BR>[Calls]<UL><LI><a href="#[86]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;NVIC_Init
+<BR>[Calls]<UL><LI><a href="#[85]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART_Init
+<LI><a href="#[87]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART_ITConfig
+<LI><a href="#[88]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART_Cmd
+<LI><a href="#[86]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;NVIC_Init
 <LI><a href="#[8a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RCC_APB1PeriphClockCmd
 <LI><a href="#[78]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RCC_APB2PeriphClockCmd
 <LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_Init
-<LI><a href="#[85]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART_Init
-<LI><a href="#[87]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART_ITConfig
-<LI><a href="#[88]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART_Cmd
 </UL>
 <BR>[Called By]<UL><LI><a href="#[8d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_Init
 </UL>
@@ -937,13 +937,13 @@ Global Symbols
 <P><STRONG><a name="[8b]"></a>UART3_Init</STRONG> (Thumb, 182 bytes, Stack size 32 bytes, drv_uart.o(i.UART3_Init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 100<LI>Call Chain = UART3_Init &rArr; USART_Init &rArr; RCC_GetClocksFreq
 </UL>
-<BR>[Calls]<UL><LI><a href="#[86]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;NVIC_Init
+<BR>[Calls]<UL><LI><a href="#[85]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART_Init
+<LI><a href="#[87]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART_ITConfig
+<LI><a href="#[88]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART_Cmd
+<LI><a href="#[86]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;NVIC_Init
 <LI><a href="#[8a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RCC_APB1PeriphClockCmd
 <LI><a href="#[78]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RCC_APB2PeriphClockCmd
 <LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_Init
-<LI><a href="#[85]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART_Init
-<LI><a href="#[87]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART_ITConfig
-<LI><a href="#[88]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART_Cmd
 </UL>
 <BR>[Called By]<UL><LI><a href="#[8d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_Init
 </UL>
@@ -953,7 +953,7 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[4c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr
 </UL>
-<BR>[Called By]<UL><LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_uart_recv_check
+<BR>[Called By]<UL><LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_uart_recv_check
 <LI><a href="#[38]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_uart_thread_entry
 </UL>
 
@@ -971,43 +971,43 @@ Global Symbols
 <P><STRONG><a name="[8f]"></a>UART_Send</STRONG> (Thumb, 96 bytes, Stack size 24 bytes, drv_uart.o(i.UART_Send))
 <BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = UART_Send
 </UL>
-<BR>[Calls]<UL><LI><a href="#[41]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;delay_ms
+<BR>[Calls]<UL><LI><a href="#[90]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART_GetFlagStatus
+<LI><a href="#[41]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;delay_ms
 <LI><a href="#[91]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART_SendData
-<LI><a href="#[90]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART_GetFlagStatus
 </UL>
-<BR>[Called By]<UL><LI><a href="#[42]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_uart_slave_send
+<BR>[Called By]<UL><LI><a href="#[42]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_uart_send
 </UL>
 
 <P><STRONG><a name="[2f]"></a>USART1_IRQHandler</STRONG> (Thumb, 100 bytes, Stack size 8 bytes, drv_uart.o(i.USART1_IRQHandler))
 <BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = USART1_IRQHandler &rArr; USART_GetITStatus
 </UL>
-<BR>[Calls]<UL><LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART_ClearFlag
-<LI><a href="#[93]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART_ReceiveData
-<LI><a href="#[92]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART_GetITStatus
+<BR>[Calls]<UL><LI><a href="#[92]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART_GetITStatus
 <LI><a href="#[90]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART_GetFlagStatus
 <LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART_ClearITPendingBit
+<LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART_ClearFlag
+<LI><a href="#[93]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART_ReceiveData
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f10x_md.o(RESET)
 </UL>
 <P><STRONG><a name="[30]"></a>USART2_IRQHandler</STRONG> (Thumb, 110 bytes, Stack size 8 bytes, drv_uart.o(i.USART2_IRQHandler))
 <BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = USART2_IRQHandler &rArr; USART_GetITStatus
 </UL>
-<BR>[Calls]<UL><LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART_ClearFlag
-<LI><a href="#[93]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART_ReceiveData
-<LI><a href="#[92]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART_GetITStatus
+<BR>[Calls]<UL><LI><a href="#[92]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART_GetITStatus
 <LI><a href="#[90]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART_GetFlagStatus
 <LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART_ClearITPendingBit
+<LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART_ClearFlag
+<LI><a href="#[93]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART_ReceiveData
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f10x_md.o(RESET)
 </UL>
 <P><STRONG><a name="[31]"></a>USART3_IRQHandler</STRONG> (Thumb, 100 bytes, Stack size 8 bytes, drv_uart.o(i.USART3_IRQHandler))
 <BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = USART3_IRQHandler &rArr; USART_GetITStatus
 </UL>
-<BR>[Calls]<UL><LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART_ClearFlag
-<LI><a href="#[93]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART_ReceiveData
-<LI><a href="#[92]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART_GetITStatus
+<BR>[Calls]<UL><LI><a href="#[92]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART_GetITStatus
 <LI><a href="#[90]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART_GetFlagStatus
 <LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART_ClearITPendingBit
+<LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART_ClearFlag
+<LI><a href="#[93]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART_ReceiveData
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f10x_md.o(RESET)
 </UL>
@@ -1107,7 +1107,7 @@ Global Symbols
 <LI><a href="#[bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_rtc_init
 <LI><a href="#[be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_common_init
 <LI><a href="#[aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_init
-<LI><a href="#[a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_sx1278_hal_init
+<LI><a href="#[a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_lora_init
 <LI><a href="#[b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_slave_uart_parse
 <LI><a href="#[bc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_system_reset
 <LI><a href="#[38]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_uart_thread_entry
@@ -1134,86 +1134,79 @@ Global Symbols
 
 <P><STRONG><a name="[16c]"></a>__scatterload_zeroinit</STRONG> (Thumb, 14 bytes, Stack size unknown bytes, handlers.o(i.__scatterload_zeroinit), UNUSED)
 
-<P><STRONG><a name="[a4]"></a>app_led_init</STRONG> (Thumb, 40 bytes, Stack size 8 bytes, app_sx1278.o(i.app_led_init))
-<BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = app_led_init &rArr; GPIO_Init
+<P><STRONG><a name="[a4]"></a>app_slave_led_init</STRONG> (Thumb, 40 bytes, Stack size 8 bytes, app_slave.o(i.app_slave_led_init))
+<BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = app_slave_led_init &rArr; GPIO_Init
 </UL>
 <BR>[Calls]<UL><LI><a href="#[78]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RCC_APB2PeriphClockCmd
 <LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_Init
 </UL>
-<BR>[Called By]<UL><LI><a href="#[39]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_sx1278_thread_entry
+<BR>[Called By]<UL><LI><a href="#[39]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_thread_entry
 </UL>
 
-<P><STRONG><a name="[a5]"></a>app_led_set_green</STRONG> (Thumb, 30 bytes, Stack size 8 bytes, app_sx1278.o(i.app_led_set_green))
-<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = app_led_set_green
+<P><STRONG><a name="[a5]"></a>app_slave_led_set</STRONG> (Thumb, 30 bytes, Stack size 8 bytes, app_slave.o(i.app_slave_led_set))
+<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = app_slave_led_set
 </UL>
 <BR>[Calls]<UL><LI><a href="#[a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_SetBits
 <LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_ResetBits
 </UL>
-<BR>[Called By]<UL><LI><a href="#[39]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_sx1278_thread_entry
+<BR>[Called By]<UL><LI><a href="#[39]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_thread_entry
 </UL>
 
-<P><STRONG><a name="[ac]"></a>app_sx1278_init</STRONG> (Thumb, 8 bytes, Stack size 8 bytes, app_sx1278.o(i.app_sx1278_init))
-<BR><BR>[Stack]<UL><LI>Max Depth = 168<LI>Call Chain = app_sx1278_init &rArr; app_sx1278_hal_init &rArr; drv_sx1268_init &rArr; drv_sx1268_set_power &rArr; drv_sx1268_set_pa &rArr; hal_sx1268_write_cmd &rArr; hal_sx1268_spi_rw_byte
+<P><STRONG><a name="[39]"></a>app_slave_thread_entry</STRONG> (Thumb, 86 bytes, Stack size 0 bytes, app_slave.o(i.app_slave_thread_entry))
+<BR><BR>[Stack]<UL><LI>Max Depth = 496<LI>Call Chain = app_slave_thread_entry &rArr; nwk_slave_main &rArr; nwk_slave_work_state_check &rArr; nwk_slave_rx_process &rArr; nwk_slave_uart_send_rx &rArr; nwk_slave_uart_send_level &rArr; nwk_crc16 &rArr; drv_crc16
 </UL>
-<BR>[Calls]<UL><LI><a href="#[a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_sx1278_hal_init
-</UL>
-<BR>[Called By]<UL><LI><a href="#[39]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_sx1278_thread_entry
-</UL>
-
-<P><STRONG><a name="[39]"></a>app_sx1278_thread_entry</STRONG> (Thumb, 80 bytes, Stack size 0 bytes, app_sx1278.o(i.app_sx1278_thread_entry))
-<BR><BR>[Stack]<UL><LI>Max Depth = 496<LI>Call Chain = app_sx1278_thread_entry &rArr; nwk_slave_main &rArr; nwk_slave_work_state_check &rArr; nwk_slave_rx_process &rArr; nwk_slave_uart_send_rx &rArr; nwk_slave_uart_send_level &rArr; nwk_crc16 &rArr; drv_crc16
-</UL>
-<BR>[Calls]<UL><LI><a href="#[b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_slave_uart_send_register
+<BR>[Calls]<UL><LI><a href="#[b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_slave_uart_set_addr
+<LI><a href="#[b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_slave_uart_send_register
 <LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_slave_main
-<LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_uart_recv_check
-<LI><a href="#[b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_uart_init
-<LI><a href="#[ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_sx1278_init
-<LI><a href="#[a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_led_set_green
-<LI><a href="#[a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_led_init
+<LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_uart_recv_check
+<LI><a href="#[af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_uart_init
+<LI><a href="#[a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_led_set
+<LI><a href="#[a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_led_init
+<LI><a href="#[a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_lora_init
 <LI><a href="#[b4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;delay_os
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> user_app.o(i.APP_Init)
 </UL>
-<P><STRONG><a name="[b5]"></a>app_uart_cts_set_mode</STRONG> (Thumb, 68 bytes, Stack size 16 bytes, app_sx1278.o(i.app_uart_cts_set_mode))
-<BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = app_uart_cts_set_mode &rArr; GPIO_Init
+<P><STRONG><a name="[b5]"></a>app_slave_uart_cts_set_mode</STRONG> (Thumb, 68 bytes, Stack size 16 bytes, app_slave.o(i.app_slave_uart_cts_set_mode))
+<BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = app_slave_uart_cts_set_mode &rArr; GPIO_Init
 </UL>
 <BR>[Calls]<UL><LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_ResetBits
 <LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_Init
 </UL>
-<BR>[Called By]<UL><LI><a href="#[42]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_uart_slave_send
+<BR>[Called By]<UL><LI><a href="#[42]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_uart_send
 </UL>
 
-<P><STRONG><a name="[b0]"></a>app_uart_init</STRONG> (Thumb, 36 bytes, Stack size 8 bytes, app_sx1278.o(i.app_uart_init))
-<BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = app_uart_init &rArr; GPIO_Init
+<P><STRONG><a name="[af]"></a>app_slave_uart_init</STRONG> (Thumb, 36 bytes, Stack size 8 bytes, app_slave.o(i.app_slave_uart_init))
+<BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = app_slave_uart_init &rArr; GPIO_Init
 </UL>
 <BR>[Calls]<UL><LI><a href="#[78]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RCC_APB2PeriphClockCmd
 <LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_Init
 </UL>
-<BR>[Called By]<UL><LI><a href="#[39]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_sx1278_thread_entry
+<BR>[Called By]<UL><LI><a href="#[39]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_thread_entry
 </UL>
 
-<P><STRONG><a name="[b2]"></a>app_uart_recv_check</STRONG> (Thumb, 64 bytes, Stack size 8 bytes, app_sx1278.o(i.app_uart_recv_check))
-<BR><BR>[Stack]<UL><LI>Max Depth = 272<LI>Call Chain = app_uart_recv_check &rArr; nwk_slave_uart_parse &rArr; nwk_slave_calcu_air_time &rArr; drv_sx1268_calcu_air_time &rArr; __aeabi_dadd &rArr; _double_epilogue &rArr; _double_round
+<P><STRONG><a name="[b2]"></a>app_slave_uart_recv_check</STRONG> (Thumb, 64 bytes, Stack size 8 bytes, app_slave.o(i.app_slave_uart_recv_check))
+<BR><BR>[Stack]<UL><LI>Max Depth = 272<LI>Call Chain = app_slave_uart_recv_check &rArr; nwk_slave_uart_parse &rArr; nwk_slave_calcu_air_time &rArr; drv_sx1268_calcu_air_time &rArr; __aeabi_dadd &rArr; _double_epilogue &rArr; _double_round
 </UL>
 <BR>[Calls]<UL><LI><a href="#[b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_slave_uart_parse
 <LI><a href="#[41]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;delay_ms
 <LI><a href="#[8c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_Clear
 </UL>
-<BR>[Called By]<UL><LI><a href="#[39]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_sx1278_thread_entry
+<BR>[Called By]<UL><LI><a href="#[39]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_thread_entry
 </UL>
 
-<P><STRONG><a name="[42]"></a>app_uart_slave_send</STRONG> (Thumb, 84 bytes, Stack size 24 bytes, app_sx1278.o(i.app_uart_slave_send))
-<BR><BR>[Stack]<UL><LI>Max Depth = 104<LI>Call Chain = app_uart_slave_send &rArr; delay_os &rArr; rt_thread_delay &rArr; rt_thread_sleep &rArr; rt_timer_start &rArr; _rt_timer_remove
+<P><STRONG><a name="[42]"></a>app_slave_uart_send</STRONG> (Thumb, 84 bytes, Stack size 24 bytes, app_slave.o(i.app_slave_uart_send))
+<BR><BR>[Stack]<UL><LI>Max Depth = 104<LI>Call Chain = app_slave_uart_send &rArr; delay_os &rArr; rt_thread_delay &rArr; rt_thread_sleep &rArr; rt_timer_start &rArr; _rt_timer_remove
 </UL>
 <BR>[Calls]<UL><LI><a href="#[8f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_Send
 <LI><a href="#[b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_ReadInputDataBit
-<LI><a href="#[b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_uart_cts_set_mode
+<LI><a href="#[b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_uart_cts_set_mode
 <LI><a href="#[b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_get_rtc_counter
 <LI><a href="#[b4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;delay_os
 <LI><a href="#[b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srand
 <LI><a href="#[ba]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rand
 </UL>
-<BR>[Address Reference Count : 1]<UL><LI> app_sx1278.o(i.app_sx1278_thread_entry)
+<BR>[Address Reference Count : 1]<UL><LI> app_slave.o(i.app_slave_thread_entry)
 </UL>
 <P><STRONG><a name="[38]"></a>app_uart_thread_entry</STRONG> (Thumb, 108 bytes, Stack size 0 bytes, user_app.o(i.app_uart_thread_entry))
 <BR><BR>[Stack]<UL><LI>Max Depth = 264<LI>Call Chain = app_uart_thread_entry &rArr; nwk_slave_uart_parse &rArr; nwk_slave_calcu_air_time &rArr; drv_sx1268_calcu_air_time &rArr; __aeabi_dadd &rArr; _double_epilogue &rArr; _double_round
@@ -1231,21 +1224,21 @@ Global Symbols
 <P><STRONG><a name="[41]"></a>delay_ms</STRONG> (Thumb, 26 bytes, Stack size 0 bytes, drv_common.o(i.delay_ms))
 <BR><BR>[Called By]<UL><LI><a href="#[bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_rtc_init
 <LI><a href="#[8f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_Send
-<LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_uart_recv_check
-<LI><a href="#[3d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_sx1278_reset
+<LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_uart_recv_check
+<LI><a href="#[3d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_lora_reset
 <LI><a href="#[38]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_uart_thread_entry
 <LI><a href="#[10b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_slave_rx_process
 <LI><a href="#[fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_delay_ms
 </UL>
-<BR>[Address Reference Count : 1]<UL><LI> app_sx1278.o(i.app_sx1278_hal_init)
+<BR>[Address Reference Count : 1]<UL><LI> app_slave.o(i.app_slave_lora_init)
 </UL>
 <P><STRONG><a name="[b4]"></a>delay_os</STRONG> (Thumb, 24 bytes, Stack size 16 bytes, drv_common.o(i.delay_os))
 <BR><BR>[Stack]<UL><LI>Max Depth = 80<LI>Call Chain = delay_os &rArr; rt_thread_delay &rArr; rt_thread_sleep &rArr; rt_timer_start &rArr; _rt_timer_remove
 </UL>
 <BR>[Calls]<UL><LI><a href="#[bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_thread_delay
 </UL>
-<BR>[Called By]<UL><LI><a href="#[42]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_uart_slave_send
-<LI><a href="#[39]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_sx1278_thread_entry
+<BR>[Called By]<UL><LI><a href="#[42]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_uart_send
+<LI><a href="#[39]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_thread_entry
 <LI><a href="#[38]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_uart_thread_entry
 <LI><a href="#[f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;$Super$$main
 </UL>
@@ -1272,7 +1265,7 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RTC_GetCounter
 </UL>
-<BR>[Called By]<UL><LI><a href="#[42]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_uart_slave_send
+<BR>[Called By]<UL><LI><a href="#[42]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_uart_send
 <LI><a href="#[f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;$Super$$main
 <LI><a href="#[ff]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_get_rtc_counter
 </UL>
@@ -1417,7 +1410,7 @@ Global Symbols
 <LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_freq
 <LI><a href="#[8e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2printf
 </UL>
-<BR>[Called By]<UL><LI><a href="#[a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_sx1278_hal_init
+<BR>[Called By]<UL><LI><a href="#[a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_lora_init
 </UL>
 
 <P><STRONG><a name="[e6]"></a>drv_sx1268_recv_check</STRONG> (Thumb, 96 bytes, Stack size 32 bytes, drv_sx1268.o(i.drv_sx1268_recv_check))
@@ -1602,8 +1595,8 @@ Global Symbols
 <P><STRONG><a name="[3a]"></a>fputc</STRONG> (Thumb, 32 bytes, Stack size 16 bytes, drv_uart.o(i.fputc))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = fputc
 </UL>
-<BR>[Calls]<UL><LI><a href="#[91]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART_SendData
-<LI><a href="#[90]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART_GetFlagStatus
+<BR>[Calls]<UL><LI><a href="#[90]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART_GetFlagStatus
+<LI><a href="#[91]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART_SendData
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> printfa.o(i.__0printf)
 </UL>
@@ -1833,7 +1826,7 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[109]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_slave_work_state_check
 </UL>
-<BR>[Called By]<UL><LI><a href="#[39]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_sx1278_thread_entry
+<BR>[Called By]<UL><LI><a href="#[39]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_thread_entry
 </UL>
 
 <P><STRONG><a name="[10a]"></a>nwk_slave_recv_check</STRONG> (Thumb, 78 bytes, Stack size 24 bytes, nwk_slave.o(i.nwk_slave_recv_check))
@@ -1925,7 +1918,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[ab]"></a>nwk_slave_set_lora_dev</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, nwk_slave.o(i.nwk_slave_set_lora_dev))
-<BR><BR>[Called By]<UL><LI><a href="#[a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_sx1278_hal_init
+<BR><BR>[Called By]<UL><LI><a href="#[a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_lora_init
 </UL>
 
 <P><STRONG><a name="[101]"></a>nwk_slave_set_lora_param</STRONG> (Thumb, 42 bytes, Stack size 16 bytes, nwk_slave.o(i.nwk_slave_set_lora_param))
@@ -1989,7 +1982,7 @@ Global Symbols
 <LI><a href="#[111]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memcpy
 <LI><a href="#[8e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2printf
 </UL>
-<BR>[Called By]<UL><LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_uart_recv_check
+<BR>[Called By]<UL><LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_uart_recv_check
 <LI><a href="#[38]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_uart_thread_entry
 </UL>
 
@@ -2002,8 +1995,8 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[10e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_slave_uart_send_rx
 </UL>
 
-<P><STRONG><a name="[b1]"></a>nwk_slave_uart_send_register</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, nwk_slave.o(i.nwk_slave_uart_send_register))
-<BR><BR>[Called By]<UL><LI><a href="#[39]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_sx1278_thread_entry
+<P><STRONG><a name="[b0]"></a>nwk_slave_uart_send_register</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, nwk_slave.o(i.nwk_slave_uart_send_register))
+<BR><BR>[Called By]<UL><LI><a href="#[39]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_thread_entry
 </UL>
 
 <P><STRONG><a name="[10e]"></a>nwk_slave_uart_send_rx</STRONG> (Thumb, 152 bytes, Stack size 320 bytes, nwk_slave.o(i.nwk_slave_uart_send_rx))
@@ -2015,6 +2008,10 @@ Global Symbols
 </UL>
 <BR>[Called By]<UL><LI><a href="#[10f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_slave_tx_process
 <LI><a href="#[10b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_slave_rx_process
+</UL>
+
+<P><STRONG><a name="[b1]"></a>nwk_slave_uart_set_addr</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, nwk_slave.o(i.nwk_slave_uart_set_addr))
+<BR><BR>[Called By]<UL><LI><a href="#[39]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_thread_entry
 </UL>
 
 <P><STRONG><a name="[109]"></a>nwk_slave_work_state_check</STRONG> (Thumb, 148 bytes, Stack size 16 bytes, nwk_slave.o(i.nwk_slave_work_state_check))
@@ -2581,22 +2578,22 @@ Global Symbols
 <H3>
 Local Symbols
 </H3>
-<P><STRONG><a name="[3e]"></a>app_sx1278_cs0</STRONG> (Thumb, 12 bytes, Stack size 8 bytes, app_sx1278.o(i.app_sx1278_cs0))
-<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = app_sx1278_cs0
+<P><STRONG><a name="[3e]"></a>app_slave_lora_cs0</STRONG> (Thumb, 12 bytes, Stack size 8 bytes, app_slave.o(i.app_slave_lora_cs0))
+<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = app_slave_lora_cs0
 </UL>
 <BR>[Calls]<UL><LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_ResetBits
 </UL>
-<BR>[Address Reference Count : 1]<UL><LI> app_sx1278.o(i.app_sx1278_hal_init)
+<BR>[Address Reference Count : 1]<UL><LI> app_slave.o(i.app_slave_lora_init)
 </UL>
-<P><STRONG><a name="[3f]"></a>app_sx1278_cs1</STRONG> (Thumb, 12 bytes, Stack size 8 bytes, app_sx1278.o(i.app_sx1278_cs1))
-<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = app_sx1278_cs1
+<P><STRONG><a name="[3f]"></a>app_slave_lora_cs1</STRONG> (Thumb, 12 bytes, Stack size 8 bytes, app_slave.o(i.app_slave_lora_cs1))
+<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = app_slave_lora_cs1
 </UL>
 <BR>[Calls]<UL><LI><a href="#[a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_SetBits
 </UL>
-<BR>[Address Reference Count : 1]<UL><LI> app_sx1278.o(i.app_sx1278_hal_init)
+<BR>[Address Reference Count : 1]<UL><LI> app_slave.o(i.app_slave_lora_init)
 </UL>
-<P><STRONG><a name="[a7]"></a>app_sx1278_hal_init</STRONG> (Thumb, 234 bytes, Stack size 32 bytes, app_sx1278.o(i.app_sx1278_hal_init))
-<BR><BR>[Stack]<UL><LI>Max Depth = 160<LI>Call Chain = app_sx1278_hal_init &rArr; drv_sx1268_init &rArr; drv_sx1268_set_power &rArr; drv_sx1268_set_pa &rArr; hal_sx1268_write_cmd &rArr; hal_sx1268_spi_rw_byte
+<P><STRONG><a name="[a7]"></a>app_slave_lora_init</STRONG> (Thumb, 234 bytes, Stack size 32 bytes, app_slave.o(i.app_slave_lora_init))
+<BR><BR>[Stack]<UL><LI>Max Depth = 160<LI>Call Chain = app_slave_lora_init &rArr; drv_sx1268_init &rArr; drv_sx1268_set_power &rArr; drv_sx1268_set_pa &rArr; hal_sx1268_write_cmd &rArr; hal_sx1268_spi_rw_byte
 </UL>
 <BR>[Calls]<UL><LI><a href="#[ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_slave_set_lora_dev
 <LI><a href="#[aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_init
@@ -2606,26 +2603,26 @@ Local Symbols
 <LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_Init
 <LI><a href="#[8e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2printf
 </UL>
-<BR>[Called By]<UL><LI><a href="#[ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_sx1278_init
+<BR>[Called By]<UL><LI><a href="#[39]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_thread_entry
 </UL>
 
-<P><STRONG><a name="[3d]"></a>app_sx1278_reset</STRONG> (Thumb, 36 bytes, Stack size 8 bytes, app_sx1278.o(i.app_sx1278_reset))
-<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = app_sx1278_reset
+<P><STRONG><a name="[3d]"></a>app_slave_lora_reset</STRONG> (Thumb, 36 bytes, Stack size 8 bytes, app_slave.o(i.app_slave_lora_reset))
+<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = app_slave_lora_reset
 </UL>
 <BR>[Calls]<UL><LI><a href="#[a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_SetBits
 <LI><a href="#[41]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;delay_ms
 <LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_ResetBits
 </UL>
-<BR>[Address Reference Count : 1]<UL><LI> app_sx1278.o(i.app_sx1278_hal_init)
+<BR>[Address Reference Count : 1]<UL><LI> app_slave.o(i.app_slave_lora_init)
 </UL>
-<P><STRONG><a name="[40]"></a>app_sx1278_spi_rw_byte</STRONG> (Thumb, 50 bytes, Stack size 8 bytes, app_sx1278.o(i.app_sx1278_spi_rw_byte))
-<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = app_sx1278_spi_rw_byte
+<P><STRONG><a name="[40]"></a>app_slave_lora_spi_rw_byte</STRONG> (Thumb, 50 bytes, Stack size 8 bytes, app_slave.o(i.app_slave_lora_spi_rw_byte))
+<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = app_slave_lora_spi_rw_byte
 </UL>
-<BR>[Calls]<UL><LI><a href="#[ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPI_I2S_SendData
-<LI><a href="#[af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPI_I2S_ReceiveData
-<LI><a href="#[ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPI_I2S_GetFlagStatus
+<BR>[Calls]<UL><LI><a href="#[ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPI_I2S_SendData
+<LI><a href="#[ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPI_I2S_ReceiveData
+<LI><a href="#[ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPI_I2S_GetFlagStatus
 </UL>
-<BR>[Address Reference Count : 1]<UL><LI> app_sx1278.o(i.app_sx1278_hal_init)
+<BR>[Address Reference Count : 1]<UL><LI> app_slave.o(i.app_slave_lora_init)
 </UL>
 <P><STRONG><a name="[120]"></a>_SysTick_Config</STRONG> (Thumb, 44 bytes, Stack size 0 bytes, board.o(i._SysTick_Config))
 <BR><BR>[Called By]<UL><LI><a href="#[11d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_hw_board_init

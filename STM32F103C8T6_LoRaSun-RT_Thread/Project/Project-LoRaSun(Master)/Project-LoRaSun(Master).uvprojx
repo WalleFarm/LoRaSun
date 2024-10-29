@@ -431,9 +431,9 @@
               <FilePath>.\Applications\user_app.c</FilePath>
             </File>
             <File>
-              <FileName>app_sx1278.c</FileName>
+              <FileName>app_master.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Applications\app_sx1278.c</FilePath>
+              <FilePath>.\Applications\app_master.c</FilePath>
             </File>
           </Files>
         </Group>
