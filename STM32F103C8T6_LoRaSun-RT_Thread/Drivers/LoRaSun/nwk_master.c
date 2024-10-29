@@ -20,6 +20,7 @@ void nwk_master_uart_send_register(u8 index, u8 slave_adddr, void (*fun_send)(u8
     pSlaveToken->fun_send=fun_send;
     pSlaveToken->slave_addr=slave_adddr;
   }
+  g_sNwkMasterWork.gw_sn=0xC1011234;//测试
 }
 
 /*		
@@ -31,6 +32,7 @@ void nwk_master_uart_send_register(u8 index, u8 slave_adddr, void (*fun_send)(u8
 */ 
 void nwk_master_uart_parse(u8 *recv_buff, u16 recv_len)
 {
+//  printf_hex("recv0=", recv_buff, recv_len);
   u8 head[2]={0xAA, 0x55}; 
   u8 *pData=nwk_find_head(recv_buff, recv_len, head, 2);
   if(pData)
@@ -76,6 +78,7 @@ void nwk_master_uart_parse(u8 *recv_buff, u16 recv_len)
           pData+=1; 
           u8 data_len=pData[0];
           pData+=1;
+          printf_hex("rx=", pData, data_len);
           nwk_master_lora_parse(pData, data_len, slave_addr, &rf);          
           break;
         }        
@@ -243,6 +246,7 @@ void nwk_master_lora_parse(u8 *recv_buff, u8 recv_len, u8 slave_addr, RfParamStr
 		pData+=4;
 		u8 payload_len=pData[0];
 		pData+=1;
+    printf("src_sn=0x%08X, payload_len=%d\n", src_sn, payload_len);
 		if(payload_len>sizeof(union_buff))
 		{
 			printf("error payload_len>NWK_TRANSMIT_MAX_SIZE!\n");
@@ -310,6 +314,7 @@ void nwk_master_lora_parse(u8 *recv_buff, u8 recv_len, u8 slave_addr, RfParamStr
 				pData+=1;
 				u8 pack_num=pData[0];
 				pData+=1;
+        printf("dst_sn=0x%08X, cmd_type=%d, pack_num=%d\n", dst_sn, cmd_type, pack_num);
 				if(dst_sn != g_sNwkMasterWork.gw_sn && dst_sn!=0xFFFFFFFF)
 				{
 					printf("dst_sn=0x%08X != local_sn=0x%08X\n", dst_sn, g_sNwkMasterWork.gw_sn);
@@ -401,7 +406,7 @@ void nwk_master_lora_parse(u8 *recv_buff, u8 recv_len, u8 slave_addr, RfParamStr
             pRecvFrom->app_data=pData;
             pRecvFrom->src_sn=src_sn;
             pRecvFrom->read_flag=true;//通知应用层读取
-            
+            printf_hex("app_buff=", pRecvFrom->app_data, pRecvFrom->data_len);
             //需要回复NwkCmdAck指令    
             u8 opt=NwkRoleGateWay | (encrypt_mode<<2) | (key_type<<4);//组合配置
             //组合回复包
@@ -424,7 +429,7 @@ void nwk_master_lora_parse(u8 *recv_buff, u8 recv_len, u8 slave_addr, RfParamStr
               uart_buff[uart_len++]=make_len;
               memcpy(&uart_buff[uart_len], make_buff, make_len);
               uart_len+=make_len;
-              nwk_master_uart_send_level(slave_addr, MSCmdTxData, uart_buff, uart_len);//发送到从机
+//              nwk_master_uart_send_level(slave_addr, MSCmdTxData, uart_buff, uart_len);//发送到从机
             }
             break;
 					}
@@ -621,7 +626,7 @@ void nwk_master_main(void)
 	
 	if(now_rtc_time-last_rtc_time>=20)
 	{
-		nwk_master_send_broad(NWK_BEACON_BASE_FREQ, 12, 7);//广播
+//		nwk_master_send_broad(NWK_BEACON_BASE_FREQ, 12, 7);//广播
 		last_rtc_time=now_rtc_time;
 	}
 }

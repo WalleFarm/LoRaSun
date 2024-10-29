@@ -124,6 +124,11 @@ void app_slave_uart_init(void)
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
 	GPIO_InitStructure.GPIO_Speed=GPIO_Speed_50MHz;
 	GPIO_Init(GPIOB, &GPIO_InitStructure);
+  
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+	GPIO_Init(GPIOA, &GPIO_InitStructure);    //TX  悬空,避免影响其他从机的发送
  
 }
 
@@ -172,8 +177,21 @@ void app_slave_uart_send(u8 *buff, u16 len)
     state=GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_2);
   }
   app_slave_uart_cts_set_mode(1);//拉低
+  //TX引脚重新初始化
+  GPIO_InitTypeDef GPIO_InitStructure;
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
+	GPIO_Init(GPIOA, &GPIO_InitStructure);    //TX  
+  
   UART_Send(2, buff, len);
   app_slave_uart_cts_set_mode(0);//释放 
+  
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+	GPIO_Init(GPIOA, &GPIO_InitStructure);    //TX  
+  printf("slave tx ok!\n");  
 }
 
 /*		
