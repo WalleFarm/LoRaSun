@@ -54,7 +54,7 @@ void nwk_slave_uart_parse(u8 *recv_buff, u16 recv_len)
             return;
           }
           memcpy(pSlaveBroad->broad_buff, pData, broad_len);
-          pSlaveBroad->broad_len=broad_len;
+//          pSlaveBroad->broad_len=broad_len;
 					printf_hex("broad_buff=", pSlaveBroad->broad_buff, broad_len);
           break;
         }
@@ -184,7 +184,7 @@ void nwk_slave_uart_send_rx(u8 *buff, u8 len, RfParamStruct *rf)
   in_buff[in_len++]=rf->sf;  
   in_buff[in_len++]=rf->bw;  
   in_buff[in_len++]=len;
-  memcpy(in_buff, buff, len);
+  memcpy(&in_buff[in_len], buff, len);
   in_len+=len;
   nwk_slave_uart_send_level(MSCmdRxData, in_buff, in_len);
 }
@@ -499,7 +499,7 @@ void nwk_slave_broad_process(void)
 				nwk_slave_send_buff(pSlaveBroad->broad_buff, pSlaveBroad->broad_len);//发送数据包
 				u32 tx_time=nwk_slave_calcu_air_time(pSlaveBroad->sf, pSlaveBroad->bw, pSlaveBroad->broad_len)*1.2;//发送时间,冗余
 				pSlaveBroad->start_rtc_time=nwk_get_rtc_counter();//记录当前时间,防止超时
-				pSlaveBroad->wait_cnts=tx_time/1000+1;//等待秒数
+				pSlaveBroad->wait_cnts=tx_time/1000+2;//等待秒数
 				printf("tx_time=%d ms, wait_cnts=%d\n", tx_time, pSlaveBroad->wait_cnts);
 				pSlaveBroad->broad_state=NwkSlaveBroadTxCheck;  				
 			}
@@ -548,8 +548,8 @@ void nwk_slave_rx_process(void)
     case NwkSlaveRxInit:
     {
 //      pSlaveRx->freq=NWK_GW_BASE_FREQ+pSlaveRx->freq_ptr*2000000;
-      pSlaveRx->rx_state=NwkSlaveRxCadInit;
       pSlaveRx->group_id=0;
+      pSlaveRx->rx_state=NwkSlaveRxCadInit;
 //      printf("###### NwkSlaveRxInit!\n");        
       break;
     }
@@ -854,7 +854,7 @@ void nwk_slave_tx_process(void)
       else if(result==CadResultSuccess)//搜索成功 
       {
         printf("**** CAD OK!\n");
-        nwk_delay_ms(pSlaveTx->group_id*20+100);//适当延时,等待对方嗅探帧发送完
+        nwk_delay_ms(pSlaveTx->group_id*50+300);//适当延时,等待对方嗅探帧发送完
         nwk_slave_send_buff(pSlaveTx->tx_buff, pSlaveTx->tx_len);//发送数据包
         u32 tx_time=nwk_slave_calcu_air_time(pSlaveTx->curr_sf, pSlaveTx->curr_bw, pSlaveTx->tx_len)*1.2;//发送时间,冗余
         pSlaveTx->start_rtc_time=nwk_get_rtc_counter();//记录当前时间,防止超时
@@ -996,16 +996,14 @@ void nwk_slave_work_state_check(void)
 void nwk_slave_main(void)
 {
   nwk_slave_work_state_check();
-//  if(g_sNwkSlaveWork.ack_tickets==(g_sNwkSlaveWork.slave_addr-1)*10)
-//  {
-//    
-//  }
-//  g_sNwkSlaveWork.ack_tickets++;
+
   
 //  if(1)//测试
 //  {
+//    #include "drv_common.h"
 //    static u32 last_time=0;
-//    u32 now_time=nwk_get_rtc_counter();
+//    u32 now_time=drv_get_sec_counter();
+//    
 //    if(now_time-last_time>=5)
 //    {
 //      u8 test_buff[]={"0123456789012345678901234"};

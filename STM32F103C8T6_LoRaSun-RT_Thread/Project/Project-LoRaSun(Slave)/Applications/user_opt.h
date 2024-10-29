@@ -27,8 +27,8 @@
 
 
 #define		BAUD_UART1		115200
-#define		BAUD_UART2		9600
-#define		BAUD_UART3		9600
+#define		BAUD_UART2		115200
+#define		BAUD_UART3		115200
 
 
 
