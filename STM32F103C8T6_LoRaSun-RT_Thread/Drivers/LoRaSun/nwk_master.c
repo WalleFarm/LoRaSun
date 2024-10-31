@@ -525,6 +525,7 @@ void nwk_master_send_down_pack(u32 dst_sn, u8 slave_addr, u8 *in_buff, u8 in_len
   u8 make_len=nwk_master_make_lora_buff(opt, dst_sn, g_sNwkMasterWork.root_key, NwkCmdDataOnce, ++pNodeToken->down_pack_num, in_buff, in_len, make_buff, sizeof(make_buff));
   if(make_len>0)
   {
+    printf_hex("lora buff=", make_buff, make_len);
     uart_buff[uart_len++]=dst_sn>>24;
     uart_buff[uart_len++]=dst_sn>>16;
     uart_buff[uart_len++]=dst_sn>>8;

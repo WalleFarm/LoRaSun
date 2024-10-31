@@ -180,8 +180,8 @@ u16 nwk_tea_decrypt(u8 *buff, u16 len, u32* key)
 */
 u32 nwk_get_rtc_counter(void)
 {
-//  return drv_get_rtc_counter();
-	return drv_get_sec_counter();
+  return drv_get_rtc_counter();
+//	return drv_get_sec_counter();
 }
 
 /*		
@@ -194,6 +194,18 @@ u32 nwk_get_rtc_counter(void)
 void nwk_set_rtc_counter(u32 time)
 {
   drv_set_rtc_counter(time);
+}
+
+/*		
+================================================================================
+描述 : 获取sec时间
+输入 : 
+输出 : 
+================================================================================
+*/
+u32 nwk_get_sec_counter(void)
+{
+	return drv_get_sec_counter();
 }
 
 ///*		
