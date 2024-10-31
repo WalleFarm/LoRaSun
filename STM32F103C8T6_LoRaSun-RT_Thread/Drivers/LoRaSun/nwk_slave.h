@@ -6,8 +6,8 @@
 #include "nwk_bsp.h"
 
 //定义所使用的LoRa芯片模块,只能选一种,其余注释
-//#define LORA_SX1278    
-#define LORA_SX1268    
+#define LORA_SX1278    
+//#define LORA_SX1268    
 //#define LORA_LLCC68    
 
 

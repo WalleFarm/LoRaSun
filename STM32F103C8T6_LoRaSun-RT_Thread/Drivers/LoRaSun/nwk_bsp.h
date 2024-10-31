@@ -106,6 +106,7 @@ u16 nwk_tea_decrypt(u8 *buff, u16 len, u32* key);
 
 u32 nwk_get_rtc_counter(void);
 void nwk_set_rtc_counter(u32 time);
+u32 nwk_get_sec_counter(void);
 
 //void nwk_eeprom_read(u8 *out_buff, u32 size);
 //void nwk_eeprom_save(u8 *buff, u32 size);

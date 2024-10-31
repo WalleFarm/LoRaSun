@@ -73,7 +73,7 @@ void nwk_slave_uart_parse(u8 *recv_buff, u16 recv_len)
           nwk_slave_set_lora_param(freq, sf, bw);//设置通讯参数(也可以不设置)
           nwk_slave_send_buff(lora_buff, lora_len); 
           u32 tx_time=nwk_slave_calcu_air_time(pSlaveRx->curr_sf, pSlaveRx->curr_bw, lora_len)*1.2;//接收等待时间
-          pSlaveRx->start_rtc_time=nwk_get_rtc_counter();//记录当前时间,防止超时
+          pSlaveRx->start_rtc_time=nwk_get_sec_counter();//记录当前时间,防止超时
           pSlaveRx->wait_cnts=tx_time/1000+1;             
           pSlaveRx->rx_state=NwkSlaveRxAckCheck;//回复包发送检测            
           break;
@@ -122,7 +122,7 @@ void nwk_slave_uart_parse(u8 *recv_buff, u16 recv_len)
           nwk_slave_send_buff(pData, data_len);
           NwkSlaveRxStruct *pSlaveRx=&g_sNwkSlaveWork.slave_rx;
           u32 tx_time=nwk_slave_calcu_air_time(rf.sf, rf.bw, data_len)*1.2;//发送时间,冗余
-          pSlaveRx->start_rtc_time=nwk_get_rtc_counter();//记录当前时间,防止超时
+          pSlaveRx->start_rtc_time=nwk_get_sec_counter();//记录当前时间,防止超时
           pSlaveRx->wait_cnts=tx_time/1000+1;//等待秒数
           pSlaveRx->rx_state=NwkSlaveRxAckCheck;     
           g_sNwkSlaveWork.work_state=NwkSlaveWorkRX;
@@ -521,7 +521,7 @@ void nwk_slave_broad_process(void)
 				nwk_slave_set_lora_param(pSlaveBroad->freq, pSlaveBroad->sf, pSlaveBroad->bw);
 				nwk_slave_send_buff(pSlaveBroad->broad_buff, pSlaveBroad->broad_len);//发送数据包
 				u32 tx_time=nwk_slave_calcu_air_time(pSlaveBroad->sf, pSlaveBroad->bw, pSlaveBroad->broad_len)*1.2;//发送时间,冗余
-				pSlaveBroad->start_rtc_time=nwk_get_rtc_counter();//记录当前时间,防止超时
+				pSlaveBroad->start_rtc_time=nwk_get_sec_counter();//记录当前时间,防止超时
 				pSlaveBroad->wait_cnts=tx_time/1000+2;//等待秒数
 				printf("tx_time=%d ms, wait_cnts=%d\n", tx_time, pSlaveBroad->wait_cnts);
 				pSlaveBroad->broad_state=NwkSlaveBroadTxCheck;  				
@@ -530,7 +530,7 @@ void nwk_slave_broad_process(void)
 		}
     case NwkSlaveBroadTxCheck:
     {
-      u32 now_time=nwk_get_rtc_counter();
+      u32 now_time=nwk_get_sec_counter();
       u8 result=nwk_slave_send_check();//发送完成检测
       if(result)//发送完成
       {
@@ -579,7 +579,7 @@ void nwk_slave_rx_process(void)
     case NwkSlaveRxCadInit:
     {
       u8 sf=0, bw=0;
-      pSlaveRx->freq=NWK_GW_BASE_FREQ+(g_sNwkSlaveWork.freq_ptr+g_sNwkSlaveWork.slave_addr)*2000000+pSlaveRx->group_id*500000;//计算监听频率
+      pSlaveRx->freq=NWK_GW_BASE_FREQ+(g_sNwkSlaveWork.freq_ptr+(g_sNwkSlaveWork.slave_addr-1))*2000000+pSlaveRx->group_id*500000;//计算监听频率
       nwk_get_channel(pSlaveRx->group_id*2, &sf, &bw);
       pSlaveRx->curr_sf=sf;
       pSlaveRx->curr_bw=bw;      
@@ -621,7 +621,7 @@ void nwk_slave_rx_process(void)
         printf("into recv mode!\n"); 
         nwk_slave_recv_init();//进入接收
         u32 tx_time=nwk_slave_calcu_air_time(sf, bw, 4)*1.2;//接收等待时间
-        pSlaveRx->start_rtc_time=nwk_get_rtc_counter();//记录当前时间,防止超时
+        pSlaveRx->start_rtc_time=nwk_get_sec_counter();//记录当前时间,防止超时
         pSlaveRx->wait_cnts=tx_time/1000+1;             
         pSlaveRx->rx_state=NwkSlaveRxCheck; 
         printf("will wait time=%ds\n", pSlaveRx->wait_cnts);  
@@ -630,7 +630,7 @@ void nwk_slave_rx_process(void)
     }     
     case NwkSlaveRxCheck:
     {
-      u32 now_time=nwk_get_rtc_counter();
+      u32 now_time=nwk_get_sec_counter();
       int16_t rssi;
       u8 recv_len=nwk_slave_recv_check(g_sNwkSlaveWork.slave_rx.recv_buff, &rssi); 
       if(recv_len>0)
@@ -650,7 +650,7 @@ void nwk_slave_rx_process(void)
             u8 will_len=pData[1];//待接收的数据长度
             printf("app len=%d\n", will_len);
             u32 tx_time=nwk_slave_calcu_air_time(pSlaveRx->curr_sf, pSlaveRx->curr_bw, will_len)*1.2;//接收等待时间
-            pSlaveRx->start_rtc_time=nwk_get_rtc_counter();//记录当前时间,防止超时
+            pSlaveRx->start_rtc_time=nwk_get_sec_counter();//记录当前时间,防止超时
             pSlaveRx->wait_cnts=tx_time/1000+2; 
             printf("app wait time=%ds\n", pSlaveRx->wait_cnts);
             return;            
@@ -665,7 +665,7 @@ void nwk_slave_rx_process(void)
         rf.sf=pSlaveRx->curr_sf;
         rf.bw=pSlaveRx->curr_bw;
         nwk_slave_uart_send_rx(pBuff, recv_len, &rf);//无线数据发送到主机
-        pSlaveRx->start_rtc_time=nwk_get_rtc_counter();//记录当前时间,防止超时
+        pSlaveRx->start_rtc_time=nwk_get_sec_counter();//记录当前时间,防止超时
         pSlaveRx->wait_cnts=2;         
         pSlaveRx->rx_state=NwkSlaveRxAckWait;//等待主机回复
         
@@ -674,7 +674,7 @@ void nwk_slave_rx_process(void)
 //        delay_ms(300);
 //        nwk_slave_send_buff(ack_buff, sizeof(ack_buff)); 
 //        u32 tx_time=nwk_slave_calcu_air_time(pSlaveRx->curr_sf, pSlaveRx->curr_bw, 2)*1.2;//接收等待时间
-//        pSlaveRx->start_rtc_time=nwk_get_rtc_counter();//记录当前时间,防止超时
+//        pSlaveRx->start_rtc_time=nwk_get_sec_counter();//记录当前时间,防止超时
 //        pSlaveRx->wait_cnts=tx_time/1000+1;             
 //        pSlaveRx->rx_state=NwkSlaveRxAckCheck;//测试, 回复包发送检测          
       }   
@@ -695,7 +695,7 @@ void nwk_slave_rx_process(void)
     }    
     case NwkSlaveRxAckWait://等待主机的回复包
     {
-      u32 now_time=nwk_get_rtc_counter();
+      u32 now_time=nwk_get_sec_counter();
       if(now_time-pSlaveRx->start_rtc_time>=pSlaveRx->wait_cnts)//超时
       {
         printf("master ack time out!\n");
@@ -705,7 +705,7 @@ void nwk_slave_rx_process(void)
     }
     case NwkSlaveRxAckCheck:
     {
-      u32 now_time=nwk_get_rtc_counter();
+      u32 now_time=nwk_get_sec_counter();
       u8 result=nwk_slave_send_check();//发送完成检测
       if(result)//发送完成
       {
@@ -796,14 +796,14 @@ void nwk_slave_tx_process(void)
       nwk_slave_cad_init();//状态切换
       nwk_slave_send_buff(test_buff, test_len);//发送SN匹配包
       u32 tx_time=nwk_slave_calcu_air_time(pSlaveTx->curr_sf, pSlaveTx->curr_bw, pSlaveTx->tx_len)*1.2;//发送时间,冗余
-      pSlaveTx->start_rtc_time=nwk_get_rtc_counter();//记录当前时间,防止超时
+      pSlaveTx->start_rtc_time=nwk_get_sec_counter();//记录当前时间,防止超时
       pSlaveTx->wait_cnts=tx_time/1000+2;//等待秒数
       pSlaveTx->tx_state=NwkSlaveTxSnCheck;     
       break;
     }
     case NwkSlaveTxSnCheck:
     {
-      u32 now_time=nwk_get_rtc_counter();
+      u32 now_time=nwk_get_sec_counter();
       u8 result=nwk_slave_send_check();//发送完成检测
       if(result)//发送完成,进入ADR模式
       {
@@ -879,7 +879,7 @@ void nwk_slave_tx_process(void)
         nwk_delay_ms(pSlaveTx->group_id*50+300);//适当延时,等待对方嗅探帧发送完
         nwk_slave_send_buff(pSlaveTx->tx_buff, pSlaveTx->tx_len);//发送数据包
         u32 tx_time=nwk_slave_calcu_air_time(pSlaveTx->curr_sf, pSlaveTx->curr_bw, pSlaveTx->tx_len)*1.2;//发送时间,冗余
-        pSlaveTx->start_rtc_time=nwk_get_rtc_counter();//记录当前时间,防止超时
+        pSlaveTx->start_rtc_time=nwk_get_sec_counter();//记录当前时间,防止超时
         pSlaveTx->wait_cnts=tx_time/1000+2;//等待秒数
         pSlaveTx->tx_state=NwkSlaveTxRunning;
       }       
@@ -887,14 +887,14 @@ void nwk_slave_tx_process(void)
     } 
     case NwkSlaveTxRunning:
     {
-      u32 now_time=nwk_get_rtc_counter();
+      u32 now_time=nwk_get_sec_counter();
       u8 result=nwk_slave_send_check();//发送完成检测
       if(result)//发送完成
       {
         printf("send app ok!   wait ack!\n");
         nwk_slave_recv_init();//进入接收,等待回复
         u32 tx_time=nwk_slave_calcu_air_time(pSlaveTx->curr_sf, pSlaveTx->curr_bw, 20)*1.2;//接收回复包等待时间
-        pSlaveTx->start_rtc_time=nwk_get_rtc_counter();//记录当前时间,防止超时
+        pSlaveTx->start_rtc_time=nwk_get_sec_counter();//记录当前时间,防止超时
         pSlaveTx->wait_cnts=tx_time/1000+1;
         pSlaveTx->tx_state=NwkSlaveTxAck;
       }
@@ -908,7 +908,7 @@ void nwk_slave_tx_process(void)
     }
     case NwkSlaveTxAck:
     {
-      u32 now_time=nwk_get_rtc_counter();
+      u32 now_time=nwk_get_sec_counter();
       int16_t rssi;
       u8 recv_len=nwk_slave_recv_check(g_sNwkSlaveWork.slave_rx.recv_buff, &rssi);
       if(recv_len>0)
