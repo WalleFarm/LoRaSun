@@ -98,6 +98,16 @@ void app_master_thread_entry(void *parameter)
   nwk_master_uart_send_register(wireless++, slave_addr++, app_master_uart_send);
   nwk_master_uart_send_register(wireless++, slave_addr++, app_master_uart_send);
   nwk_master_uart_send_register(wireless++, slave_addr++, app_master_uart_send);
+  
+  u8 freq_ptr=0;
+  nwk_master_set_freq_ptr(freq_ptr);//设置基础频段
+  for(u8 i=0; i<4; i++)
+  {
+    u8 slave=i+1;
+    nwk_master_send_freq_ptr(slave);
+    delay_os(100);
+  }
+  nwk_master_add_token(0x12345678);//测试
   while(1)
   {
     app_master_uart_recv_check();//串口接收检查

@@ -534,16 +534,8 @@ void nwk_node_recv_parse(u8 *recv_buff, u8 recv_len)
                 pData+=4;
                 if(ack_time>NWK_TIME_STAMP_THRESH && nwk_get_rtc_counter()!=ack_time)
                 {
+                  printf("update rtc time=%us\n", ack_time);
                   nwk_set_rtc_counter(ack_time);//更新RTC时间
-                }
-                u8 key_flag=pData[0];
-                pData+=1;
-                if(key_flag)//更新APP_KEY标志
-                {
-                  u8 key_tmp[16]={0x45,0xEF,0x09,0x3E,0xA2,0xC8,0xB1,0x4A,0x90,0x75,0xD9,0x63,0x7B,0x3B,0x82,0x96};//解算密码,应用时注意混淆
-                  nwk_tea_encrypt(pData, 16, (u32 *)key_tmp);//把网关下发的16字节随机数进行加密作为APP_KEY
-                  memcpy(pGateWay->app_key, pData, 16); 
-                  pGateWay->join_state=JoinStateOK;//入网成功                  
                 }
               }
               else if(role==NwkRoleNode)
@@ -556,18 +548,30 @@ void nwk_node_recv_parse(u8 *recv_buff, u8 recv_len)
             }
 						break;
 					}					
-//					case NwkCmdJoin://入网
-//					{
-//						printf("src_sn=0x%08X NwkCmdJoin!\n", src_sn);
-//            if(pGateWay)
-//            {
-//              u8 key_tmp[16]={0x45,0xEF,0x09,0x3E,0xA2,0xC8,0xB1,0x4A,0x90,0x75,0xD9,0x63,0x7B,0x3B,0x82,0x96};//解算密码,应用时注意混淆
-//              nwk_tea_encrypt(pData, 16, (u32 *)key_tmp);//把网关下发的16字节随机数进行加密作为APP_KEY
-//              memcpy(pGateWay->app_key, pData, 16); 
-//              pGateWay->join_state=JoinStateOK;//入网成功
-//            }
-//						break;
-//					}
+					case NwkCmdJoin://入网
+					{
+						printf("src_sn=0x%08X NwkCmdJoin!\n", src_sn);
+            if(pGateWay)
+            {
+              u8 join_state=pData[0];
+              pData+=1;
+              printf("join_state=%d\n", join_state);//默认接受入网
+              //同时返回时间戳
+              u32 ack_time=pData[0]<<24|pData[1]<<16|pData[2]<<8|pData[3];
+              pData+=4;
+              if(ack_time>NWK_TIME_STAMP_THRESH && nwk_get_rtc_counter()!=ack_time)
+              {
+                printf("update rtc time=%us\n", ack_time);
+                nwk_set_rtc_counter(ack_time);//更新RTC时间
+              }              
+              
+              u8 key_tmp[16]={0x45,0xEF,0x09,0x3E,0xA2,0xC8,0xB1,0x4A,0x90,0x75,0xD9,0x63,0x7B,0x3B,0x82,0x96};//解算密码,应用时注意混淆
+              nwk_tea_encrypt(pData, 16, (u32 *)key_tmp);//把网关下发的16字节随机数进行加密作为APP_KEY
+              memcpy(pGateWay->app_key, pData, 16); 
+              pGateWay->join_state=JoinStateOK;//入网成功
+            }
+						break;
+					}
 					case NwkCmdDataOnce://单包数据
 					{
 						printf("src_sn=0x%08X NwkCmdDataOnce!\n", src_sn);
@@ -579,10 +583,12 @@ void nwk_node_recv_parse(u8 *recv_buff, u8 recv_len)
             
             //需要回复NwkCmdAck指令    
             NwkNodeRxStruct *pNodeRx=&g_sNwkNodeWork.node_rx;
+            
             u8 opt=NwkRoleNode | (encrypt_mode<<2) | (key_type<<4);//组合配置
             //组合回复包
             u8 tmp_buff[1]={NwkCmdDataOnce};
-            pNodeRx->ack_len=nwk_node_make_send_buff(opt, src_sn, pKey, NwkCmdAck, nwk_get_rand()%255, tmp_buff, 1, pNodeRx->ack_buff, sizeof(pNodeRx->ack_buff));
+            u8 pack_num=nwk_get_rand()%255;
+            pNodeRx->ack_len=nwk_node_make_send_buff(opt, src_sn, pKey, NwkCmdAck, pack_num, tmp_buff, 1, pNodeRx->ack_buff, sizeof(pNodeRx->ack_buff));
             break;
 					}
 					case NwkCmdDataMult://连续数据
@@ -717,7 +723,7 @@ u8 nwk_node_send2node(u32 dst_node_sn, u8 *in_buff, u8 in_len)
 void nwk_node_search_process(void)
 {
   static u8 ptr=0;
-  static const u32 base_freq=NWK_BEACON_BASE_FREQ;
+  static const u32 base_freq=NWK_BROAD_BASE_FREQ;
   static const u8 sf=12, bw=7;
   NwkNodeSearchStruct *pSearch=&g_sNwkNodeWork.node_search;
   switch(pSearch->search_state)
@@ -1027,16 +1033,30 @@ void nwk_node_rx_process(void)
         printf("recv rssi=%ddbm\n", rssi);
         u8 *pBuff=g_sNwkNodeWork.node_rx.recv_buff;
         printf_hex("recv=", pBuff, recv_len);
+        pNodeRx->ack_len=0;
 				nwk_node_recv_parse(pBuff, recv_len);
-				
+        if(pNodeRx->ack_len>0)
+        {
+          //发送回复包
+          nwk_node_send_buff(pNodeRx->ack_buff, pNodeRx->ack_len); 
+          u32 tx_time=nwk_node_calcu_air_time(pNodeRx->curr_sf, pNodeRx->curr_bw, 2)*1.2;//接收等待时间
+          pNodeRx->start_rtc_time=nwk_get_rtc_counter();//记录当前时间,防止超时
+          pNodeRx->wait_cnts=tx_time/1000+1;             
+          pNodeRx->rx_state=NwkNodeRxAppAck;//回复包发送检测           
+        }
+        else
+        {
+          printf("ack none, exit!\n");
+          pNodeRx->rx_state=NwkNodeRxIdel;//结束本回合 
+        }
         //测试
-        u8 ack_buff[]={0xAA, 0x55};
-        delay_ms(300);
-        nwk_node_send_buff(ack_buff, sizeof(ack_buff)); 
-        u32 tx_time=nwk_node_calcu_air_time(pNodeRx->curr_sf, pNodeRx->curr_bw, 2)*1.2;//接收等待时间
-        pNodeRx->start_rtc_time=nwk_get_rtc_counter();//记录当前时间,防止超时
-        pNodeRx->wait_cnts=tx_time/1000+1;             
-        pNodeRx->rx_state=NwkNodeRxAppAck;//测试, 回复包发送检测  				
+//        u8 ack_buff[]={0xAA, 0x55};
+//        delay_ms(300);
+//        nwk_node_send_buff(ack_buff, sizeof(ack_buff)); 
+//        u32 tx_time=nwk_node_calcu_air_time(pNodeRx->curr_sf, pNodeRx->curr_bw, 2)*1.2;//接收等待时间
+//        pNodeRx->start_rtc_time=nwk_get_rtc_counter();//记录当前时间,防止超时
+//        pNodeRx->wait_cnts=tx_time/1000+1;             
+//        pNodeRx->rx_state=NwkNodeRxAppAck;//测试, 回复包发送检测  				
 			}	
       else if(now_time-pNodeRx->start_rtc_time>pNodeRx->wait_cnts)//超时
       {
@@ -1265,7 +1285,7 @@ void nwk_node_tx_gw_process(void)
       }
       break;
     }
-    case NwkNodeTxGwAck:
+    case NwkNodeTxGwAck://等待网关回复确认
     {
       u32 now_time=nwk_get_rtc_counter();
       int16_t rssi;
@@ -1277,13 +1297,11 @@ void nwk_node_tx_gw_process(void)
 				printf("tx ack rssi=%ddbm\n", rssi);
 				printf_hex("ack=", g_sNwkNodeWork.node_rx.recv_buff, recv_len);
         nwk_node_recv_parse(g_sNwkNodeWork.node_rx.recv_buff, recv_len);
-        NwkNodeRxStruct *pNodeRx=&g_sNwkNodeWork.node_rx;
-        pNodeRx->sf1=pNodeTxGw->sf;
-        pNodeRx->bw1=pNodeTxGw->bw;//记录最优参数,接收时候使用
+//        NwkNodeRxStruct *pNodeRx=&g_sNwkNodeWork.node_rx;
         
-				pNodeTxGw->tx_len=0;//测试,清零
-        pNodeTxGw->pGateWay->err_cnts=0;
-        pNodeTxGw->tx_state=NwkNodeTxGwIdel;
+//				pNodeTxGw->tx_len=0;//测试,清零
+//        pNodeTxGw->pGateWay->err_cnts=0;
+//        pNodeTxGw->tx_state=NwkNodeTxGwIdel;
       }   
       else if(now_time-pNodeTxGw->start_rtc_time>pNodeTxGw->wait_cnts)//超时
       {

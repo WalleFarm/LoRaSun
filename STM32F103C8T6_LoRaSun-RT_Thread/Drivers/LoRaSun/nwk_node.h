@@ -7,8 +7,8 @@
 
 //定义所使用的LoRa芯片模块,只能选一种,其余注释
 //#define LORA_SX1278    
-#define LORA_SX1268    
-//#define LORA_LLCC68    
+//#define LORA_SX1268    
+#define LORA_LLCC68    
 
 
 #if defined(LORA_SX1278)  
@@ -20,12 +20,15 @@
   #define  LoRaDevStruct    DrvSx1268Struct
 
 #elif defined(LORA_LLCC68)
-
+  //与1268共用一套代码
+  #define LORA_SX1268    
+  #include "drv_sx1268.h"
+  #define  LoRaDevStruct    DrvSx1268Struct
 
 #endif
 
 
-#define NWK_GW_NUM          3   //监听的网关最大数量
+#define NWK_GW_NUM              3   //监听的网关最大数量
 #define NWK_D2D_NODE_NUM        3   //D2D设备存储最大数量
 
 #define NWK_NODE_USE_AES        //是否启用AES加密,根据芯片能力和需求确定
@@ -134,7 +137,7 @@ typedef struct
   u8 rx_state;
   u8 listen_cnts;
   u8 wait_cnts;
-  u8 sf1, bw1;
+//  u8 sf1, bw1;
   u8 curr_sf, curr_bw;
 	u8 will_len;
 	u8 group_id;

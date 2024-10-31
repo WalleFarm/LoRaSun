@@ -1,5 +1,5 @@
 
-#include "app_sx1278.h" 
+#include "app_node.h" 
 
 #ifdef  LORA_SX1278 
 DrvSx1278Struct g_sDrvSx1278={0};
@@ -16,7 +16,7 @@ DrvSx1268Struct g_sDrvSx1268={0};
 输出 : 
 ================================================================================
 */
-static void app_sx1278_reset(void)
+static void app_node_lora_reset(void)
 {
 	GPIO_ResetBits(GPIOB, GPIO_Pin_14);
 	delay_ms(10);
@@ -32,7 +32,7 @@ static void app_sx1278_reset(void)
 输出 : 
 ================================================================================
 */
-static void app_sx1278_cs0(void)
+static void app_node_lora_cs0(void)
 {
 	GPIO_ResetBits(GPIOA, GPIO_Pin_4);
 	delay_ms(1);
@@ -45,7 +45,7 @@ static void app_sx1278_cs0(void)
 输出 : 
 ================================================================================
 */
-static void app_sx1278_cs1(void)
+static void app_node_lora_cs1(void)
 {
 	GPIO_SetBits(GPIOA, GPIO_Pin_4);
 }
@@ -57,7 +57,7 @@ static void app_sx1278_cs1(void)
 输出 : 
 ================================================================================
 */
-static u8 app_sx1278_spi_rw_byte(u8 byte)
+static u8 app_node_lora_spi_rw_byte(u8 byte)
 {
 	while(SPI_I2S_GetFlagStatus(SPI1,SPI_I2S_FLAG_TXE)==RESET);
 	SPI_I2S_SendData(SPI1,byte);
@@ -93,7 +93,7 @@ void app_node_wait_on_busy(void)
 输出 : 
 ================================================================================
 */
-void app_led_init(void)
+void app_node_led_init(void)
 {
   GPIO_InitTypeDef GPIO_InitStructure;
 
@@ -119,7 +119,7 @@ void app_led_init(void)
 输出 : 
 ================================================================================
 */
-void app_led_set_blue(bool state)
+void app_node_led_set_blue(bool state)
 {
   if(state)//亮灯
   {
@@ -138,7 +138,7 @@ void app_led_set_blue(bool state)
 输出 : 
 ================================================================================
 */
-void app_led_set_green(bool state)
+void app_node_led_set_green(bool state)
 {
   if(state)//亮灯
   {
@@ -157,7 +157,7 @@ void app_led_set_green(bool state)
 输出 : 
 ================================================================================
 */
-void app_key_init(void)
+void app_node_key_init(void)
 {
   GPIO_InitTypeDef GPIO_InitStructure;
 
@@ -178,7 +178,7 @@ void app_key_init(void)
 输出 : 
 ================================================================================
 */
-void app_key_check(void)
+void app_node_key_check(void)
 {
   static u8 key_cnts=0;
   u8 val=GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_9);
@@ -203,7 +203,7 @@ void app_key_check(void)
 输出 : 
 ================================================================================
 */
-void app_temp_init(void)
+void app_node_temp_init(void)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
 	ADC_InitTypeDef   ADC_InitStructure;
@@ -244,7 +244,7 @@ void app_temp_init(void)
 输出 : 
 ================================================================================
 */
-u16 app_temp_update(void)
+u16 app_node_temp_update(void)
 {
 	while(!ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC ));//等待转换结束
 	u16 adc_value=ADC_GetConversionValue(ADC1);  
@@ -271,7 +271,7 @@ u16 app_temp_update(void)
 输出 : 
 ================================================================================
 */
-static void app_sx1278_hal_init(void)
+static void app_node_lora_init(void)
 {
   GPIO_InitTypeDef GPIO_InitStructure;
 	SPI_InitTypeDef SPI_InitStructure;
@@ -317,10 +317,10 @@ static void app_sx1278_hal_init(void)
 	SPI_Cmd(SPI1,ENABLE);
 
 #ifdef  LORA_SX1278 
-	g_sDrvSx1278.tag_hal_sx1278.sx1278_reset = app_sx1278_reset;
-	g_sDrvSx1278.tag_hal_sx1278.sx1278_cs_0 = app_sx1278_cs0;
-	g_sDrvSx1278.tag_hal_sx1278.sx1278_cs_1 = app_sx1278_cs1;
-	g_sDrvSx1278.tag_hal_sx1278.sx1278_spi_rw_byte = app_sx1278_spi_rw_byte;
+	g_sDrvSx1278.tag_hal_sx1278.sx1278_reset = app_node_lora_reset;
+	g_sDrvSx1278.tag_hal_sx1278.sx1278_cs_0 = app_node_lora_cs0;
+	g_sDrvSx1278.tag_hal_sx1278.sx1278_cs_1 = app_node_lora_cs1;
+	g_sDrvSx1278.tag_hal_sx1278.sx1278_spi_rw_byte = app_node_lora_spi_rw_byte;
 	drv_sx1278_init(&g_sDrvSx1278);//初始化
 	
 	nwk_node_set_lora_dev(&g_sDrvSx1278);
@@ -334,11 +334,10 @@ static void app_sx1278_hal_init(void)
 	GPIO_InitStructure.GPIO_Speed=GPIO_Speed_50MHz;
 	GPIO_Init(GPIOB, &GPIO_InitStructure);//BUSY
 	
-	g_sDrvSx1268.tag_hal_sx1268.sx1268_reset = app_sx1278_reset;
-	g_sDrvSx1268.tag_hal_sx1268.sx1268_cs_0 = app_sx1278_cs0;
-	g_sDrvSx1268.tag_hal_sx1268.sx1268_cs_1 = app_sx1278_cs1;
-	g_sDrvSx1268.tag_hal_sx1268.sx1268_spi_rw_byte = app_sx1278_spi_rw_byte;
-  g_sDrvSx1268.tag_hal_sx1268.delay_ms=delay_ms;
+	g_sDrvSx1268.tag_hal_sx1268.sx1268_reset = app_node_lora_reset;
+	g_sDrvSx1268.tag_hal_sx1268.sx1268_cs_0 = app_node_lora_cs0;
+	g_sDrvSx1268.tag_hal_sx1268.sx1268_cs_1 = app_node_lora_cs1;
+	g_sDrvSx1268.tag_hal_sx1268.sx1268_spi_rw_byte = app_node_lora_spi_rw_byte;
 	g_sDrvSx1268.tag_hal_sx1268.wait_on_busy=app_node_wait_on_busy;
 	drv_sx1268_init(&g_sDrvSx1268);//初始化
 	 
@@ -346,11 +345,6 @@ static void app_sx1278_hal_init(void)
 	printf("app_sx12768_hal_init ok!\n");
 #endif  
 
-//	g_sDrvSx1278.tag_hal_sx1278.sx1278_reset = app_sx1278_reset;
-//	g_sDrvSx1278.tag_hal_sx1278.sx1278_cs_0 = app_sx1278_cs0;
-//	g_sDrvSx1278.tag_hal_sx1278.sx1278_cs_1 = app_sx1278_cs1;
-//	g_sDrvSx1278.tag_hal_sx1278.sx1278_spi_rw_byte = app_sx1278_spi_rw_byte;
-//	drv_sx1278_init(&g_sDrvSx1278);//初始化
 	
 	nwk_node_add_gw(0xC1011234, 0, 1);//添加目标网关
 	nwk_node_set_sn(0x12345678);
@@ -372,32 +366,19 @@ static void app_sx1278_hal_init(void)
 
 /*		
 ================================================================================
-描述 : 
-输入 : 
-输出 : 
-================================================================================
-*/
-void app_sx1278_init(void)
-{
-	app_sx1278_hal_init();
-
-}  
-
-/*		
-================================================================================
 描述 : sx1278线程
 输入 : 
 输出 : 
 ================================================================================
 */
-void app_sx1278_thread_entry(void *parameter) 
+void app_node_thread_entry(void *parameter) 
 {
   static u32 run_cnts=0;
   static bool led_state=false;  
-  app_sx1278_init();
-  app_led_init();
-  app_key_init();
-  app_temp_init();
+  app_node_lora_init();
+  app_node_led_init();
+  app_node_key_init();
+  app_node_temp_init();
   while(1)
   {
     nwk_node_main();
@@ -406,13 +387,13 @@ void app_sx1278_thread_entry(void *parameter)
     {
       printf_hex("recv=", recv_from->app_data, recv_from->data_len);
     }
-    app_key_check();//按键检测
+    app_node_key_check();//按键检测
     if(run_cnts++%200==0)//指示灯运行
     {
       led_state=!led_state;
-      app_led_set_blue(led_state);
-      app_led_set_green(led_state);
-//      app_temp_update();//温度更新
+      app_node_led_set_blue(led_state);
+      app_node_led_set_green(led_state);
+//      app_node_temp_update();//温度更新
     }
     delay_os(5);
   }
@@ -427,6 +408,28 @@ void app_sx1278_thread_entry(void *parameter)
 输出 : 
 ================================================================================
 */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

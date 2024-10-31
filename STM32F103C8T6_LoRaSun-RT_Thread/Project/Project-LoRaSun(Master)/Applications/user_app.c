@@ -54,7 +54,7 @@ void app_uart_thread_entry(void *parameter)
 {
 	static UART_Struct *pUART=&g_sUART1; 
 	u16 recv_len;
-//	char *pData=NULL;
+	char *pData=NULL;
 	
 	while(1)
 	{
@@ -74,9 +74,11 @@ void app_uart_thread_entry(void *parameter)
         printf("*** reset!\n");
         drv_system_reset();
       }
-			else
+			else if((pData=strstr(pBuff, "down:"))!=NULL)
 			{
-				
+				pData+=strlen("down:");
+        u16 len=strlen(pData);
+        nwk_master_send_down_pack(0x12345678, 1, (u8*)pData, len);//发送测试
 			}
       
 

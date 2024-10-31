@@ -53,7 +53,7 @@ void app_uart_thread_entry(void *parameter)
 {
 	static UART_Struct *pUART=&g_sUART1; 
 	u16 recv_len;
-//	char *pData=NULL;
+	char *pData=NULL;
 	
 	while(1)
 	{
@@ -72,6 +72,12 @@ void app_uart_thread_entry(void *parameter)
       {
         printf("*** reset!\n");
         drv_system_reset();
+      }
+      else if((pData=strstr(pBuff, "addr:"))!=NULL)
+      {
+        pData+=strlen("addr:");
+        u8 slave_addr=atoi(pData);
+        app_slave_write_addr(slave_addr);
       }
 			else
 			{

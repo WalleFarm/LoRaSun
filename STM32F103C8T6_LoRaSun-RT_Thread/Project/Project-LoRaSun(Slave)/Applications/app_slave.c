@@ -1,7 +1,7 @@
 
 #include "app_slave.h"  
 
-
+AppSlaveSaveStruct g_sAppSlaveSave={0};
  
 #ifdef  LORA_SX1278 
 DrvSx1278Struct g_sDrvSx1278={0};
@@ -65,6 +65,28 @@ static u8 app_slave_lora_spi_rw_byte(u8 byte)
 	while(SPI_I2S_GetFlagStatus(SPI1,SPI_I2S_FLAG_RXNE)==RESET);
 	return SPI_I2S_ReceiveData(SPI1);  
 }
+
+/*		
+================================================================================
+描述 : 忙检测
+输入 : 
+输出 : 
+================================================================================
+*/
+void app_slave_wait_on_busy(void)
+{
+	u32 counts=0;
+	while(GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_12)>0)
+	{
+		if(counts++>1000)
+		{
+			printf("busy line wait time out!\n");
+			return;
+		}
+		delay_ms(1);
+	}
+}
+
 
 /*		
 ================================================================================
@@ -283,11 +305,16 @@ static void app_slave_lora_init(void)
 #endif 
 
 #ifdef  LORA_SX1268 
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
+	GPIO_InitStructure.GPIO_Speed=GPIO_Speed_50MHz;
+	GPIO_Init(GPIOB, &GPIO_InitStructure);//BUSY
+
 	g_sDrvSx1268.tag_hal_sx1268.sx1268_reset = app_slave_lora_reset;
 	g_sDrvSx1268.tag_hal_sx1268.sx1268_cs_0 = app_slave_lora_cs0;
 	g_sDrvSx1268.tag_hal_sx1268.sx1268_cs_1 = app_slave_lora_cs1;
 	g_sDrvSx1268.tag_hal_sx1268.sx1268_spi_rw_byte = app_slave_lora_spi_rw_byte;
-  g_sDrvSx1268.tag_hal_sx1268.delay_ms=delay_ms;
+	g_sDrvSx1268.tag_hal_sx1268.wait_on_busy=app_slave_wait_on_busy;
 	drv_sx1268_init(&g_sDrvSx1268);//初始化
 	 
   nwk_slave_set_lora_dev(&g_sDrvSx1268); 
@@ -303,8 +330,52 @@ static void app_slave_lora_init(void)
   *    3.3V--电源
   *    GND --GND
   */
-  
-  
+}
+
+/*		
+================================================================================
+描述 : 
+输入 : 
+输出 : 
+================================================================================
+*/
+void app_slave_write_config(void)
+{
+  g_sAppSlaveSave.crcValue=drv_crc16((u8*)&g_sAppSlaveSave, sizeof(g_sAppSlaveSave)-2);
+  EEPROM_Write(50, (u8*)&g_sAppSlaveSave, sizeof(g_sAppSlaveSave));  
+}
+
+/*		
+================================================================================
+描述 : 
+输入 : 
+输出 : 
+================================================================================
+*/
+void app_slave_read_config(void)
+{
+  EEPROM_Read(50, (u8*)&g_sAppSlaveSave, sizeof(g_sAppSlaveSave));
+  if(g_sAppSlaveSave.crcValue!=drv_crc16((u8*)&g_sAppSlaveSave, sizeof(g_sAppSlaveSave)-2))
+  {
+    g_sAppSlaveSave.slave_addr=1;
+    app_slave_write_config();
+    printf("app_slave_read_config new!\n");
+  }
+  nwk_slave_set_addr(g_sAppSlaveSave.slave_addr);
+}
+
+/*		
+================================================================================
+描述 : 
+输入 : 
+输出 : 
+================================================================================
+*/
+void app_slave_write_addr(u8 slave_addr)
+{
+  g_sAppSlaveSave.slave_addr=slave_addr;
+  app_slave_write_config();
+  nwk_slave_set_addr(slave_addr);
 }
 
 /*		
@@ -318,11 +389,14 @@ void app_slave_thread_entry(void *parameter)
 {
   static u32 run_cnts=0;
   static bool led_state=false;
+  
+  app_slave_read_config();
   app_slave_lora_init();
   app_slave_led_init();
   app_slave_uart_init();
   nwk_slave_uart_send_register(app_slave_uart_send);
-  nwk_slave_uart_set_addr(1);//设置本机地址码
+//  nwk_slave_uart_set_addr(1);//设置本机地址码
+  
   while(1)
   {
     app_slave_uart_recv_check();//串口接收检查

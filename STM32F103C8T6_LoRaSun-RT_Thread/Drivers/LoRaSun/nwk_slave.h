@@ -95,7 +95,7 @@ typedef struct
   u8 rx_state;
   u8 recv_buff[255];
   u8 recv_len;
-  u8 freq_ptr;
+//  u8 freq_ptr;
   u8 group_id;
   u16 wait_cnts;
   u32 freq;
@@ -130,6 +130,7 @@ typedef struct
 typedef struct
 {
 	u8 slave_addr;
+  u8 freq_ptr;
   u8 work_state;
   int recv_rssi;
   LoRaDevStruct *pLoRaDev;
@@ -137,9 +138,9 @@ typedef struct
   NwkSlaveBroadStruct slave_broad;
   NwkSlaveRxStruct slave_rx;
   NwkSlaveTxStruct slave_tx;
-	u8 ack_buff[300];
-  u16 ack_len;
-  u8 ack_tickets;
+//	u8 ack_buff[300];
+//  u16 ack_len;
+//  u8 ack_tickets;
   void (*fun_send)(u8 *buff, u16 len);
 }NwkSlaveWorkStruct;
 
@@ -159,7 +160,7 @@ void nwk_slave_uart_parse(u8 *recv_buff, u16 recv_len);
 void nwk_slave_uart_send_level(u8 cmd_type, u8 *in_buff, u16 in_len);
 void nwk_slave_uart_send_heart(void);
 void nwk_slave_uart_send_rx(u8 *buff, u8 len, RfParamStruct *rf);
-void nwk_slave_uart_set_addr(u8 slave_addr);
+void nwk_slave_set_addr(u8 slave_addr);
 
 void nwk_slave_broad_process(void);
 void nwk_slave_rx_process(void);

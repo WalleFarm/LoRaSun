@@ -54,16 +54,11 @@ void nwk_master_uart_parse(u8 *recv_buff, u16 recv_len)
           
           break;
         }
-        case MSCmdBroad://设置广播信息
+        case MSCmdSetFreqPtr://从机请求设置基础频率
         {
-         
+          nwk_master_set_freq_ptr(slave_addr);
           break;
-        }
-        case MSCmdAckData://确认数据已经收到
-        {
-
-          break;
-        }
+        }        
         case MSCmdRxData://接收数据
         {
           printf("MSCmdRxData ###\n");
@@ -122,8 +117,6 @@ void nwk_master_uart_send_level(u8 slave_addr, u8 cmd_type, u8 *in_buff, u16 in_
     pSlaveToken->fun_send(make_buff, make_len);
   }
 }
-
-
 
 /*		
 ================================================================================
@@ -342,13 +335,11 @@ void nwk_master_lora_parse(u8 *recv_buff, u8 recv_len, u8 slave_addr, RfParamStr
             if(ack_cmd==NwkCmdDataOnce)//单包数据回复
             {
               //清理发送数据
-              if(role==NwkRoleGateWay)//网关
+              NwkSlaveTokenStruct *pNwkSlaveToken=nwk_master_find_slave(slave_addr);
+              if(pNwkSlaveToken)
               {
-
-              }
-              else if(role==NwkRoleNode)
-              {
-
+                memset(pNwkSlaveToken->tx_buff, 0, sizeof(pNwkSlaveToken->tx_buff));
+                pNwkSlaveToken->tx_len=0;
               }
             }
 						break;
@@ -362,8 +353,7 @@ void nwk_master_lora_parse(u8 *recv_buff, u8 recv_len, u8 slave_addr, RfParamStr
             //组合LoRa回复包
             u8 lora_buff[50]={0};
             u8 lora_len=0;						
-            lora_buff[lora_len++]=NwkCmdJoin;
-            lora_buff[lora_len++]=JoinStateAccept;
+            lora_buff[lora_len++]=JoinStateAccept;//接收入网
             lora_buff[lora_len++]=now_time>>24;
             lora_buff[lora_len++]=now_time>>16;
             lora_buff[lora_len++]=now_time>>8;
@@ -388,13 +378,13 @@ void nwk_master_lora_parse(u8 *recv_buff, u8 recv_len, u8 slave_addr, RfParamStr
             uart_buff[uart_len++]=rf->sf;
             uart_buff[uart_len++]=rf->bw;
             u8 make_buff[80]={0};
-            u8 make_len=nwk_master_make_lora_buff(opt, src_sn, pKey, NwkCmdAck, pNodeToken->down_pack_num++, lora_buff, lora_len, make_buff, sizeof(make_buff));
+            u8 make_len=nwk_master_make_lora_buff(opt, src_sn, pKey, NwkCmdJoin, ++pNodeToken->down_pack_num, lora_buff, lora_len, make_buff, sizeof(make_buff));
             if(make_len>0)
             {
               uart_buff[uart_len++]=make_len;
               memcpy(&uart_buff[uart_len], make_buff, make_len);
               uart_len+=make_len;
-              nwk_master_uart_send_level(slave_addr, MSCmdTxData, uart_buff, uart_len);//发送到从机
+              nwk_master_uart_send_level(slave_addr, MSCmdAckRxData, uart_buff, uart_len);//发送到从机
             }						
 						break;
 					}
@@ -410,26 +400,30 @@ void nwk_master_lora_parse(u8 *recv_buff, u8 recv_len, u8 slave_addr, RfParamStr
             //需要回复NwkCmdAck指令    
             u8 opt=NwkRoleGateWay | (encrypt_mode<<2) | (key_type<<4);//组合配置
             //组合回复包
-            u8 lora_buff[50]={0};
+            u8 lora_buff[50]={0}; 
             u8 lora_len=0;
             lora_buff[lora_len++]=NwkCmdDataOnce;
-       
+            lora_buff[lora_len++]=now_time>>24;
+            lora_buff[lora_len++]=now_time>>16;
+            lora_buff[lora_len++]=now_time>>8;
+            lora_buff[lora_len++]=now_time;	
+            
             u8 uart_buff[100]={0};
             u8 uart_len=0;   
             uart_buff[uart_len++]=rf->freq>>24;
-            uart_buff[uart_len++]=rf->freq>>16;
+            uart_buff[uart_len++]=rf->freq>>16; 
             uart_buff[uart_len++]=rf->freq>>8;
             uart_buff[uart_len++]=rf->freq;
             uart_buff[uart_len++]=rf->sf;
             uart_buff[uart_len++]=rf->bw;
             u8 make_buff[80]={0};
-            u8 make_len=nwk_master_make_lora_buff(opt, src_sn, pKey, NwkCmdAck, pNodeToken->down_pack_num++, lora_buff, lora_len, make_buff, sizeof(make_buff));
+            u8 make_len=nwk_master_make_lora_buff(opt, src_sn, pKey, NwkCmdAck, ++pNodeToken->down_pack_num, lora_buff, lora_len, make_buff, sizeof(make_buff));
             if(make_len>0)
             {
               uart_buff[uart_len++]=make_len;
               memcpy(&uart_buff[uart_len], make_buff, make_len);
               uart_len+=make_len;
-//              nwk_master_uart_send_level(slave_addr, MSCmdTxData, uart_buff, uart_len);//发送到从机
+              nwk_master_uart_send_level(slave_addr, MSCmdAckRxData, uart_buff, uart_len);//发送到从机
             }
             break;
 					}
@@ -447,12 +441,12 @@ void nwk_master_lora_parse(u8 *recv_buff, u8 recv_len, u8 slave_addr, RfParamStr
 
 /*		
 ================================================================================
-描述 : 
+描述 : 发送广播
 输入 : 
 输出 : 
 ================================================================================
 */
-void nwk_master_send_broad(u32 freq, u8 sf, u8 bw)
+void nwk_master_send_broad(u8 slave_addr, u32 freq, u8 sf, u8 bw) 
 {
 	u8 uart_buff[100]={0};
 	u8 uart_len=0; 	
@@ -481,12 +475,67 @@ void nwk_master_send_broad(u32 freq, u8 sf, u8 bw)
 		uart_buff[uart_len++]=make_len;
 		memcpy(&uart_buff[uart_len], make_buff, make_len);
 		uart_len+=make_len;
-		nwk_master_uart_send_level(1, MSCmdBroad, uart_buff, uart_len);//发送到从机
+		nwk_master_uart_send_level(slave_addr, MSCmdBroad, uart_buff, uart_len);//发送到从机
 		printf("nwk_master_send_broad ###\n");
 	}	
 
 }
 
+/*		
+================================================================================
+描述 : 
+输入 : 
+输出 : 
+================================================================================
+*/
+void nwk_master_send_freq_ptr(u8 slave_addr)
+{
+	u8 uart_buff[50]={0};
+	u8 uart_len=0; 	
+  uart_buff[uart_len++]=g_sNwkMasterWork.freq_ptr;
+  nwk_master_uart_send_level(slave_addr, MSCmdSetFreqPtr, uart_buff, uart_len);//发送到从机	
+}
+
+/*		
+================================================================================
+描述 : 
+输入 : 
+输出 : 
+================================================================================
+*/
+void nwk_master_send_down_pack(u32 dst_sn, u8 slave_addr, u8 *in_buff, u8 in_len)
+{
+  NwkNodeTokenStruct *pNodeToken=nwk_master_find_token(dst_sn);
+  if(pNodeToken==NULL)
+  {
+    printf("no found node!\n");
+    return;
+  }
+//  if(pNodeToken->join_state!=JoinStateOK)
+//  {
+//    printf("no joined!\n");
+//    return;    
+//  }
+  u8 opt=NwkRoleGateWay | (EncryptTEA<<2) | (KeyTypeRoot<<4);//组合配置
+  
+  static u8 uart_buff[300]={0};
+  u8 uart_len=0;   
+
+  static u8 make_buff[250]={0};
+  u8 make_len=nwk_master_make_lora_buff(opt, dst_sn, g_sNwkMasterWork.root_key, NwkCmdDataOnce, ++pNodeToken->down_pack_num, in_buff, in_len, make_buff, sizeof(make_buff));
+  if(make_len>0)
+  {
+    uart_buff[uart_len++]=dst_sn>>24;
+    uart_buff[uart_len++]=dst_sn>>16;
+    uart_buff[uart_len++]=dst_sn>>8;
+    uart_buff[uart_len++]=dst_sn;
+    uart_buff[uart_len++]=make_len;
+    memcpy(&uart_buff[uart_len], make_buff, make_len);
+    uart_len+=make_len;
+    nwk_master_uart_send_level(slave_addr, MSCmdTxData, uart_buff, uart_len);//发送到从机
+  } 
+  
+}
 
 /*		
 ================================================================================
@@ -522,6 +571,18 @@ void nwk_master_set_root_key(u8 *key)
 
 /*		
 ================================================================================
+描述 : 设置基础频率序号
+输入 : 
+输出 : 
+================================================================================
+*/ 
+void nwk_master_set_freq_ptr(u8 freq_ptr)
+{
+  g_sNwkMasterWork.freq_ptr=freq_ptr;
+}
+
+/*		
+================================================================================
 描述 : 添加节点记录
 输入 : 
 输出 : 
@@ -551,9 +612,11 @@ NwkNodeTokenStruct *nwk_master_add_token(u32 node_sn)
         pTemp->next=pNodeToken;
       }
       g_sNwkMasterWork.node_cnts++;
+      printf("add node token ok!\n");
       return pNodeToken;
     }
   }
+  printf("add node token failed!\n");
   return NULL;
 }
 
@@ -626,7 +689,7 @@ void nwk_master_main(void)
 	
 	if(now_rtc_time-last_rtc_time>=20)
 	{
-//		nwk_master_send_broad(NWK_BEACON_BASE_FREQ, 12, 7);//广播
+//		nwk_master_send_broad(1, NWK_BEACON_BASE_FREQ, 11, 6);//广播
 		last_rtc_time=now_rtc_time;
 	}
 }
