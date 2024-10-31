@@ -346,7 +346,7 @@ static void app_node_lora_init(void)
 #endif  
 
 	
-	nwk_node_add_gw(0xC1011234, 0, 1);//添加目标网关
+	nwk_node_add_gw(0xC1011234, 0, 3);//添加目标网关
 	nwk_node_set_sn(0x12345678);
 	nwk_node_set_wake_period(10);
 	

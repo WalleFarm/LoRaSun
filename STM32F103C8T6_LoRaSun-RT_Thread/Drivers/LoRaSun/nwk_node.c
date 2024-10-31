@@ -316,10 +316,11 @@ void nwk_node_send_sniff(u8 sf, u8 bw)
 #elif defined(LORA_LLCC68)
 
 #endif	
-	while(loops--)
-  {
-    nwk_delay_ms(2);
-  }  
+	nwk_delay_ms(10);
+//	while(loops--)
+//  {
+//    nwk_delay_ms(2);
+//  }  
 }
 
 /*		
@@ -486,13 +487,14 @@ void nwk_node_recv_parse(u8 *recv_buff, u8 recv_len)
 		}
 		if(union_len>0)
 		{
+			printf_hex("out buff=", union_buff, union_len);
 			pData=union_buff;
 			union_len=pData[0];
 			u16 crcValue=pData[union_len]<<8|pData[union_len+1];
 			if(nwk_crc16(union_buff, union_len)==crcValue)
 			{
 				pData+=1;
-				u8 dst_sn=pData[0]<<24|pData[1]<<16|pData[2]<<8|pData[3];
+				u32 dst_sn=pData[0]<<24|pData[1]<<16|pData[2]<<8|pData[3];
 				pData+=4;
 				u8 cmd_type=pData[0];
 				pData+=1;
@@ -528,6 +530,7 @@ void nwk_node_recv_parse(u8 *recv_buff, u8 recv_len)
                 NwkNodeTxGwStruct *pNodeTxGw=&g_sNwkNodeWork.node_tx_gw;
                 memset(pNodeTxGw->tx_buff, 0, sizeof(pNodeTxGw->tx_buff));
                 pNodeTxGw->tx_len=0;
+								pNodeTxGw->tx_state=NwkNodeTxGwIdel;//结束回合
                 printf("clear tx gw buff!\n");
                 //同时返回时间戳
                 u32 ack_time=pData[0]<<24|pData[1]<<16|pData[2]<<8|pData[3];
@@ -542,7 +545,7 @@ void nwk_node_recv_parse(u8 *recv_buff, u8 recv_len)
               {
                 NwkNodeTxD2dStruct *pNodeD2d=&g_sNwkNodeWork.node_tx_d2d;
                 memset(pNodeD2d->tx_buff, 0, sizeof(pNodeD2d->tx_buff));
-                pNodeD2d->tx_len=0;                
+                pNodeD2d->tx_len=0;        					
                 printf("clear tx d2d buff!\n");
               }
             }
@@ -1137,9 +1140,10 @@ void nwk_node_tx_gw_process(void)
         pNodeTxGw->wireless_ptr=0;
         if(pNodeTxGw->pGateWay->wireless_num>0)
         {
-          pNodeTxGw->wireless_ptr=nwk_get_rand()%pNodeTxGw->pGateWay->wireless_num;//随机选择天线
+          pNodeTxGw->wireless_ptr=rand()%pNodeTxGw->pGateWay->wireless_num;//随机选择天线
 					printf("wireless_ptr=%d\n", pNodeTxGw->wireless_ptr);
         }
+//				pNodeTxGw->wireless_ptr=2;//测试
         pNodeTxGw->tx_state=NwkNodeTxGwLBTInit;//下一步      
       }
       else
@@ -1160,10 +1164,10 @@ void nwk_node_tx_gw_process(void)
       else
       {
         u8 freq_ptr=pNodeTxGw->pGateWay->base_freq_ptr + pNodeTxGw->wireless_ptr*2;//计算频率序号
-        u8 sf=0, bw=0;
-        nwk_get_channel(pNodeTxGw->group_id*3, &sf, &bw);
+//        u8 sf=0, bw=0;
+//        nwk_get_channel(pNodeTxGw->group_id*2, &sf, &bw);
         pNodeTxGw->freq=NWK_GW_BASE_FREQ+freq_ptr*1000000+pNodeTxGw->group_id*500000;//目标天线监听频率,间隔2M
-        nwk_node_set_lora_param(pNodeTxGw->freq, sf, bw);
+//        nwk_node_set_lora_param(pNodeTxGw->freq, sf, bw);
 //        nwk_node_cad_init(); 
 //        pNodeTxGw->tx_state=NwkNodeTxGwLBTCheck;//进入LBT
 				pNodeTxGw->sniff_cnts=0;
@@ -1195,7 +1199,7 @@ void nwk_node_tx_gw_process(void)
       nwk_get_channel(pNodeTxGw->group_id*2, &sf, &bw); //嗅探参数
       nwk_node_set_lora_param(pNodeTxGw->freq, sf, bw);
 			 
-			for(u8 i=0; i<3+NWK_RF_GROUP_NUM-pNodeTxGw->group_id; i++)//8-pNodeTxGw->group_id
+			for(u8 i=0; i<3; i++)//+NWK_RF_GROUP_NUM-pNodeTxGw->group_id
 			{
 				nwk_node_send_sniff(sf, bw);//发送嗅探帧
 			}
@@ -1216,11 +1220,11 @@ void nwk_node_tx_gw_process(void)
       if(result==CadResultFailed)//没搜索到
       {
         pNodeTxGw->cad_cnts++;
-				if(pNodeTxGw->cad_cnts<5)//10-pNodeTxGw->group_id
+				if(pNodeTxGw->cad_cnts<3)//10-pNodeTxGw->group_id
 				{
 					nwk_node_cad_init();//继续监听
 				}
-        else if(pNodeTxGw->sniff_cnts<5)//同一组参数嗅探多次
+        else if(pNodeTxGw->sniff_cnts<3)//同一组参数嗅探多次
         {
           pNodeTxGw->tx_state=NwkNodeTxGwSniffInit;//继续嗅探
         }

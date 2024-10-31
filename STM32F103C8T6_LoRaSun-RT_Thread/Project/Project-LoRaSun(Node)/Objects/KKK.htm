@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\Objects\KKK.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\Objects\KKK.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060422: Last Updated: Thu Oct 31 17:21:16 2024
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060422: Last Updated: Thu Oct 31 23:14:06 2024
 <BR><P>
 <H3>Maximum Stack Usage =       1108 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -321,6 +321,7 @@ Global Symbols
 </UL>
 <P><STRONG><a name="[121]"></a>rand</STRONG> (Thumb, 20 bytes, Stack size 0 bytes, rand.o(.text))
 <BR><BR>[Called By]<UL><LI><a href="#[11e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_get_rand
+<LI><a href="#[136]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_tx_gw_process
 </UL>
 
 <P><STRONG><a name="[120]"></a>srand</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, rand.o(.text))
@@ -2080,10 +2081,11 @@ Global Symbols
 <LI><a href="#[12e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_rx_process
 </UL>
 
-<P><STRONG><a name="[12a]"></a>nwk_node_recv_parse</STRONG> (Thumb, 840 bytes, Stack size 232 bytes, nwk_node.o(i.nwk_node_recv_parse))
+<P><STRONG><a name="[12a]"></a>nwk_node_recv_parse</STRONG> (Thumb, 846 bytes, Stack size 232 bytes, nwk_node.o(i.nwk_node_recv_parse))
 <BR><BR>[Stack]<UL><LI>Max Depth = 1004<LI>Call Chain = nwk_node_recv_parse &rArr; nwk_aes_decrypt &rArr; aes_decrypt_buff &rArr; mbedtls_aes_setkey_dec &rArr; mbedtls_aes_setkey_enc &rArr; aes_gen_tables
 </UL>
-<BR>[Calls]<UL><LI><a href="#[127]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_tea_encrypt
+<BR>[Calls]<UL><LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;printf_hex
+<LI><a href="#[127]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_tea_encrypt
 <LI><a href="#[12c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_tea_decrypt
 <LI><a href="#[12d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_set_rtc_counter
 <LI><a href="#[11f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_get_rtc_counter
@@ -2187,8 +2189,8 @@ Global Symbols
 <LI><a href="#[12e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_rx_process
 </UL>
 
-<P><STRONG><a name="[132]"></a>nwk_node_send_sniff</STRONG> (Thumb, 126 bytes, Stack size 64 bytes, nwk_node.o(i.nwk_node_send_sniff))
-<BR><BR>[Stack]<UL><LI>Max Depth = 248<LI>Call Chain = nwk_node_send_sniff &rArr; nwk_node_calcu_air_time &rArr; drv_sx1268_calcu_air_time &rArr; __aeabi_dadd &rArr; _double_epilogue &rArr; _double_round
+<P><STRONG><a name="[132]"></a>nwk_node_send_sniff</STRONG> (Thumb, 106 bytes, Stack size 56 bytes, nwk_node.o(i.nwk_node_send_sniff))
+<BR><BR>[Stack]<UL><LI>Max Depth = 240<LI>Call Chain = nwk_node_send_sniff &rArr; nwk_node_calcu_air_time &rArr; drv_sx1268_calcu_air_time &rArr; __aeabi_dadd &rArr; _double_epilogue &rArr; _double_round
 </UL>
 <BR>[Calls]<UL><LI><a href="#[58]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
 <LI><a href="#[50]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dadd
@@ -2230,7 +2232,7 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[125]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_work_check
 </UL>
 
-<P><STRONG><a name="[136]"></a>nwk_node_tx_gw_process</STRONG> (Thumb, 1496 bytes, Stack size 56 bytes, nwk_node.o(i.nwk_node_tx_gw_process))
+<P><STRONG><a name="[136]"></a>nwk_node_tx_gw_process</STRONG> (Thumb, 1500 bytes, Stack size 56 bytes, nwk_node.o(i.nwk_node_tx_gw_process))
 <BR><BR>[Stack]<UL><LI>Max Depth = 1060<LI>Call Chain = nwk_node_tx_gw_process &rArr; nwk_node_recv_parse &rArr; nwk_aes_decrypt &rArr; aes_decrypt_buff &rArr; mbedtls_aes_setkey_dec &rArr; mbedtls_aes_setkey_enc &rArr; aes_gen_tables
 </UL>
 <BR>[Calls]<UL><LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;printf_hex
@@ -2257,6 +2259,7 @@ Global Symbols
 <LI><a href="#[123]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_cad_init
 <LI><a href="#[122]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_cad_check
 <LI><a href="#[a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr4
+<LI><a href="#[121]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rand
 <LI><a href="#[8f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2printf
 </UL>
 <BR>[Called By]<UL><LI><a href="#[125]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_work_check
@@ -2310,6 +2313,7 @@ Global Symbols
 <LI><a href="#[136]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_tx_gw_process
 <LI><a href="#[135]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_search_process
 <LI><a href="#[12e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_rx_process
+<LI><a href="#[12a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_recv_parse
 </UL>
 
 <P><STRONG><a name="[13b]"></a>rt_application_init</STRONG> (Thumb, 34 bytes, Stack size 16 bytes, components.o(i.rt_application_init))
