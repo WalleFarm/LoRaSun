@@ -9,6 +9,8 @@ DrvSx1278Struct g_sDrvSx1278={0};
 DrvSx1268Struct g_sDrvSx1268={0};
 #endif
 
+AppNodeSaveStruct g_sAppNodeSave={0};
+
 /*		
 ================================================================================
 描述 : 硬件复位
@@ -188,6 +190,7 @@ void app_node_key_check(void)
     if(key_cnts==6)//外部循环周期是5ms,这里大概是30ms
     {
       printf("key trigger!\n");
+      app_node_send_status();
     }
   }
   else
@@ -347,10 +350,6 @@ static void app_node_lora_init(void)
 #endif  
 
 	
-	nwk_node_add_gw(0xC1011234, 0, 4);//添加目标网关
-	nwk_node_set_sn(0x12345678);
-	nwk_node_set_wake_period(10);
-	
   
   /*   接线
   *    PB14--复位reset
@@ -364,6 +363,80 @@ static void app_node_lora_init(void)
   
   
 }
+
+
+/*		
+================================================================================
+描述 : 保存配置信息
+输入 : 
+输出 : 
+================================================================================
+*/
+void app_node_write_config(void)
+{
+  g_sAppNodeSave.crcValue=nwk_crc16((u8*)&g_sAppNodeSave, sizeof(g_sAppNodeSave)-2);
+  EEPROM_Write(50, (u8*)&g_sAppNodeSave, sizeof(g_sAppNodeSave));
+}
+
+/*		
+================================================================================
+描述 : 读取配置信息
+输入 : 
+输出 : 
+================================================================================
+*/
+void app_node_read_config(void)
+{
+  EEPROM_Read(50, (u8*)&g_sAppNodeSave, sizeof(g_sAppNodeSave));
+  if(g_sAppNodeSave.crcValue!=nwk_crc16((u8*)&g_sAppNodeSave, sizeof(g_sAppNodeSave)-2))
+  {
+    memset(&g_sAppNodeSave, 0, sizeof(g_sAppNodeSave));
+    g_sAppNodeSave.node_sn=0x11223344;
+    g_sAppNodeSave.wake_period=10;
+    app_node_write_config();
+    printf("app_node_read_config new!\n");
+  }
+	nwk_node_add_gw(0xC1011234, 0, 4);//添加目标网关
+	nwk_node_set_sn(g_sAppNodeSave.node_sn);//设置节点SN
+	nwk_node_set_wake_period(g_sAppNodeSave.wake_period);  //设置节点唤醒周期
+}
+
+/*		
+================================================================================
+描述 : 
+输入 : 
+输出 : 
+================================================================================
+*/
+void app_node_set_sn(u32 node_sn)
+{
+  printf("set node sn=0x%08X\n", node_sn);
+  g_sAppNodeSave.node_sn=node_sn;
+  app_node_write_config();
+}
+
+/*		
+================================================================================
+描述 : 
+输入 : 
+输出 : 
+================================================================================
+*/
+void app_node_set_wake_period(u16 wake_period)
+{
+  printf("set wake period=%ds\n", wake_period);
+  g_sAppNodeSave.wake_period=wake_period;
+  app_node_write_config();
+}
+
+/*		
+================================================================================
+描述 : 
+输入 : 
+输出 : 
+================================================================================
+*/
+
 
 /*		
 ================================================================================
@@ -410,7 +483,7 @@ void app_node_thread_entry(void *parameter)
     NwkNodeRecvFromStruct *recv_from=nwk_node_recv_from_check();
     if(recv_from)
     {
-      printf_hex("recv=", recv_from->app_data, recv_from->data_len);
+      printf_hex("app buff=", recv_from->app_data, recv_from->data_len);
     }
     app_node_key_check();//按键检测
     if(run_cnts++%200==0)//指示灯运行

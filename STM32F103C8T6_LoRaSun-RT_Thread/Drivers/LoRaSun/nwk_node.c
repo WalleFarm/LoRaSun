@@ -1141,7 +1141,7 @@ void nwk_node_tx_gw_process(void)
           pKey=pGateWay->app_key;//有应用密码尽量用应用密码
 					printf_hex("use app key=", pKey, 16);
         }
-        u8 encrypt_mode=NWK_NODE_USE_ENCRYPT_MODE;
+        u8 encrypt_mode=NWK_NODE_USE_ENCRYPT_MODE;//加密模式一般根据芯片能力直接固定即可
         u8 opt=NwkRoleNode | (encrypt_mode<<2) | (key_type<<4);//组合配置
         
         //组合发送数据
@@ -1182,7 +1182,7 @@ void nwk_node_tx_gw_process(void)
 //        pNodeTxGw->tx_state=NwkNodeTxGwLBTCheck;//进入LBT
 				pNodeTxGw->sniff_cnts=0;
 				pNodeTxGw->tx_state=NwkNodeTxGwSniffInit;//进行嗅探
-        printf("tx LBT init!\n");        
+//        printf("tx LBT init!\n");        
       }
       break;
     }
@@ -1473,7 +1473,7 @@ void nwk_node_work_check(void)
         static u32 wait_time=20;
         int det_time=now_time-pNodeSearch->search_start_time;
 //				printf("det_time=%d\n", det_time);
-        if(gw_cnts==0)//  && det_time>wait_time
+        if(gw_cnts==0 && det_time>wait_time)//  
         {
           wait_time*=2;
           if(wait_time>86400)
@@ -1514,20 +1514,21 @@ void nwk_node_work_check(void)
           }
         }        
       }
-//      if(g_sNwkNodeWork.work_state==NwkNodeWorkIdel)//仍旧空闲--入网检查
-//      {
-//				u32 now_time=nwk_get_rtc_counter();
-//        for(u8 i=0; i<NWK_GW_NUM; i++)
-//        {
-//          NwkParentWorkStrcut *pGateWay=&g_sNwkNodeWork.parent_list[i];
-//          if(pGateWay->gw_sn>0 && pGateWay->join_state==JoinStateNone && now_time-pGateWay->last_join_time>30)
-//          {
-//						pGateWay->last_join_time=now_time;
-//            nwk_node_req_join(pGateWay->gw_sn);//请求入网
-//            return;
-//          }
-//        }        
-//      }
+      if(g_sNwkNodeWork.work_state==NwkNodeWorkIdel)//仍旧空闲--入网检查
+      {
+				u32 now_time=nwk_get_rtc_counter();
+        for(u8 i=0; i<NWK_GW_NUM; i++)
+        {
+          NwkParentWorkStrcut *pGateWay=&g_sNwkNodeWork.parent_list[i];
+          if(pGateWay->gw_sn>0 && pGateWay->join_state==JoinStateNone && 
+             pGateWay->last_join_time>0 && now_time-pGateWay->last_join_time>30)
+          {
+						pGateWay->last_join_time=now_time;
+            nwk_node_req_join(pGateWay->gw_sn);//请求入网
+            return;
+          }
+        }        
+      }
       //睡眠检查
       if(g_sNwkNodeWork.work_state==NwkNodeWorkIdel)//仍旧空闲--睡眠
       {

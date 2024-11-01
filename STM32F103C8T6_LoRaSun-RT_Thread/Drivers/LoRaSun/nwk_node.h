@@ -31,7 +31,7 @@
 #define NWK_GW_NUM              3   //监听的网关最大数量
 #define NWK_D2D_NODE_NUM        3   //D2D设备存储最大数量
 
-#define NWK_NODE_USE_AES        //是否启用AES加密,根据芯片能力和需求确定
+//#define NWK_NODE_USE_AES        //是否启用AES加密,根据芯片能力和需求确定
 
 #define NWK_NODE_USE_ENCRYPT_MODE     EncryptTEA  //节点使用的加密方法
 

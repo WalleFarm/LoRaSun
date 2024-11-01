@@ -82,7 +82,18 @@ void app_uart_thread_entry(void *parameter)
 			{
 				nwk_node_req_join(0xC1011234);//请求入网
 			}
-			
+      else if((pData=strstr(pBuff, "sn:"))!=NULL)
+      {
+        pData+=3;
+        u32 node_sn=atol(pData);
+        app_node_set_sn(node_sn);
+      }
+      else if((pData=strstr(pBuff, "wake:"))!=NULL)
+      {
+        pData+=5;
+        u16 wake_period=atol(pData);
+        app_node_set_wake_period(wake_period);
+      }			
 			UART_Clear(pUART);
 		}		
 
