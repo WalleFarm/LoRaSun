@@ -14,7 +14,7 @@ void drv_sx1268_init(DrvSx1268Struct *psx1268)
 {
   hal_sx1268_rst(&psx1268->tag_hal_sx1268);
 
-//  drv_sx1268_wakeup(psx1268);
+  drv_sx1268_wakeup(psx1268);
   
   drv_sx1268_set_standby(psx1268, SX1268_STDBY_RC);
   drv_sx1268_set_dio2_switchctrl(psx1268, true);//射频自动切换
@@ -29,7 +29,7 @@ void drv_sx1268_init(DrvSx1268Struct *psx1268)
                            SX1268_IRQ_RADIO_NONE,
                            SX1268_IRQ_RADIO_NONE );  
   u32 freq=475000000;
-  u8 sf=12, bw=9;
+  u8 sf=11, bw=9;
   drv_sx1268_calibrate_image(psx1268, freq);//470M频段校准
   drv_sx1268_set_freq(psx1268, freq);
   
@@ -41,10 +41,7 @@ void drv_sx1268_init(DrvSx1268Struct *psx1268)
 
 //  drv_sx1268_set_cad_params(psx1268, SX1268_CAD_08_SYMBOL, 24, 20, SX1268_CAD_ONLY, 100);  
 	drv_sx1268_set_cad_params(psx1268, SX1268_CAD_01_SYMBOL, 44, 30, SX1268_CAD_ONLY, 100);   
-	
-
-  drv_sx1268_set_cad_params(psx1268, SX1268_CAD_01_SYMBOL, 44, 30, SX1268_CAD_ONLY, 100);  
-  
+	 
   u8 reg=hal_sx1268_read_reg(&psx1268->tag_hal_sx1268, 0x0889);
   hal_sx1268_write_reg(&psx1268->tag_hal_sx1268, 0x0889, reg | ( 1 << 2 ));
   drv_sx1268_set_power(psx1268, 22);//22dbm输出  

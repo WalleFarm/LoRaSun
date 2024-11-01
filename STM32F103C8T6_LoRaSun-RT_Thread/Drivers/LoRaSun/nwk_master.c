@@ -25,6 +25,27 @@ void nwk_master_uart_send_register(u8 index, u8 slave_adddr, void (*fun_send)(u8
 
 /*		
 ================================================================================
+描述 : 发送时长计算
+输入 : 
+输出 : 
+================================================================================
+*/ 
+u32 nwk_master_calcu_air_time(u8 sf, u8 bw, u16 data_len)
+{
+  u32 tx_time=0;
+#if defined(LORA_SX1278)  
+	
+	tx_time=drv_sx1278_calcu_air_time(sf, bw, data_len);
+#elif defined(LORA_SX1268)
+  tx_time=drv_sx1268_calcu_air_time(sf, bw, data_len);
+#elif defined(LORA_LLCC68)
+ 
+#endif	
+return tx_time;  
+}
+
+/*		
+================================================================================
 描述 : 
 输入 :  
 输出 : 
@@ -353,6 +374,11 @@ void nwk_master_lora_parse(u8 *recv_buff, u8 recv_len, u8 slave_addr, RfParamStr
             //组合LoRa回复包
             u8 lora_buff[50]={0};
             u8 lora_len=0;						
+            u32 tx_time=nwk_master_calcu_air_time(rf->sf, rf->bw, 16);
+            u8 det_sec=tx_time/1000;
+            if(tx_time%1000>500)det_sec+=1;//四舍五入
+            now_time+=det_sec;//增加延时
+            printf("det_sec=%ds\n", det_sec);
             lora_buff[lora_len++]=JoinStateAccept;//接收入网
             lora_buff[lora_len++]=now_time>>24;
             lora_buff[lora_len++]=now_time>>16;
@@ -402,6 +428,11 @@ void nwk_master_lora_parse(u8 *recv_buff, u8 recv_len, u8 slave_addr, RfParamStr
             //组合回复包
             u8 lora_buff[50]={0}; 
             u8 lora_len=0;
+            u32 tx_time=nwk_master_calcu_air_time(rf->sf, rf->bw, 16);
+            u8 det_sec=tx_time/1000;
+            if(tx_time%1000>500)det_sec+=1;//四舍五入
+            now_time+=det_sec;//增加延时          
+            printf("det_sec=%ds\n", det_sec);            
             lora_buff[lora_len++]=NwkCmdDataOnce;
             lora_buff[lora_len++]=now_time>>24;
             lora_buff[lora_len++]=now_time>>16;

@@ -339,6 +339,7 @@ static void app_node_lora_init(void)
 	g_sDrvSx1268.tag_hal_sx1268.sx1268_cs_1 = app_node_lora_cs1;
 	g_sDrvSx1268.tag_hal_sx1268.sx1268_spi_rw_byte = app_node_lora_spi_rw_byte;
 	g_sDrvSx1268.tag_hal_sx1268.wait_on_busy=app_node_wait_on_busy;
+  g_sDrvSx1268.tag_hal_sx1268.delay_ms=delay_ms;
 	drv_sx1268_init(&g_sDrvSx1268);//初始化
 	 
   nwk_node_set_lora_dev(&g_sDrvSx1268); 

@@ -475,11 +475,11 @@ void nwk_slave_send_sniff(u8 sf, u8 bw)
 #elif defined(LORA_LLCC68)
 
 #endif
-
-	while(loops--)
-  {
-    nwk_delay_ms(2);
-  }	
+  nwk_delay_ms(10);
+//	while(loops--)
+//  {
+//    nwk_delay_ms(2);
+//  }	
 }
 
 
@@ -570,7 +570,6 @@ void nwk_slave_rx_process(void)
     }
     case NwkSlaveRxInit:
     {
-//      pSlaveRx->freq=NWK_GW_BASE_FREQ+pSlaveRx->freq_ptr*2000000;
       pSlaveRx->group_id=0;
       pSlaveRx->rx_state=NwkSlaveRxCadInit;
 //      printf("###### NwkSlaveRxInit!\n");        

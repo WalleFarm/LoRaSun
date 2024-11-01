@@ -12,7 +12,7 @@ typedef struct
 	u8 (*sx1268_spi_rw_byte)(u8 byte);//字节读写函数
 	void (*sx1268_cs_0)(void);//片选0
 	void (*sx1268_cs_1)(void);//片选1
-//  void (*delay_ms)(u32 dlyms);//延时
+  void (*delay_ms)(u32 dlyms);//延时
 	void (*wait_on_busy)(void);//等待空闲
 }HalSx1268Struct;
 
