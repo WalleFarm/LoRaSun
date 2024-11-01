@@ -94,7 +94,7 @@ void nwk_master_uart_parse(u8 *recv_buff, u16 recv_len)
           pData+=1; 
           u8 data_len=pData[0];
           pData+=1;
-          printf_hex("rx=", pData, data_len);
+//          printf_hex("rx=", pData, data_len);
           nwk_master_lora_parse(pData, data_len, slave_addr, &rf);          
           break;
         }        
@@ -194,7 +194,7 @@ u8 nwk_master_make_lora_buff(u8 opt, u32 dst_sn, u8 *key, u8 cmd_type, u8 pack_n
 		}
 		case EncryptAES:
 		{
-#ifdef	NWK_NODE_USE_AES	//是否使用AES加密		
+#ifdef	NWK_MASTER_USE_AES	//是否使用AES加密		
 			int out_len=nwk_aes_encrypt(union_buff, union_len, pEncrypt, NWK_TRANSMIT_MAX_SIZE, key);//aes加密
 			if(out_len<16)
 			{
@@ -287,6 +287,7 @@ void nwk_master_lora_parse(u8 *recv_buff, u8 recv_len, u8 slave_addr, RfParamStr
     {
       pKey=pNodeToken->app_key;//入网后要用应用密码
       pNodeToken->rssi=rf->rssi;//更新信号强度
+      printf_hex("use app key=", pKey, 16);
     }	
 		
 		int union_len=0;
@@ -306,7 +307,7 @@ void nwk_master_lora_parse(u8 *recv_buff, u8 recv_len, u8 slave_addr, RfParamStr
 			}
 			case EncryptAES:
 			{ 
-#ifdef	NWK_NODE_USE_AES	//是否使用AES加密		
+#ifdef	NWK_MASTER_USE_AES	//是否使用AES加密		
 				union_len=nwk_aes_decrypt(pData, payload_len, union_buff, sizeof(union_buff), pKey); 
 #else
 				union_len=0;
@@ -341,6 +342,11 @@ void nwk_master_lora_parse(u8 *recv_buff, u8 recv_len, u8 slave_addr, RfParamStr
 				}
         u32 now_time=nwk_get_rtc_counter();
         pNodeToken->keep_time=now_time;
+        NwkSlaveTokenStruct *pNwkSlaveToken=nwk_master_find_slave(slave_addr);
+        if(pNwkSlaveToken)
+        {
+          pNwkSlaveToken->counts++;
+        }
 				switch(cmd_type)
 				{
 					case NwkCmdHeart:
@@ -356,7 +362,6 @@ void nwk_master_lora_parse(u8 *recv_buff, u8 recv_len, u8 slave_addr, RfParamStr
             if(ack_cmd==NwkCmdDataOnce)//单包数据回复
             {
               //清理发送数据
-              NwkSlaveTokenStruct *pNwkSlaveToken=nwk_master_find_slave(slave_addr);
               if(pNwkSlaveToken)
               {
                 memset(pNwkSlaveToken->tx_buff, 0, sizeof(pNwkSlaveToken->tx_buff));
@@ -389,11 +394,12 @@ void nwk_master_lora_parse(u8 *recv_buff, u8 recv_len, u8 slave_addr, RfParamStr
 						{
 							app_key[i]=nwk_get_rand()%255;
 						}			
+            printf_hex("key in=", app_key, 16);
 						memcpy(&lora_buff[lora_len], app_key, 16); 
 						lora_len+=16;						
 						nwk_tea_encrypt(app_key, 16, (u32 *)key_tmp);//把16字节随机数进行加密作为APP_KEY
-						memcpy(pNodeToken->app_key, pData, 16); 
-						
+						memcpy(pNodeToken->app_key, app_key, 16); 
+						printf_hex("key out=", app_key, 16);
 						//组合从机数据
             u8 uart_buff[100]={0};
             u8 uart_len=0;   
@@ -419,9 +425,11 @@ void nwk_master_lora_parse(u8 *recv_buff, u8 recv_len, u8 slave_addr, RfParamStr
 						printf("src_sn=0x%08X NwkCmdDataOnce!\n", src_sn);
             NwkMasterRecvFromStruct *pRecvFrom=&g_sNwkMasterWork.recv_from;
             pRecvFrom->data_len=union_len-7;//应用数据长度
-            pRecvFrom->app_data=pData;
+            memcpy(pRecvFrom->app_data, pData, pRecvFrom->data_len);
             pRecvFrom->src_sn=src_sn;
             pRecvFrom->read_flag=true;//通知应用层读取
+            memcpy(&pRecvFrom->rf_param, rf, sizeof(RfParamStruct));//复制无线参数
+            
             printf_hex("app_buff=", pRecvFrom->app_data, pRecvFrom->data_len);
             //需要回复NwkCmdAck指令    
             u8 opt=NwkRoleGateWay | (encrypt_mode<<2) | (key_type<<4);//组合配置
@@ -714,19 +722,16 @@ void nwk_master_del_token(u32 node_sn)
 输出 : 
 ================================================================================
 */ 
-void nwk_master_main(void)
+NwkMasterRecvFromStruct *nwk_master_recv_from_check(void)
 {
-  static u32 last_rtc_time=0;
-	u32 now_rtc_time=nwk_get_rtc_counter();
-	
-	if(now_rtc_time-last_rtc_time>=20)
-	{
-//		nwk_master_send_broad(1, NWK_BEACON_BASE_FREQ, 11, 6);//广播
-		last_rtc_time=now_rtc_time;
-	}
+  NwkMasterRecvFromStruct *pRecvFrom=&g_sNwkMasterWork.recv_from;
+  if(pRecvFrom->read_flag)
+  {
+    pRecvFrom->read_flag=false;
+    return pRecvFrom;
+  }
+  return NULL;
 }
-
-
 
 /*		
 ================================================================================
@@ -735,6 +740,32 @@ void nwk_master_main(void)
 输出 : 
 ================================================================================
 */ 
+void nwk_master_main(void)
+{
+  static u32 last_rtc_time=0;
+	u32 now_rtc_time=nwk_get_rtc_counter();
+	
+	if(now_rtc_time-last_rtc_time>=10)
+	{
+//		nwk_master_send_broad(1, NWK_BEACON_BASE_FREQ, 11, 6);//广播
+    u32 sum=1;
+    for(u8 i=0; i<NWK_GW_WIRELESS_NUM; i++)
+    {
+      NwkSlaveTokenStruct *pNwkSlave=&g_sNwkMasterWork.slave_token_list[i];
+      sum+=pNwkSlave->counts;
+    }
+    printf("sum counts=%d\n", sum);
+    for(u8 i=0; i<NWK_GW_WIRELESS_NUM; i++)
+    {
+      NwkSlaveTokenStruct *pNwkSlave=&g_sNwkMasterWork.slave_token_list[i];
+      printf("slave addr=%d, counts=%d, percent=%.1f%%\n", i+1, pNwkSlave->counts, pNwkSlave->counts*100.f/sum);
+    }    
+		last_rtc_time=now_rtc_time;
+	}
+}
+
+
+
 
 
 

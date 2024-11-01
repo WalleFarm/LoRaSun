@@ -6,11 +6,12 @@
 
 #define NWK_GW_WIRELESS_NUM     4    //天线数量    
 #define NWK_NODE_MAX_NUM        100  //节点最大数量,根据芯片RAM确定  
+//#define NWK_MASTER_USE_AES        //是否启用AES加密,根据芯片能力和需求确定
 
 typedef struct NwkNodeTokenStruct
 {
   u32 node_sn;
-  u8 last_sf, last_bw;//最近一次通讯参数
+//  u8 last_sf, last_bw;//最近一次通讯参数
   u8 join_state;
   u16 wake_period;//唤醒周期
   int16_t rssi;
@@ -26,14 +27,15 @@ typedef struct
   u32 keep_time;
   u8 tx_buff[256];
   u8 tx_len;
+  u32 counts;
   void (*fun_send)(u8 *buff, u16 len);//发送接口
 }NwkSlaveTokenStruct;//从机天线管理
 
 typedef struct
 {
   u32 src_sn; //数据来源
-  u8 *app_data;//应用数据指针
-  u8 data_len;//数据长度
+  u8 app_data[300];//应用数据指针
+  u16 data_len;//数据长度
   bool read_flag;//读取标志
   RfParamStruct rf_param;
 }NwkMasterRecvFromStruct;//数据接收结构体
@@ -58,17 +60,14 @@ void nwk_master_lora_parse(u8 *recv_buff, u8 recv_len, u8 slave_addr, RfParamStr
 void nwk_master_send_broad(u8 slave_addr, u32 freq, u8 sf, u8 bw); 
 void nwk_master_send_freq_ptr(u8 slave_addr);
 void nwk_master_send_down_pack(u32 dst_sn, u8 slave_addr, u8 *in_buff, u8 in_len);
-
-
 NwkSlaveTokenStruct *nwk_master_find_slave(u8 slave_addr);
-
-
 void nwk_master_set_root_key(u8 *key);
 void nwk_master_set_freq_ptr(u8 freq_ptr);
 NwkNodeTokenStruct *nwk_master_add_token(u32 node_sn);
 NwkNodeTokenStruct *nwk_master_find_token(u32 node_sn);
 void nwk_master_del_token(u32 node_sn);
 
+NwkMasterRecvFromStruct *nwk_master_recv_from_check(void);
 void nwk_master_main(void);
 
 #endif

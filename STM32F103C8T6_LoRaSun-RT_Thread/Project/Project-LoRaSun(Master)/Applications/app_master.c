@@ -80,6 +80,33 @@ void app_master_uart_recv_check(void)
   }   
 }
 
+
+void app_master_recv_check(void)
+{
+  NwkMasterRecvFromStruct *pRecvFrom=nwk_master_recv_from_check();
+  if(pRecvFrom)
+  {
+    u8 *pData=pRecvFrom->app_data;
+    u8 cmd_type=pData[0];
+    pData+=1;
+    printf("cmd_type=%d, rssi=%ddbm, snr=%ddbm\n", cmd_type,
+            pRecvFrom->rf_param.rssi, pRecvFrom->rf_param.snr);
+    switch(cmd_type)
+    {
+      case 0x01:
+      {
+        u16 temp_val=pData[0]<<8|pData[1];
+        pData+=2;
+        u32 node_time=pData[0]<<24|pData[1]<<16|pData[2]<<8|pData[3];
+        pData+=4;
+        printf("temp_val=%.1fC\n", (temp_val-1000)/10.f);
+        printf("node_time=%us, gw time=%us\n", node_time, nwk_get_rtc_counter());
+        break;
+      }
+    }
+  }
+}
+
 /*		
 ================================================================================
 描述 : master线程
@@ -111,6 +138,7 @@ void app_master_thread_entry(void *parameter)
   while(1)
   {
     app_master_uart_recv_check();//串口接收检查
+    app_master_recv_check();
     nwk_master_main(); 
     
     if(run_cnts++%100==0)//指示灯运行

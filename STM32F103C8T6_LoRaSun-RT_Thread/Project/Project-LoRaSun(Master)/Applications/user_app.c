@@ -80,6 +80,13 @@ void app_uart_thread_entry(void *parameter)
         u16 len=strlen(pData);
         nwk_master_send_down_pack(0x12345678, 1, (u8*)pData, len);//发送测试
 			}
+ 			else if((pData=strstr(pBuff, "time:"))!=NULL)
+			{
+				pData+=strlen("time:");
+        u32 time=atol(pData);
+        printf("set time=%us\n", time);
+        nwk_set_rtc_counter(time);
+			}     
       
 
 			UART_Clear(pUART);
