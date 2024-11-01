@@ -533,9 +533,11 @@ void nwk_node_recv_parse(u8 *recv_buff, u8 recv_len)
 								pNodeTxGw->tx_state=NwkNodeTxGwIdel;//结束回合
                 printf("clear tx gw buff!\n");
                 //同时返回时间戳
+								u32 now_time=nwk_get_rtc_counter();
                 u32 ack_time=pData[0]<<24|pData[1]<<16|pData[2]<<8|pData[3];
                 pData+=4;
-                if(ack_time>NWK_TIME_STAMP_THRESH && nwk_get_rtc_counter()!=ack_time)
+								printf("ack_time=%us, now_time=%us\n", ack_time, now_time);
+                if(ack_time>NWK_TIME_STAMP_THRESH && now_time!=ack_time)
                 {
                   printf("update rtc time=%us\n", ack_time);
                   nwk_set_rtc_counter(ack_time);//更新RTC时间
@@ -569,9 +571,16 @@ void nwk_node_recv_parse(u8 *recv_buff, u8 recv_len)
               }              
               
               u8 key_tmp[16]={0x45,0xEF,0x09,0x3E,0xA2,0xC8,0xB1,0x4A,0x90,0x75,0xD9,0x63,0x7B,0x3B,0x82,0x96};//解算密码,应用时注意混淆
-              nwk_tea_encrypt(pData, 16, (u32 *)key_tmp);//把网关下发的16字节随机数进行加密作为APP_KEY
-              memcpy(pGateWay->app_key, pData, 16); 
+              printf_hex("key in=", pData, 16);
+							nwk_tea_encrypt(pData, 16, (u32 *)key_tmp);//把网关下发的16字节随机数进行加密作为APP_KEY
+              printf_hex("key out=", pData, 16);
+							memcpy(pGateWay->app_key, pData, 16); 
               pGateWay->join_state=JoinStateOK;//入网成功
+							
+							NwkNodeTxGwStruct *pNodeTxGw=&g_sNwkNodeWork.node_tx_gw;
+							memset(pNodeTxGw->tx_buff, 0, sizeof(pNodeTxGw->tx_buff));
+							pNodeTxGw->tx_len=0;
+							pNodeTxGw->tx_state=NwkNodeTxGwIdel;//结束回合							
             }
 						break;
 					}
@@ -1113,6 +1122,7 @@ void nwk_node_tx_gw_process(void)
       NwkParentWorkStrcut *pGateWay=NULL;
       if(pNodeTxGw->tx_cmd==NwkCmdJoin)
       {
+				printf("req join ###\n");
         pGateWay=nwk_node_search_gw(pNodeTxGw->join_sn);//选择要入网的网关
       }
       else
@@ -1125,10 +1135,11 @@ void nwk_node_tx_gw_process(void)
 				pNodeTxGw->pGateWay=pGateWay;
         u8 key_type=KeyTypeRoot;
         u8 *pKey=g_sNwkNodeWork.root_key;
-        if(pGateWay->join_state==JoinStateOK)
+        if(pGateWay->join_state==JoinStateOK && pNodeTxGw->tx_cmd!=NwkCmdJoin)//入网用根密码
         {
           key_type=KeyTypeApp;
           pKey=pGateWay->app_key;//有应用密码尽量用应用密码
+					printf_hex("use app key=", pKey, 16);
         }
         u8 encrypt_mode=NWK_NODE_USE_ENCRYPT_MODE;
         u8 opt=NwkRoleNode | (encrypt_mode<<2) | (key_type<<4);//组合配置
@@ -1140,10 +1151,9 @@ void nwk_node_tx_gw_process(void)
         pNodeTxGw->wireless_ptr=0;
         if(pNodeTxGw->pGateWay->wireless_num>0)
         {
-          pNodeTxGw->wireless_ptr=rand()%pNodeTxGw->pGateWay->wireless_num;//随机选择天线
+          pNodeTxGw->wireless_ptr=nwk_get_rand()%pNodeTxGw->pGateWay->wireless_num;//随机选择天线
 					printf("wireless_ptr=%d\n", pNodeTxGw->wireless_ptr);
         }
-//				pNodeTxGw->wireless_ptr=2;//测试
         pNodeTxGw->tx_state=NwkNodeTxGwLBTInit;//下一步      
       }
       else
@@ -1506,11 +1516,13 @@ void nwk_node_work_check(void)
       }
 //      if(g_sNwkNodeWork.work_state==NwkNodeWorkIdel)//仍旧空闲--入网检查
 //      {
+//				u32 now_time=nwk_get_rtc_counter();
 //        for(u8 i=0; i<NWK_GW_NUM; i++)
 //        {
 //          NwkParentWorkStrcut *pGateWay=&g_sNwkNodeWork.parent_list[i];
-//          if(pGateWay->gw_sn>0 && pGateWay->join_state==JoinStateNone)
+//          if(pGateWay->gw_sn>0 && pGateWay->join_state==JoinStateNone && now_time-pGateWay->last_join_time>30)
 //          {
+//						pGateWay->last_join_time=now_time;
 //            nwk_node_req_join(pGateWay->gw_sn);//请求入网
 //            return;
 //          }

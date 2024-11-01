@@ -97,20 +97,6 @@ typedef enum
 
 }NwkNodeTxD2dState;//发送D2D状态
 
-//typedef struct
-//{
-//  u32 device_sn;//对方SN
-//  u16 wake_period;//唤醒周期
-//}NwkD2DSaveStruct;//D2D设备信息存储
-
-
-//typedef struct
-//{
-//	u32 gw_sn;
-//  u8 base_freq;//基础频率
-//  u8 wireless_num;//天线数量
-//}NwkParentSaveStruct;//要连接的网关参数,配对模式使用
-
 typedef struct
 {
   u32 gw_sn; //网关序列号
@@ -119,11 +105,13 @@ typedef struct
   u8 payload_percent;//网关负载百分比
   u8 err_cnts;//出错次数
   s16 rssi;//信号强度
+	s8 snr;
   u32 keep_rtc_time;//最近通信时间
 	u8 app_key[16];//应用密码
 	u8 join_state;//入网状态
 	u8 up_pack_num, down_pack_num;
-}NwkParentWorkStrcut;//广播模式下 监听到的网关参数
+	u32 last_join_time;//上次请求入网时间
+}NwkParentWorkStrcut;//网关信息
 
 typedef struct
 {
@@ -137,7 +125,6 @@ typedef struct
   u8 rx_state;
   u8 listen_cnts;
   u8 wait_cnts;
-//  u8 sf1, bw1;
   u8 curr_sf, curr_bw;
 	u8 will_len;
 	u8 group_id;
@@ -190,16 +177,6 @@ typedef struct
   bool read_flag;//读取标志
 }NwkNodeRecvFromStruct;//数据接收结构体
 
-//typedef struct
-//{
-//  u32 node_sn;
-//  
-//  NwkParentSaveStruct parent_save;//配对网关信息
-//  NwkD2DSaveStruct d2d_list_save[NWK_D2D_NODE_NUM];//D2D配对信息 
-//  u16 reserved;
-//  u16 crc_value;
-//}NwkNodeSaveStruct;//节点存储信息
-
 typedef struct
 {
 	u8 event;//事件  
@@ -226,8 +203,6 @@ typedef struct
   NwkNodeRxStruct node_rx;
   u8 root_key[16];//根密码,同一个网络中的设备保持一致
 }NwkNodeWorkStruct;//节点工作信息
-
-
 
 
 void nwk_node_set_sn(u32 node_sn);

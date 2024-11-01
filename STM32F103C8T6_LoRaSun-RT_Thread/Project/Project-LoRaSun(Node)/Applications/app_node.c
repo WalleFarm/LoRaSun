@@ -258,7 +258,7 @@ u16 app_node_temp_update(void)
   float Ka=273.15f;	
   float temp_value=1.f/(1.f/T2+log(res_value/Rp)/Bx)-Ka+0.5f;
 //	printf("@@@@@@ ave_value =%u, volt=%.1fV, res_value=%.1f ohm, temp_value=%.2fC\n", ave_value, volt, res_value, temp_value);
-  printf("temp_value=%.2f C\n", temp_value);
+//  printf("temp_value=%.2f C\n", temp_value);
   u16 temp_u16=temp_value*10+1000;    
   return temp_u16;
 }
@@ -347,7 +347,7 @@ static void app_node_lora_init(void)
 #endif  
 
 	
-	nwk_node_add_gw(0xC1011234, 0, 3);//添加目标网关
+	nwk_node_add_gw(0xC1011234, 0, 4);//添加目标网关
 	nwk_node_set_sn(0x12345678);
 	nwk_node_set_wake_period(10);
 	
@@ -367,7 +367,31 @@ static void app_node_lora_init(void)
 
 /*		
 ================================================================================
-描述 : sx1278线程
+描述 : 
+输入 : 
+输出 : 
+================================================================================
+*/
+void app_node_send_status(void)
+{
+	printf("app_node_send_status  ###\n");
+	u8 make_buff[20]={0};
+	u8 make_len=0;
+	u16 temp_val=app_node_temp_update();//温度更新
+	u32 now_time=nwk_get_rtc_counter();
+	make_buff[make_len++]=0x01;//状态  命令
+	make_buff[make_len++]=temp_val>>8;
+	make_buff[make_len++]=temp_val;
+	make_buff[make_len++]=now_time>>24;
+	make_buff[make_len++]=now_time>>16;
+	make_buff[make_len++]=now_time>>8;
+	make_buff[make_len++]=now_time;
+	nwk_node_send2gateway(make_buff, make_len);
+}
+
+/*		
+================================================================================
+描述 : node线程
 输入 : 
 输出 : 
 ================================================================================
@@ -396,6 +420,11 @@ void app_node_thread_entry(void *parameter)
       app_node_led_set_green(led_state);
 //      app_node_temp_update();//温度更新
     }
+		if(run_cnts%2000==0)
+		{
+			app_node_send_status();
+		}
+		
     delay_os(5);
   }
 }

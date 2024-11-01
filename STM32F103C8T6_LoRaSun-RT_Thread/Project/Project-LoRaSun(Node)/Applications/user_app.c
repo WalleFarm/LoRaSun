@@ -78,8 +78,11 @@ void app_uart_thread_entry(void *parameter)
 				pData+=3;
 				nwk_node_send2gateway((u8*)pData, strlen(pData));
 			}
-      
-
+      else if((pData=strstr(pBuff, "join"))!=NULL)
+			{
+				nwk_node_req_join(0xC1011234);//请求入网
+			}
+			
 			UART_Clear(pUART);
 		}		
 
