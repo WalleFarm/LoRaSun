@@ -79,6 +79,27 @@ void nwk_node_set_lora_dev(LoRaDevStruct *pLoRaDev)
 	g_sNwkNodeWork.pLoRaDev=pLoRaDev;
 }
 
+/*		
+================================================================================
+描述 : 设置LED
+输入 : 
+输出 : 
+================================================================================
+*/ 
+void nwk_node_set_led(bool state)
+{
+	if(g_sNwkNodeWork.pLoRaDev==NULL)
+		return;
+#if defined(LORA_SX1278)  
+    hal_sx1278_set_led(&g_sNwkNodeWork.pLoRaDev->tag_hal_sx1278, state);
+
+#elif defined(LORA_SX1268)
+    hal_sx1268_set_led(&g_sNwkNodeWork.pLoRaDev->tag_hal_sx1268, state);
+#elif defined(LORA_LLCC68)
+
+#endif	
+	
+}
 
 /*		
 ================================================================================
@@ -871,6 +892,10 @@ void nwk_node_search_process(void)
 */ 
 void nwk_node_rx_process(void)
 {
+  static bool led_state=false;
+  nwk_node_set_led(led_state);
+  led_state=!led_state;
+  
   NwkNodeRxStruct *pNodeRx=&g_sNwkNodeWork.node_rx;
   switch(pNodeRx->rx_state)
   {
@@ -907,6 +932,7 @@ void nwk_node_rx_process(void)
         pNodeRx->listen_cnts++;
         if(pNodeRx->listen_cnts>=2)//监测结束
         {
+          nwk_node_set_led(false);
           pNodeRx->rx_state=NwkNodeRxIdel;
         }
         else
@@ -1106,6 +1132,10 @@ void nwk_node_rx_process(void)
 */ 
 void nwk_node_tx_gw_process(void)
 {
+  static bool led_state=false;
+  nwk_node_set_led(led_state);
+  led_state=!led_state;
+  
   NwkNodeTxGwStruct *pNodeTxGw=&g_sNwkNodeWork.node_tx_gw;
   static u8 *pMakeBuff=g_sNwkNodeWork.node_rx.recv_buff;  //接收缓冲区复用
   static const u8 make_size=(u8)sizeof(g_sNwkNodeWork.node_rx.recv_buff);
@@ -1346,6 +1376,7 @@ void nwk_node_tx_gw_process(void)
         pNodeTxGw->alarm_rtc_time=now_time+pNodeTxGw->wait_cnts;//闹钟时间
         printf("tx wait time=%ds\n", pNodeTxGw->wait_cnts);        
       }
+      nwk_node_set_led(false);
       pNodeTxGw->tx_state=NwkNodeTxGwIdel;//空闲等待
       break;
     }
@@ -1514,21 +1545,21 @@ void nwk_node_work_check(void)
           }
         }        
       }
-      if(g_sNwkNodeWork.work_state==NwkNodeWorkIdel)//仍旧空闲--入网检查
-      {
-				u32 now_time=nwk_get_rtc_counter();
-        for(u8 i=0; i<NWK_GW_NUM; i++)
-        {
-          NwkParentWorkStrcut *pGateWay=&g_sNwkNodeWork.parent_list[i];
-          if(pGateWay->gw_sn>0 && pGateWay->join_state==JoinStateNone && 
-             pGateWay->last_join_time>0 && now_time-pGateWay->last_join_time>30)
-          {
-						pGateWay->last_join_time=now_time;
-            nwk_node_req_join(pGateWay->gw_sn);//请求入网
-            return;
-          }
-        }        
-      }
+//      if(g_sNwkNodeWork.work_state==NwkNodeWorkIdel)//仍旧空闲--入网检查
+//      {
+//				u32 now_time=nwk_get_rtc_counter();
+//        for(u8 i=0; i<NWK_GW_NUM; i++)
+//        {
+//          NwkParentWorkStrcut *pGateWay=&g_sNwkNodeWork.parent_list[i];
+//          if(pGateWay->gw_sn>0 && pGateWay->join_state==JoinStateNone && 
+//             pGateWay->last_join_time>0 && now_time-pGateWay->last_join_time>30)
+//          {
+//						pGateWay->last_join_time=now_time;
+//            nwk_node_req_join(pGateWay->gw_sn);//请求入网
+//            return;
+//          }
+//        }        
+//      }
       //睡眠检查
       if(g_sNwkNodeWork.work_state==NwkNodeWorkIdel)//仍旧空闲--睡眠
       {

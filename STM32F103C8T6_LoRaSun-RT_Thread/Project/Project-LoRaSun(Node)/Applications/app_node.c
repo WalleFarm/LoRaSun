@@ -10,7 +10,7 @@ DrvSx1268Struct g_sDrvSx1268={0};
 #endif
 
 AppNodeSaveStruct g_sAppNodeSave={0};
-
+AppNodeWorkStruct g_sAppNodeWork={0};
 /*		
 ================================================================================
 描述 : 硬件复位
@@ -324,6 +324,7 @@ static void app_node_lora_init(void)
 	g_sDrvSx1278.tag_hal_sx1278.sx1278_cs_0 = app_node_lora_cs0;
 	g_sDrvSx1278.tag_hal_sx1278.sx1278_cs_1 = app_node_lora_cs1;
 	g_sDrvSx1278.tag_hal_sx1278.sx1278_spi_rw_byte = app_node_lora_spi_rw_byte;
+	g_sDrvSx1278.tag_hal_sx1278.set_led = app_node_led_set_blue;
 	drv_sx1278_init(&g_sDrvSx1278);//初始化
 	
 	nwk_node_set_lora_dev(&g_sDrvSx1278);
@@ -341,8 +342,9 @@ static void app_node_lora_init(void)
 	g_sDrvSx1268.tag_hal_sx1268.sx1268_cs_0 = app_node_lora_cs0;
 	g_sDrvSx1268.tag_hal_sx1268.sx1268_cs_1 = app_node_lora_cs1;
 	g_sDrvSx1268.tag_hal_sx1268.sx1268_spi_rw_byte = app_node_lora_spi_rw_byte;
-	g_sDrvSx1268.tag_hal_sx1268.wait_on_busy=app_node_wait_on_busy;
-  g_sDrvSx1268.tag_hal_sx1268.delay_ms=delay_ms;
+	g_sDrvSx1268.tag_hal_sx1268.wait_on_busy = app_node_wait_on_busy;
+  g_sDrvSx1268.tag_hal_sx1268.delay_ms = delay_ms;
+  g_sDrvSx1268.tag_hal_sx1268.set_led = app_node_led_set_blue;
 	drv_sx1268_init(&g_sDrvSx1268);//初始化
 	 
   nwk_node_set_lora_dev(&g_sDrvSx1268); 
@@ -363,6 +365,23 @@ static void app_node_lora_init(void)
   
   
 }
+
+
+/*		
+================================================================================
+描述 : 
+输入 : 
+输出 : 
+================================================================================
+*/
+
+/*		
+================================================================================
+描述 : 
+输入 : 
+输出 : 
+================================================================================
+*/
 
 
 /*		
@@ -396,9 +415,11 @@ void app_node_read_config(void)
     app_node_write_config();
     printf("app_node_read_config new!\n");
   }
+  printf("read node_sn=0x%08X, period=%ds\n", g_sAppNodeSave.node_sn, g_sAppNodeSave.wake_period);
 	nwk_node_add_gw(0xC1011234, 0, 4);//添加目标网关
 	nwk_node_set_sn(g_sAppNodeSave.node_sn);//设置节点SN
 	nwk_node_set_wake_period(g_sAppNodeSave.wake_period);  //设置节点唤醒周期
+  
 }
 
 /*		
@@ -473,10 +494,21 @@ void app_node_thread_entry(void *parameter)
 {
   static u32 run_cnts=0;
   static bool led_state=false;  
+  
+  app_node_read_config();
+  
   app_node_lora_init();
   app_node_led_init();
+  
   app_node_key_init();
   app_node_temp_init();
+  app_node_led_set_blue(true);
+  app_node_led_set_green(true);
+  
+  app_oled96_init();
+  app_oled96_show_node(g_sAppNodeSave.node_sn, g_sAppNodeSave.wake_period);//显示节点信息
+  app_node_led_set_blue(false);
+  app_node_led_set_green(false);
   while(1)
   {
     nwk_node_main();
@@ -485,17 +517,17 @@ void app_node_thread_entry(void *parameter)
     {
       printf_hex("app buff=", recv_from->app_data, recv_from->data_len);
     }
+    app_oled96_main_process();//屏幕显示
     app_node_key_check();//按键检测
     if(run_cnts++%200==0)//指示灯运行
     {
       led_state=!led_state;
-      app_node_led_set_blue(led_state);
-      app_node_led_set_green(led_state);
+      app_node_led_set_green(led_state);//运行指示灯
 //      app_node_temp_update();//温度更新
     }
 		if(run_cnts%2000==0)
 		{
-			app_node_send_status();
+//			app_node_send_status();
 		}
 		
     delay_os(5);

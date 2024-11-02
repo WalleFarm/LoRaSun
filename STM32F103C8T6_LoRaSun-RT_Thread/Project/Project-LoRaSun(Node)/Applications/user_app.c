@@ -73,7 +73,7 @@ void app_uart_thread_entry(void *parameter)
         printf("*** reset!\n");
         drv_system_reset();
       }
-			else if((pData=strstr(pBuff, "gw:"))!=NULL)
+			else if((pData=strstr(pBuff, "up:"))!=NULL)
 			{
 				pData+=3;
 				nwk_node_send2gateway((u8*)pData, strlen(pData));

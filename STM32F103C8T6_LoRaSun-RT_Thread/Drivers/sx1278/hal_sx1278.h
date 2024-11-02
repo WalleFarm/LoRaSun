@@ -12,6 +12,7 @@ typedef struct
 	u8 (*sx1278_spi_rw_byte)(u8 byte);//字节读写函数
 	void (*sx1278_cs_0)(void);//片选0
 	void (*sx1278_cs_1)(void);//片选1
+  void (*set_led)(bool state);
 }HalSx1278Struct;
 
  
@@ -25,6 +26,7 @@ u8 hal_sx1278_read_addr(HalSx1278Struct *psx1278, u8 addr);
 void hal_sx1278_write_fifo(HalSx1278Struct *psx1278, u8 *buff, u8 size);
 void hal_sx1278_read_fifo(HalSx1278Struct *psx1278, u8 *buff, u8 size);
 
+void hal_sx1278_set_led(HalSx1278Struct *psx1278, bool state);
 
 
 

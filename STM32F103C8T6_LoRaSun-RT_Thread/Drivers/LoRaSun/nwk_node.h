@@ -7,8 +7,8 @@
 
 //定义所使用的LoRa芯片模块,只能选一种,其余注释
 //#define LORA_SX1278    
-//#define LORA_SX1268    
-#define LORA_LLCC68    
+#define LORA_SX1268    
+//#define LORA_LLCC68    
 
 
 #if defined(LORA_SX1278)  
@@ -210,6 +210,7 @@ void nwk_node_set_root_key(u8 *key);
 void nwk_node_add_gw(u32 gw_sn, u8 base_freq, u8 wireless_num);
 void nwk_node_set_wake_period(u16 period);
 void nwk_node_set_lora_dev(LoRaDevStruct *pLoRaDev);
+void nwk_node_set_led(bool state);//LED
 void nwk_node_set_lora_param(u32 freq, u8 sf, u8 bw);
 void nwk_node_sleep_init(void);
 void nwk_node_cad_init(void);

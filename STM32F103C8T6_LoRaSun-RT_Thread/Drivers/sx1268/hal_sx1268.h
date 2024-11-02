@@ -14,6 +14,7 @@ typedef struct
 	void (*sx1268_cs_1)(void);//片选1
   void (*delay_ms)(u32 dlyms);//延时
 	void (*wait_on_busy)(void);//等待空闲
+  void (*set_led)(bool state);
 }HalSx1268Struct;
 
  
@@ -30,6 +31,7 @@ u8 hal_sx1268_read_reg(HalSx1268Struct *psx1268, u16 addr);
 
 void hal_sx1268_write_fifo(HalSx1268Struct *psx1268, u8 *buff, u8 size);
 void hal_sx1268_read_fifo(HalSx1268Struct *psx1268, u8 offset, u8 *buff, u8 size);
+void hal_sx1268_set_led(HalSx1268Struct *psx1268, bool state);
 
 
 #endif

@@ -435,6 +435,11 @@
               <FileType>1</FileType>
               <FilePath>.\Applications\app_node.c</FilePath>
             </File>
+            <File>
+              <FileName>app_oled96.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Applications\app_oled96.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -464,6 +469,11 @@
               <FileName>drv_encrypt.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Drivers\drv_encrypt.c</FilePath>
+            </File>
+            <File>
+              <FileName>drv_oled96.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Drivers\drv_oled96.c</FilePath>
             </File>
           </Files>
         </Group>

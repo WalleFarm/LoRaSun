@@ -3,6 +3,7 @@
 #define __APP_NODE_H__
 #include "nwk_node.h" 
 #include "drv_uart.h"
+#include "app_oled96.h"
 
 typedef struct
 {
@@ -13,12 +14,17 @@ typedef struct
 
 typedef struct
 {
-  
   u32 node_sn;
   AppNodeGwSaveStruct gw_save_list[NWK_GW_NUM];
   u16 wake_period;
   u16 crcValue;
 }AppNodeSaveStruct;
+
+typedef struct
+{
+  u8 temp;
+//  DrvOLED96WorkStruct oled96_work;
+}AppNodeWorkStruct;
 
 
 void app_node_set_sn(u32 node_sn);
