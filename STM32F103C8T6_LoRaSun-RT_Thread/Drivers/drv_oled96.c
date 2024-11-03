@@ -169,6 +169,24 @@ void drv_oled96_clear(DrvOLED96WorkStruct *pOLED96)
 
 /*		
 ================================================================================
+描述 : 清理单行
+输入 : line:0~7
+输出 : 
+================================================================================
+*/
+void drv_oled96_clear_line(DrvOLED96WorkStruct *pOLED96, u8 line)
+{
+    drv_oled96_write_byte(pOLED96, 0xb0+line, OLED96_CMD); 
+    drv_oled96_write_byte(pOLED96, 0x00, OLED96_CMD);
+    drv_oled96_write_byte(pOLED96, 0x10, OLED96_CMD);   
+    for(u8 n=0; n<OLED96_WIDTH; n++)
+    {
+      drv_oled96_write_byte(pOLED96, 0, OLED96_DATA);
+    }  
+}
+
+/*		
+================================================================================
 描述 : 
 输入 : x:0~128(F6X8字体最大是122, F8X16最大是120)  y:0~7(一个字节8个像素,高64像素,所以y有8格)
 输出 : 

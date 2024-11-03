@@ -78,7 +78,7 @@ void app_uart_thread_entry(void *parameter)
 			{
 				pData+=strlen("down:");
         u16 len=strlen(pData);
-        nwk_master_send_down_pack(0x12345678, 1, (u8*)pData, len);//发送测试
+        nwk_master_add_down_pack(0x12345678, (u8*)pData, len);//发送测试
 			}
  			else if((pData=strstr(pBuff, "time:"))!=NULL)
 			{

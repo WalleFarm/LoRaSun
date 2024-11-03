@@ -30,6 +30,7 @@ void drv_oled96_display_off(DrvOLED96WorkStruct *pOLED96);
 void drv_oled96_color_turn(DrvOLED96WorkStruct *pOLED96, u8 mode);
 void drv_oled96_display_turn(DrvOLED96WorkStruct *pOLED96, u8 mode);
 void drv_oled96_clear(DrvOLED96WorkStruct *pOLED96);
+void drv_oled96_clear_line(DrvOLED96WorkStruct *pOLED96, u8 line);
 
 void drv_oled96_set_pos(DrvOLED96WorkStruct *pOLED96, u8 x, u8 y);
 void drv_oled96_show_char(DrvOLED96WorkStruct *pOLED96, u8 x,u8 y,char ch,u8 size);

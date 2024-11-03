@@ -516,6 +516,7 @@ void app_node_thread_entry(void *parameter)
     if(recv_from)
     {
       printf_hex("app buff=", recv_from->app_data, recv_from->data_len);
+      printf_oled("rx=%s", recv_from->app_data);
     }
     app_oled96_main_process();//屏幕显示
     app_node_key_check();//按键检测
@@ -524,10 +525,17 @@ void app_node_thread_entry(void *parameter)
       led_state=!led_state;
       app_node_led_set_green(led_state);//运行指示灯
 //      app_node_temp_update();//温度更新
+
     }
-		if(run_cnts%2000==0)
+		if(run_cnts%400==0)//显示信息更新
 		{
-//			app_node_send_status();
+      RfParamStruct *rf_param=nwk_node_take_rf_param();
+      app_oled96_show_signal(rf_param->rssi, rf_param->snr);//更新信号显示
+      
+      u16 total_cnts=0, ok_cnts=0;
+      nwk_node_tx_cnts(&total_cnts, &ok_cnts);
+      app_oled96_show_tx_total(total_cnts, ok_cnts);//显示发送次数
+//      printf_oled("show update!!!!");
 		}
 		
     delay_os(5);

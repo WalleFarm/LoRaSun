@@ -83,6 +83,8 @@ void nwk_slave_uart_parse(u8 *recv_buff, u16 recv_len)
           NwkSlaveTxStruct *pSlaveTx=&g_sNwkSlaveWork.slave_tx;
           u32 dst_sn=pData[0]<<24|pData[1]<<16|pData[2]<<8|pData[3];
           pData+=4;
+          u8 awake_flag=pData[0];
+          pData+=1;
           u8 tx_len=pData[0];
           pData+=1;
           if(tx_len<sizeof(pSlaveTx->tx_buff))
@@ -90,11 +92,12 @@ void nwk_slave_uart_parse(u8 *recv_buff, u16 recv_len)
             if(pSlaveTx->tx_len==0)
             {
               pSlaveTx->dst_sn=dst_sn;
+              pSlaveTx->awake_flag=awake_flag;//唤醒标志
               pSlaveTx->tx_len=tx_len;
               memcpy(pSlaveTx->tx_buff, pData, tx_len);
               u16 freq_cnts=(NWK_MAX_FREQ-NWK_MIN_FREQ)/500000;
               pSlaveTx->freq=(nwk_crc16((u8*)&dst_sn, 4)%freq_cnts)*500000+NWK_MIN_FREQ;//根据序列号计算频段  
-              printf("dst_sn=0x%08X, (%.2f, %d, %d), tx_len=%d\n", dst_sn, pSlaveTx->freq/1000000.f, pSlaveTx->sfs[0], pSlaveTx->bws[0], tx_len);              
+              printf("dst_sn=0x%08X, freq=%.2fMHZ, tx_len=%d\n", dst_sn, pSlaveTx->freq/1000000.f, tx_len);              
             }
             else
             {
@@ -775,9 +778,12 @@ void nwk_slave_tx_process(void)
     case NwkSlaveTxWake:
     {
       printf("send wake!\n");
-      for(u16 i=0; i<40; i++)
+      if(pSlaveTx->awake_flag)
       {
-        nwk_slave_send_sniff(pSlaveTx->curr_sf, pSlaveTx->curr_bw);//发送嗅探帧,唤醒设备
+        for(u16 i=0; i<40; i++)
+        {
+          nwk_slave_send_sniff(pSlaveTx->curr_sf, pSlaveTx->curr_bw);//发送嗅探帧,唤醒设备
+        }        
       }
       u8 test_buff[10]={0};
       u8 test_len=0;

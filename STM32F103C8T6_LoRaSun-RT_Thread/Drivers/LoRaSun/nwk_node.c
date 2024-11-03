@@ -35,7 +35,7 @@ void nwk_node_set_root_key(u8 *key)
 
 /*		
 ================================================================================
-描述 : 手动添加网关
+描述 : 添加网关
 输入 : 
 输出 : 
 ================================================================================
@@ -51,8 +51,28 @@ void nwk_node_add_gw(u32 gw_sn, u8 base_freq, u8 wireless_num)
 			pGateWay->gw_sn=gw_sn;
 			pGateWay->base_freq_ptr=base_freq;
 			pGateWay->wireless_num=wireless_num;
+      break;
     }
   }  	
+}
+
+/*		
+================================================================================
+描述 : 删除网关
+输入 : 
+输出 : 
+================================================================================
+*/ 
+void nwk_node_del_gw(u32 gw_sn)
+{
+  for(u8 i=0; i<NWK_GW_NUM; i++)
+  {
+    NwkParentWorkStrcut *pGateWay=&g_sNwkNodeWork.parent_list[i];
+    if(pGateWay->gw_sn==gw_sn)
+    {
+      memset(pGateWay, 0, sizeof(NwkParentWorkStrcut));
+    }
+  }   
 }
 
 /*		
@@ -224,7 +244,7 @@ u8 nwk_node_cad_check(void)
 输出 : 
 ================================================================================
 */ 
-u8 nwk_node_recv_check(u8 *buff, int16_t *rssi)
+u8 nwk_node_recv_check(u8 *buff, RfParamStruct *rf_param)
 {
 	u8 read_size=0;
 	if(g_sNwkNodeWork.pLoRaDev==NULL)
@@ -235,13 +255,18 @@ u8 nwk_node_recv_check(u8 *buff, int16_t *rssi)
 	read_size=drv_sx1278_recv_check(g_sNwkNodeWork.pLoRaDev, buff); 
 	if(read_size>0)
 	{
-		*rssi=drv_sx1278_read_rssi(g_sNwkNodeWork.pLoRaDev);
+		rf_param->rssi=drv_sx1278_read_rssi(g_sNwkNodeWork.pLoRaDev);
+    rf_param->snr=drv_sx1278_read_snr(g_sNwkNodeWork.pLoRaDev);
 	}
 #elif defined(LORA_SX1268)
 	read_size=drv_sx1268_recv_check(g_sNwkNodeWork.pLoRaDev, buff, 255); 
 	if(read_size>0)
 	{
-		*rssi=drv_sx1268_get_rssi_inst(g_sNwkNodeWork.pLoRaDev);
+    Sx1268PacketStatusStruct status;
+    drv_sx1268_get_pack_status(g_sNwkNodeWork.pLoRaDev, &status);
+//    rf_param->rssi=status.SignalRssiPkt;
+    rf_param->snr=status.SnrPkt;
+		rf_param->rssi=drv_sx1268_get_rssi_inst(g_sNwkNodeWork.pLoRaDev);
 	}
 #elif defined(LORA_LLCC68)
 
@@ -474,10 +499,11 @@ void nwk_node_recv_parse(u8 *recv_buff, u8 recv_len)
 		if(role==NwkRoleGateWay)//是否为网关设备
 		{
 			pGateWay=nwk_node_search_gw(src_sn);//查询网关
-			if(pGateWay && pGateWay->join_state==JoinStateOK && key_type==KeyTypeApp)
+			if(pGateWay && key_type==KeyTypeApp)
 			{
-				pKey=pGateWay->app_key;//入网后要用应用密码
-        pGateWay->rssi=g_sNwkNodeWork.recv_rssi;//更新信号强度
+				pKey=pGateWay->app_key;//应用密码
+        pGateWay->rssi=g_sNwkNodeWork.rf_param.rssi;//更新信号强度
+        pGateWay->snr=g_sNwkNodeWork.rf_param.snr;
 			}			
 		}
 		
@@ -526,11 +552,12 @@ void nwk_node_recv_parse(u8 *recv_buff, u8 recv_len)
 					printf("dst_sn=0x%08X != local_sn=0x%08X\n", dst_sn, g_sNwkNodeWork.node_sn);
 					return;
 				}
-				if(pGateWay && pack_num==pGateWay->down_pack_num)
-				{
-					printf("gw_sn=0x%08X have same down_pack_num=%d\n", src_sn, pack_num);
-					return;
-				}
+//				if(pGateWay && pack_num==pGateWay->down_pack_num)
+//				{
+//					printf("gw_sn=0x%08X have same down_pack_num=%d\n", src_sn, pack_num);
+//					return;
+//				}
+        printf("down pack_num=%d\n", pack_num);
 				switch(cmd_type)
 				{
 					case NwkCmdHeart:
@@ -543,16 +570,14 @@ void nwk_node_recv_parse(u8 *recv_buff, u8 recv_len)
 						printf("src_sn=0x%08X NwkCmdAck!\n", src_sn);
             u8 ack_cmd=pData[0];
             pData+=1;
-            if(ack_cmd==NwkCmdDataOnce)//单包数据回复
+            if(ack_cmd==NwkCmdDataOnce)//单包数据回复,说明发送成功
             {
               //清理发送数据
               if(role==NwkRoleGateWay)//网关
               {
+                nwk_node_clear_tx();
                 NwkNodeTxGwStruct *pNodeTxGw=&g_sNwkNodeWork.node_tx_gw;
-                memset(pNodeTxGw->tx_buff, 0, sizeof(pNodeTxGw->tx_buff));
-                pNodeTxGw->tx_len=0;
-								pNodeTxGw->tx_state=NwkNodeTxGwIdel;//结束回合
-                printf("clear tx gw buff!\n");
+                pNodeTxGw->tx_ok_cnts++;//发送成功计数
                 //同时返回时间戳
 								u32 now_time=nwk_get_rtc_counter();
                 u32 ack_time=pData[0]<<24|pData[1]<<16|pData[2]<<8|pData[3];
@@ -597,11 +622,8 @@ void nwk_node_recv_parse(u8 *recv_buff, u8 recv_len)
               printf_hex("key out=", pData, 16);
 							memcpy(pGateWay->app_key, pData, 16); 
               pGateWay->join_state=JoinStateOK;//入网成功
-							
-							NwkNodeTxGwStruct *pNodeTxGw=&g_sNwkNodeWork.node_tx_gw;
-							memset(pNodeTxGw->tx_buff, 0, sizeof(pNodeTxGw->tx_buff));
-							pNodeTxGw->tx_len=0;
-							pNodeTxGw->tx_state=NwkNodeTxGwIdel;//结束回合							
+							printf("pGateWay->join_state=%d\n", pGateWay->join_state);
+							nwk_node_clear_tx();						
             }
 						break;
 					}
@@ -610,10 +632,11 @@ void nwk_node_recv_parse(u8 *recv_buff, u8 recv_len)
 						printf("src_sn=0x%08X NwkCmdDataOnce!\n", src_sn);
             NwkNodeRecvFromStruct *pRecvFrom=&g_sNwkNodeWork.recv_from;
             pRecvFrom->data_len=union_len-7;//应用数据长度
-            pRecvFrom->app_data=pData;
+            memset(pRecvFrom->app_data, 0, sizeof(pRecvFrom->app_data));
+            memcpy(pRecvFrom->app_data, pData, pRecvFrom->data_len);
             pRecvFrom->src_sn=src_sn;
             pRecvFrom->read_flag=true;//通知应用层读取
-            
+//            printf_hex("app buff00=", pRecvFrom->app_data, pRecvFrom->data_len);
             //需要回复NwkCmdAck指令    
             NwkNodeRxStruct *pNodeRx=&g_sNwkNodeWork.node_rx;
             
@@ -681,6 +704,22 @@ NwkParentWorkStrcut *nwk_node_select_gw(void)
 	return NULL;
 }
 
+/*		
+================================================================================
+描述 : 清除发送数据
+输入 : 
+输出 : 
+================================================================================
+*/
+void nwk_node_clear_tx(void)
+{
+  NwkNodeTxGwStruct *pNodeTxGw=&g_sNwkNodeWork.node_tx_gw;
+  memset(pNodeTxGw->tx_buff, 0, sizeof(pNodeTxGw->tx_buff));
+  pNodeTxGw->tx_len=0; 
+  pNodeTxGw->try_cnts=0;       
+  pNodeTxGw->tx_state=NwkNodeTxGwIdel;//回合结束  
+  printf("clear tx buff!\n");   
+}
 
 /*		
 ================================================================================
@@ -694,6 +733,7 @@ u8 nwk_node_send2gateway(u8 *in_buff, u8 in_len)
   NwkNodeTxGwStruct *pNodeTxGw=&g_sNwkNodeWork.node_tx_gw;
   if(pNodeTxGw->tx_len>0 || in_len>NWK_TRANSMIT_MAX_SIZE)
   {
+    printf("tx task is busy!\n");
     return 0;
   }
   
@@ -701,6 +741,7 @@ u8 nwk_node_send2gateway(u8 *in_buff, u8 in_len)
   pNodeTxGw->tx_len=in_len;
   pNodeTxGw->tx_cmd=NwkCmdDataOnce;
   pNodeTxGw->try_cnts=0;
+  pNodeTxGw->tx_total_cnts++;
 	printf("send to gw!\n");
   return 0;
 }
@@ -757,7 +798,7 @@ void nwk_node_search_process(void)
 {
   static u8 ptr=0;
   static const u32 base_freq=NWK_BROAD_BASE_FREQ;
-  static const u8 sf=12, bw=7;
+  static const u8 sf=NWK_BROAD_SF, bw=NWK_BROAD_BW;
   NwkNodeSearchStruct *pSearch=&g_sNwkNodeWork.node_search;
   switch(pSearch->search_state)
   {
@@ -809,11 +850,10 @@ void nwk_node_search_process(void)
     }
     case NwkNodeSearchRxCheck: //接收检测
     {
-      int16_t rssi;
-      u8 recv_len=nwk_node_recv_check(g_sNwkNodeWork.node_rx.recv_buff, &rssi);
+      u8 recv_len=nwk_node_recv_check(g_sNwkNodeWork.node_rx.recv_buff, &g_sNwkNodeWork.rf_param);
       if(recv_len>0)
       {
-				printf("rssi=%ddbm\n", rssi);
+				printf("rssi=%ddbm, snr=%ddbm\n", g_sNwkNodeWork.rf_param.rssi, g_sNwkNodeWork.rf_param.snr);
 				printf_hex("search recv=", g_sNwkNodeWork.node_rx.recv_buff, recv_len);
         nwk_tea_decrypt(g_sNwkNodeWork.node_rx.recv_buff, recv_len, (u32*)g_sNwkNodeWork.root_key);//解密
 				printf_hex("search out=", g_sNwkNodeWork.node_rx.recv_buff, recv_len);
@@ -842,9 +882,7 @@ void nwk_node_search_process(void)
                 pGateWay->gw_sn=gw_sn;
                 pGateWay->base_freq_ptr=base_freq;
                 pGateWay->wireless_num=wireless_num;
-                pGateWay->rssi=rssi;
                 printf("add gw_sn=0x%08X, base_freq=%d, wireless=%d\n", gw_sn, base_freq, wireless_num);
-//                nwk_node_req_join(gw_sn);//请求入网
                 break;
               }
             }            
@@ -915,8 +953,8 @@ void nwk_node_rx_process(void)
     }
     case NwkNodeRxCadInit:
     {
-			pNodeRx->curr_sf=11;
-			pNodeRx->curr_bw=6; 
+			pNodeRx->curr_sf=NWK_BROAD_SF;
+			pNodeRx->curr_bw=NWK_BROAD_BW; 
 			printf("rx cad param=(%.2f, %d, %d)\n", pNodeRx->freq/1000000.f, pNodeRx->curr_sf, pNodeRx->curr_bw);
       nwk_node_set_lora_param(pNodeRx->freq, pNodeRx->curr_sf, pNodeRx->curr_bw);
       nwk_node_cad_init(); 
@@ -954,12 +992,10 @@ void nwk_node_rx_process(void)
     case NwkNodeRxSnCheck:
     {
       u32 now_time=nwk_get_rtc_counter();
-      int16_t rssi;
-      u8 recv_len=nwk_node_recv_check(pNodeRx->recv_buff, &rssi);
+      u8 recv_len=nwk_node_recv_check(pNodeRx->recv_buff, &g_sNwkNodeWork.rf_param);
       if(recv_len>0)
       {
         //数据解析
-        g_sNwkNodeWork.recv_rssi=rssi;
 				printf_hex("recv=", pNodeRx->recv_buff, recv_len);
 				
 				u8 head[]={0xA9};
@@ -1064,11 +1100,10 @@ void nwk_node_rx_process(void)
 		case NwkNodeRxAppCheck://应用数据接收检查
 		{
       u32 now_time=nwk_get_rtc_counter();
-      int16_t rssi;
-      u8 recv_len=nwk_node_recv_check(g_sNwkNodeWork.node_rx.recv_buff, &rssi); 
+      u8 recv_len=nwk_node_recv_check(g_sNwkNodeWork.node_rx.recv_buff, &g_sNwkNodeWork.rf_param); 
       if(recv_len>0)
       {
-        printf("recv rssi=%ddbm\n", rssi);
+        printf("rx recv rssi=%ddbm, snr=%ddbm\n", g_sNwkNodeWork.rf_param.rssi, g_sNwkNodeWork.rf_param.snr);
         u8 *pBuff=g_sNwkNodeWork.node_rx.recv_buff;
         printf_hex("recv=", pBuff, recv_len);
         pNodeRx->ack_len=0;
@@ -1152,7 +1187,7 @@ void nwk_node_tx_gw_process(void)
       NwkParentWorkStrcut *pGateWay=NULL;
       if(pNodeTxGw->tx_cmd==NwkCmdJoin)
       {
-				printf("req join ###\n");
+				printf("req join gw_sn=0x%08X###\n", pNodeTxGw->join_sn);
         pGateWay=nwk_node_search_gw(pNodeTxGw->join_sn);//选择要入网的网关
       }
       else
@@ -1332,20 +1367,13 @@ void nwk_node_tx_gw_process(void)
     case NwkNodeTxGwAck://等待网关回复确认
     {
       u32 now_time=nwk_get_rtc_counter();
-      int16_t rssi;
-      u8 recv_len=nwk_node_recv_check(g_sNwkNodeWork.node_rx.recv_buff, &rssi);
+      u8 recv_len=nwk_node_recv_check(g_sNwkNodeWork.node_rx.recv_buff, &g_sNwkNodeWork.rf_param);
       if(recv_len>0)
       {
         //数据解析
-        g_sNwkNodeWork.recv_rssi=rssi;
-				printf("tx ack rssi=%ddbm\n", rssi);
+				printf("tx ack rssi=%ddbm, snr=%ddbm\n", g_sNwkNodeWork.rf_param.rssi, g_sNwkNodeWork.rf_param.snr);
 				printf_hex("ack=", g_sNwkNodeWork.node_rx.recv_buff, recv_len);
         nwk_node_recv_parse(g_sNwkNodeWork.node_rx.recv_buff, recv_len);
-//        NwkNodeRxStruct *pNodeRx=&g_sNwkNodeWork.node_rx;
-        
-//				pNodeTxGw->tx_len=0;//测试,清零
-//        pNodeTxGw->pGateWay->err_cnts=0;
-//        pNodeTxGw->tx_state=NwkNodeTxGwIdel;
       }   
       else if(now_time-pNodeTxGw->start_rtc_time>pNodeTxGw->wait_cnts)//超时
       {
@@ -1362,11 +1390,8 @@ void nwk_node_tx_gw_process(void)
         printf("try_cnts=%d\n", pNodeTxGw->try_cnts);        
       if(pNodeTxGw->try_cnts>=1)//结束发送
       {
-        memset(pNodeTxGw->tx_buff, 0, sizeof(pNodeTxGw->tx_buff));
-        pNodeTxGw->tx_len=0; 
-        pNodeTxGw->try_cnts=0;        
+        nwk_node_clear_tx();       
         pNodeTxGw->alarm_rtc_time=0xFFFFFFFF;//不唤醒
-        printf("clear tx buff!\n");        
       }
       else
       {
@@ -1377,7 +1402,7 @@ void nwk_node_tx_gw_process(void)
         printf("tx wait time=%ds\n", pNodeTxGw->wait_cnts);        
       }
       nwk_node_set_led(false);
-      pNodeTxGw->tx_state=NwkNodeTxGwIdel;//空闲等待
+      pNodeTxGw->tx_state=NwkNodeTxGwIdel;//回合结束
       break;
     }
   }
@@ -1403,7 +1428,6 @@ void nwk_node_tx_d2d_process(void)
     }
   }
 }
-
 
 /*		
 ================================================================================
@@ -1545,21 +1569,28 @@ void nwk_node_work_check(void)
           }
         }        
       }
-//      if(g_sNwkNodeWork.work_state==NwkNodeWorkIdel)//仍旧空闲--入网检查
-//      {
-//				u32 now_time=nwk_get_rtc_counter();
-//        for(u8 i=0; i<NWK_GW_NUM; i++)
-//        {
-//          NwkParentWorkStrcut *pGateWay=&g_sNwkNodeWork.parent_list[i];
-//          if(pGateWay->gw_sn>0 && pGateWay->join_state==JoinStateNone && 
-//             pGateWay->last_join_time>0 && now_time-pGateWay->last_join_time>30)
-//          {
-//						pGateWay->last_join_time=now_time;
-//            nwk_node_req_join(pGateWay->gw_sn);//请求入网
-//            return;
-//          }
-//        }        
-//      }
+      if(g_sNwkNodeWork.work_state==NwkNodeWorkIdel)//仍旧空闲--入网检查
+      {
+				u32 now_time=nwk_get_rtc_counter();
+        for(u8 i=0; i<NWK_GW_NUM; i++)
+        {
+          NwkParentWorkStrcut *pGateWay=&g_sNwkNodeWork.parent_list[i];
+          if(pGateWay->wait_join_time==0)
+          {
+            pGateWay->wait_join_time=nwk_get_rand()%30+30;//首次入网等待时间
+            pGateWay->last_join_time=now_time;
+          }          
+          if(pGateWay->gw_sn>0 && pGateWay->join_state==JoinStateNone && 
+             now_time-pGateWay->last_join_time>pGateWay->wait_join_time)
+          {
+            printf("pGateWay=0x%08X, join_state=%d\n", pGateWay->gw_sn, pGateWay->join_state);          
+            pGateWay->wait_join_time=nwk_get_rand()%60+60;
+						pGateWay->last_join_time=now_time;
+            nwk_node_req_join(pGateWay->gw_sn);//请求入网
+            return;
+          }
+        }        
+      }
       //睡眠检查
       if(g_sNwkNodeWork.work_state==NwkNodeWorkIdel)//仍旧空闲--睡眠
       {
@@ -1631,6 +1662,31 @@ NwkNodeRecvFromStruct *nwk_node_recv_from_check(void)
   return NULL;
 }
 
+/*		
+================================================================================
+描述 : 获取RF参数
+输入 : 
+输出 : 
+================================================================================
+*/ 
+RfParamStruct *nwk_node_take_rf_param(void)
+{
+  return &g_sNwkNodeWork.rf_param;
+}
+
+/*		
+================================================================================
+描述 : 获取TX参数
+输入 : 
+输出 : 
+================================================================================
+*/ 
+void nwk_node_tx_cnts(u16 *total_cnts, u16 *ok_cnts)
+{
+  *total_cnts=g_sNwkNodeWork.node_tx_gw.tx_total_cnts;
+  *ok_cnts=g_sNwkNodeWork.node_tx_gw.tx_ok_cnts;
+}
+
 
 /*		
 ================================================================================
@@ -1699,7 +1755,7 @@ NowkNodeReturnStruct *nwk_node_main(void)
   u32 min_alarm_time=0xFFFFFFFF;  
   NowkNodeReturnStruct *pReturn=&g_sNwkNodeWork.node_return;
 	nwk_node_work_check();
-  pReturn->pRecvFrom=nwk_node_recv_from_check();
+//  pReturn->pRecvFrom=nwk_node_recv_from_check();
   
   if(g_sNwkNodeWork.work_state!=NwkNodeWorkIdel)//有任务在运行
   {

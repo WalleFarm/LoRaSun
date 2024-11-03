@@ -111,21 +111,13 @@ typedef struct
   u8 sniff_cnts;
   u8 group_id;
   u8 cad_cnts;
-  u8 sfs[2],bws[2];
   u8 curr_sf, curr_bw;
+  u8 awake_flag;
   u16 wait_cnts;
   u32 dst_sn;
   u32 freq;
   u32 start_rtc_time;
 }NwkSlaveTxStruct;//从机发送结构体
-
-//typedef struct
-//{
-//	u8 slave_addr;
-//	
-//	u8 reserved;
-//	u16 crc_value;
-//}NwkSlaveSaveStruct;
 
 typedef struct
 {
@@ -138,9 +130,6 @@ typedef struct
   NwkSlaveBroadStruct slave_broad;
   NwkSlaveRxStruct slave_rx;
   NwkSlaveTxStruct slave_tx;
-//	u8 ack_buff[300];
-//  u16 ack_len;
-//  u8 ack_tickets;
   void (*fun_send)(u8 *buff, u16 len);
 }NwkSlaveWorkStruct;
 

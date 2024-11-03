@@ -25,7 +25,7 @@ void app_oled96_init(void)
   app_oled96_show_signal(-129, 48);
   app_oled96_show_tx_total(12345, 12321);
 
-  printf_oled("==debug 1234657890123456 time=%us", drv_get_rtc_counter());
+//  printf_oled("==debug 1234657890123456 time=%us", drv_get_rtc_counter());
   
 }
 
@@ -60,6 +60,8 @@ void app_oled96_show_node(u32 node_sn, u16 period)
   DrvOLED96WorkStruct *pOLED96=&g_sAppOLEDWork.oled96_work;
   char buff[30]={0};
   sprintf(buff, "1.SN:%08X, %ds", node_sn, period);
+  
+  drv_oled96_clear_line(pOLED96, 0);//清理
   drv_oled96_show_str_f6x8(pOLED96, 0, 0, buff);   
 }
 
@@ -74,7 +76,8 @@ void app_oled96_show_signal(s16 rssi, s8 snr)
 {
   DrvOLED96WorkStruct *pOLED96=&g_sAppOLEDWork.oled96_work;
   char buff[30]={0};
-  sprintf(buff, "2.%ddbm, %ddbm", rssi, snr);
+  sprintf(buff, "2.RSSI%ddbm, %ddbm", rssi, snr);
+  drv_oled96_clear_line(pOLED96, 1);//清理
   drv_oled96_show_str_f6x8(pOLED96, 0, 1, buff);  
 }
 
@@ -89,7 +92,8 @@ void app_oled96_show_time(void)
 {
   DrvOLED96WorkStruct *pOLED96=&g_sAppOLEDWork.oled96_work;
   char buff[30]={0};
-  sprintf(buff, "3.%us", drv_get_rtc_counter());
+  sprintf(buff, "3.RTC:%us", drv_get_rtc_counter());
+//  drv_oled96_clear_line(pOLED96, 2);//清理
   drv_oled96_show_str_f6x8(pOLED96, 0, 2, buff);   
 }
 
@@ -100,11 +104,14 @@ void app_oled96_show_time(void)
 输出 : 
 ================================================================================
 */
-void app_oled96_show_tx_total(u16 tx_cnts, u16 ok_cnts)
+void app_oled96_show_tx_total(u16 total_cnts, u16 ok_cnts)
 {
   DrvOLED96WorkStruct *pOLED96=&g_sAppOLEDWork.oled96_work;
   char buff[30]={0};
-  sprintf(buff, "4.%d/%d=%.1f%%", ok_cnts, tx_cnts, 100.f*ok_cnts/ok_cnts);
+  float percent=100.f*ok_cnts/total_cnts;
+//  printf("percent=%.1f%%\n", percent);
+  sprintf(buff, "4.%d/%d=%.1f%%", ok_cnts, total_cnts, percent);
+  drv_oled96_clear_line(pOLED96, 3);//清理
   drv_oled96_show_str_f6x8(pOLED96, 0, 3, buff);   
 }
 
@@ -118,6 +125,10 @@ void app_oled96_show_tx_total(u16 tx_cnts, u16 ok_cnts)
 void app_oled96_show_debug(char *str)
 {
   DrvOLED96WorkStruct *pOLED96=&g_sAppOLEDWork.oled96_work;
+  drv_oled96_clear_line(pOLED96, 4);//清理
+  drv_oled96_clear_line(pOLED96, 5);//清理
+  drv_oled96_clear_line(pOLED96, 6);//清理
+  drv_oled96_clear_line(pOLED96, 7);//清理
   drv_oled96_show_str_f6x8(pOLED96, 0, 4, str); 
 }
 

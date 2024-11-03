@@ -81,7 +81,7 @@ void app_master_uart_recv_check(void)
 }
 
 
-void app_master_recv_check(void)
+void app_master_recv_parse(void)
 {
   NwkMasterRecvFromStruct *pRecvFrom=nwk_master_recv_from_check();
   if(pRecvFrom)
@@ -121,7 +121,7 @@ void app_master_thread_entry(void *parameter)
 
   app_master_led_init();
   u8 wireless=0, slave_addr=1;
-  nwk_master_uart_send_register(wireless++, slave_addr++, app_master_uart_send);
+  nwk_master_uart_send_register(wireless++, slave_addr++, app_master_uart_send);//添加从机模块
   nwk_master_uart_send_register(wireless++, slave_addr++, app_master_uart_send);
   nwk_master_uart_send_register(wireless++, slave_addr++, app_master_uart_send);
   nwk_master_uart_send_register(wireless++, slave_addr++, app_master_uart_send);
@@ -134,11 +134,11 @@ void app_master_thread_entry(void *parameter)
     nwk_master_send_freq_ptr(slave);
     delay_os(100);
   }
-  nwk_master_add_token(0x12345678);//测试
+//  nwk_master_add_token(0x12345678);//测试
   while(1)
   {
     app_master_uart_recv_check();//串口接收检查
-    app_master_recv_check();
+    app_master_recv_parse();//应用层接收解析
     nwk_master_main(); 
     
     if(run_cnts++%100==0)//指示灯运行

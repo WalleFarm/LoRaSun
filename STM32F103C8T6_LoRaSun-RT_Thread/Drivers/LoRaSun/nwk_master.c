@@ -271,23 +271,27 @@ void nwk_master_lora_parse(u8 *recv_buff, u8 recv_len, u8 slave_addr, RfParamStr
       printf("error role==NwkRoleGateWay!\n");
       return;
     }
-    NwkNodeTokenStruct *pNodeToken=nwk_master_find_token(src_sn);
-    if(pNodeToken==NULL)
+    NwkNodeTokenStruct *pNodeToken=nwk_master_find_node(src_sn);
+//    if(pNodeToken==NULL)
+//    {
+//      printf("error pNodeToken==NULL!\n");
+//      return;
+//    }
+    if(pNodeToken)
     {
-      pNodeToken=nwk_master_add_token(src_sn);
-    }
-    if(pNodeToken==NULL)
-    {
-      printf("error pNodeToken==NULL!\n");
-      return;
-    }
-    
-		u8 *pKey=g_sNwkMasterWork.root_key;//默认根密码
-    if(pNodeToken->join_state==JoinStateOK && key_type==KeyTypeApp)
-    {
-      pKey=pNodeToken->app_key;//入网后要用应用密码
       pNodeToken->rssi=rf->rssi;//更新信号强度
-      printf_hex("use app key=", pKey, 16);
+      pNodeToken->snr=rf->snr;      
+    }
+		u8 *pKey=g_sNwkMasterWork.root_key;//默认根密码
+    if(key_type==KeyTypeApp)
+    {
+      if(pNodeToken==NULL)
+      {
+        printf("no found node_sn=0x%08X, key_type==KeyTypeApp error!\n", src_sn);
+        return;
+      }        
+      pKey=pNodeToken->app_key;//应用密码
+//      printf_hex("use app key=", pKey, 16);
     }	
 		
 		int union_len=0;
@@ -338,14 +342,15 @@ void nwk_master_lora_parse(u8 *recv_buff, u8 recv_len, u8 slave_addr, RfParamStr
 				if(pack_num==pNodeToken->down_pack_num)
 				{
 					printf("gw_sn=0x%08X have same down_pack_num=%d\n", src_sn, pack_num);
-					return;
+//					return;
 				}
         u32 now_time=nwk_get_rtc_counter();
-        pNodeToken->keep_time=now_time;
+        if(pNodeToken)
+          pNodeToken->keep_time=now_time;//更新连接时间
         NwkSlaveTokenStruct *pNwkSlaveToken=nwk_master_find_slave(slave_addr);
         if(pNwkSlaveToken)
         {
-          pNwkSlaveToken->counts++;
+          pNwkSlaveToken->counts++;//各天线接收次数统计
         }
 				switch(cmd_type)
 				{
@@ -362,10 +367,12 @@ void nwk_master_lora_parse(u8 *recv_buff, u8 recv_len, u8 slave_addr, RfParamStr
             if(ack_cmd==NwkCmdDataOnce)//单包数据回复
             {
               //清理发送数据
-              if(pNwkSlaveToken)
+              NwkNodeTokenStruct *pNwkNode=nwk_master_find_node(src_sn);
+              if(pNwkNode)
               {
-                memset(pNwkSlaveToken->tx_buff, 0, sizeof(pNwkSlaveToken->tx_buff));
-                pNwkSlaveToken->tx_len=0;
+                memset(pNwkNode->down_buff, 0, sizeof(pNwkNode->down_buff));
+                pNwkNode->down_len=0;
+                printf("clear down buff!\n");
               }
             }
 						break;
@@ -373,8 +380,19 @@ void nwk_master_lora_parse(u8 *recv_buff, u8 recv_len, u8 slave_addr, RfParamStr
 					case NwkCmdJoin://入网
 					{
 						printf("src_sn=0x%08X NwkCmdJoin!\n", src_sn);
+            u16 wake_period=pData[0]<<8|pData[1];
+            pData+=2;
+            printf("wake_period=%ds\n", wake_period);
+            if(pNodeToken==NULL)
+            {
+              pNodeToken=nwk_master_add_node(src_sn);
+            }  
+            if(pNodeToken)
+            {
+              pNodeToken->join_state=JoinStateOK;//入网成功
+              pNodeToken->wake_period=wake_period;
+            }
 						u8 key_tmp[16]={0x45,0xEF,0x09,0x3E,0xA2,0xC8,0xB1,0x4A,0x90,0x75,0xD9,0x63,0x7B,0x3B,0x82,0x96};//解算密码,应用时注意混淆						
-						pNodeToken->join_state=JoinStateOK;//入网成功
             u8 opt=NwkRoleGateWay | (encrypt_mode<<2) | (KeyTypeRoot<<4);//组合配置
             //组合LoRa回复包
             u8 lora_buff[50]={0};
@@ -384,7 +402,7 @@ void nwk_master_lora_parse(u8 *recv_buff, u8 recv_len, u8 slave_addr, RfParamStr
             if(tx_time%1000>500)det_sec+=1;//四舍五入
             now_time+=det_sec;//增加延时
             printf("det_sec=%ds\n", det_sec);
-            lora_buff[lora_len++]=JoinStateAccept;//接收入网
+            lora_buff[lora_len++]=JoinStateAccept;//默认接受入网
             lora_buff[lora_len++]=now_time>>24;
             lora_buff[lora_len++]=now_time>>16;
             lora_buff[lora_len++]=now_time>>8;
@@ -398,7 +416,10 @@ void nwk_master_lora_parse(u8 *recv_buff, u8 recv_len, u8 slave_addr, RfParamStr
 						memcpy(&lora_buff[lora_len], app_key, 16); 
 						lora_len+=16;						
 						nwk_tea_encrypt(app_key, 16, (u32 *)key_tmp);//把16字节随机数进行加密作为APP_KEY
-						memcpy(pNodeToken->app_key, app_key, 16); 
+            if(pNodeToken)
+            {
+              memcpy(pNodeToken->app_key, app_key, 16); 
+            }
 						printf_hex("key out=", app_key, 16);
 						//组合从机数据
             u8 uart_buff[100]={0};
@@ -542,26 +563,31 @@ void nwk_master_send_freq_ptr(u8 slave_addr)
 输出 : 
 ================================================================================
 */
-void nwk_master_send_down_pack(u32 dst_sn, u8 slave_addr, u8 *in_buff, u8 in_len)
+void nwk_master_send_down_pack(u32 dst_sn, u8 slave_addr, u8 *in_buff, u8 in_len, u8 flag)
 {
-  NwkNodeTokenStruct *pNodeToken=nwk_master_find_token(dst_sn);
+  NwkNodeTokenStruct *pNodeToken=nwk_master_find_node(dst_sn);
   if(pNodeToken==NULL)
   {
     printf("no found node!\n");
     return;
   }
-//  if(pNodeToken->join_state!=JoinStateOK)
-//  {
+  u8 key_type=KeyTypeRoot;
+  u8 *pKey=g_sNwkMasterWork.root_key;
+  if(pNodeToken->join_state==JoinStateOK)
+  {
 //    printf("no joined!\n");
 //    return;    
-//  }
-  u8 opt=NwkRoleGateWay | (EncryptTEA<<2) | (KeyTypeRoot<<4);//组合配置
+    key_type=KeyTypeApp;
+    pKey=pNodeToken->app_key;
+    printf("down use app key!\n");
+  }
+  u8 opt=NwkRoleGateWay | (EncryptTEA<<2) | (key_type<<4);//组合配置
   
   static u8 uart_buff[300]={0};
   u8 uart_len=0;   
 
   static u8 make_buff[250]={0};
-  u8 make_len=nwk_master_make_lora_buff(opt, dst_sn, g_sNwkMasterWork.root_key, NwkCmdDataOnce, ++pNodeToken->down_pack_num, in_buff, in_len, make_buff, sizeof(make_buff));
+  u8 make_len=nwk_master_make_lora_buff(opt, dst_sn, pKey, NwkCmdDataOnce, ++pNodeToken->down_pack_num, in_buff, in_len, make_buff, sizeof(make_buff));
   if(make_len>0)
   {
     printf_hex("lora buff=", make_buff, make_len);
@@ -569,6 +595,7 @@ void nwk_master_send_down_pack(u32 dst_sn, u8 slave_addr, u8 *in_buff, u8 in_len
     uart_buff[uart_len++]=dst_sn>>16;
     uart_buff[uart_len++]=dst_sn>>8;
     uart_buff[uart_len++]=dst_sn;
+    uart_buff[uart_len++]=flag;
     uart_buff[uart_len++]=make_len;
     memcpy(&uart_buff[uart_len], make_buff, make_len);
     uart_len+=make_len;
@@ -628,7 +655,7 @@ void nwk_master_set_freq_ptr(u8 freq_ptr)
 输出 : 
 ================================================================================
 */ 
-NwkNodeTokenStruct *nwk_master_add_token(u32 node_sn)
+NwkNodeTokenStruct *nwk_master_add_node(u32 node_sn)
 {
   if(g_sNwkMasterWork.node_cnts<NWK_NODE_MAX_NUM)
   {
@@ -667,7 +694,7 @@ NwkNodeTokenStruct *nwk_master_add_token(u32 node_sn)
 输出 : 
 ================================================================================
 */ 
-NwkNodeTokenStruct *nwk_master_find_token(u32 node_sn)
+NwkNodeTokenStruct *nwk_master_find_node(u32 node_sn)
 {
   NwkNodeTokenStruct *pTemp=g_sNwkMasterWork.pNodeHead;
   while(pTemp)
@@ -688,7 +715,7 @@ NwkNodeTokenStruct *nwk_master_find_token(u32 node_sn)
 输出 : 
 ================================================================================
 */ 
-void nwk_master_del_token(u32 node_sn)
+void nwk_master_del_node(u32 node_sn)
 {
   NwkNodeTokenStruct *pTemp1=g_sNwkMasterWork.pNodeHead;
   NwkNodeTokenStruct *pTemp2=pTemp1;
@@ -714,6 +741,86 @@ void nwk_master_del_token(u32 node_sn)
     pTemp1=pTemp1->next;
   }  
 }
+
+
+/*		
+================================================================================
+描述 : 添加下行包
+输入 : 
+输出 : 
+================================================================================
+*/ 
+u8 nwk_master_add_down_pack(u32 dst_sn, u8 *in_buff, u8 in_len)
+{
+  NwkNodeTokenStruct *pNwkNode=nwk_master_find_node(dst_sn);
+  if(pNwkNode)
+  {
+    if(pNwkNode->down_len==0)
+    {
+      memcpy(pNwkNode->down_buff, in_buff, in_len);
+      pNwkNode->down_len=in_len;
+      printf("add down pack ok!\n");
+      return 1;
+    }
+    else
+    {
+      printf("have down buff!\n");
+    }
+  }
+  else
+  {
+    printf("no found dst_sn=0x%08X\n", dst_sn);
+  }
+  return 0;
+}
+
+/*		
+================================================================================
+描述 : 下行包发送检测
+输入 : 
+输出 : 
+================================================================================
+*/
+void nwk_master_check_down_pack(void)
+{
+  NwkNodeTokenStruct *pTemp=g_sNwkMasterWork.pNodeHead;
+  u32 now_time=nwk_get_rtc_counter();
+  while(pTemp)
+  {
+    if(pTemp->down_len>0 && now_time-pTemp->down_time>10)//避免连续发送
+    {
+      u16 period=pTemp->wake_period;
+      bool send_flag=false;
+      u8 awake_flag=1;//是否需要唤醒操作
+      if(period==0)//不休眠,随时发送
+      {
+        send_flag=true;
+        awake_flag=0;
+      }
+      else if(period==0xFFFF)//不唤醒,上行时才能发送
+      {
+        
+      }
+      else
+      {
+        if((now_time)%period==0)
+        {
+          send_flag=true;
+        }
+      }  
+      if(send_flag)
+      {
+        pTemp->down_time=now_time;
+        u8 slave_addr=nwk_get_rand()%NWK_GW_WIRELESS_NUM+1;
+        printf(">>>down tx node_sn=0x%08X, slave_addr=%d\n", pTemp->node_sn, slave_addr);
+        nwk_master_send_down_pack(pTemp->node_sn, slave_addr, pTemp->down_buff, pTemp->down_len, awake_flag);        
+      }
+    }
+
+    pTemp=pTemp->next;
+  }  
+}
+
 
 /*		
 ================================================================================
@@ -742,12 +849,12 @@ NwkMasterRecvFromStruct *nwk_master_recv_from_check(void)
 */ 
 void nwk_master_main(void)
 {
-  static u32 last_rtc_time=0;
-	u32 now_rtc_time=nwk_get_rtc_counter();
-	
-	if(now_rtc_time-last_rtc_time>=10)
+  static u32 last_sec_time=0;
+	u32 now_sec_time=nwk_get_sec_counter();
+	nwk_master_check_down_pack();//下行数据包检测
+	if(now_sec_time-last_sec_time>=10)
 	{
-//		nwk_master_send_broad(1, NWK_BEACON_BASE_FREQ, 11, 6);//广播
+//		nwk_master_send_broad(1, NWK_BROAD_BASE_FREQ, NWK_BROAD_SF, NWK_BROAD_BW);//广播
     u32 sum=1;
     for(u8 i=0; i<NWK_GW_WIRELESS_NUM; i++)
     {
@@ -760,7 +867,7 @@ void nwk_master_main(void)
       NwkSlaveTokenStruct *pNwkSlave=&g_sNwkMasterWork.slave_token_list[i];
       printf("slave addr=%d, counts=%d, percent=%.1f%%\n", i+1, pNwkSlave->counts, pNwkSlave->counts*100.f/sum);
     }    
-		last_rtc_time=now_rtc_time;
+		last_sec_time=now_sec_time;
 	}
 }
 
