@@ -94,6 +94,7 @@ void nwk_master_uart_parse(u8 *recv_buff, u16 recv_len)
           pData+=1; 
           u8 data_len=pData[0];
           pData+=1;
+          printf("***** P(%.1f, %d, %d)\n", rf.freq/100000.f, rf.sf, rf.bw);
 //          printf_hex("rx=", pData, data_len);
           nwk_master_lora_parse(pData, data_len, slave_addr, &rf);          
           break;
@@ -157,7 +158,7 @@ u8 nwk_master_make_lora_buff(u8 opt, u32 dst_sn, u8 *key, u8 cmd_type, u8 pack_n
 	}
 	
 	//加密单元整合
-	u8 union_buff[NWK_TRANSMIT_MAX_SIZE+16]={0};
+	static u8 union_buff[NWK_TRANSMIT_MAX_SIZE+16]={0};
 	u8 union_len=0;
 	union_buff[union_len++]=0;
 	u32 src_sn=g_sNwkMasterWork.gw_sn;
@@ -395,7 +396,7 @@ void nwk_master_lora_parse(u8 *recv_buff, u8 recv_len, u8 slave_addr, RfParamStr
 						u8 key_tmp[16]={0x45,0xEF,0x09,0x3E,0xA2,0xC8,0xB1,0x4A,0x90,0x75,0xD9,0x63,0x7B,0x3B,0x82,0x96};//解算密码,应用时注意混淆						
             u8 opt=NwkRoleGateWay | (encrypt_mode<<2) | (KeyTypeRoot<<4);//组合配置
             //组合LoRa回复包
-            u8 lora_buff[50]={0};
+            static u8 lora_buff[50]={0};
             u8 lora_len=0;						
             u32 tx_time=nwk_master_calcu_air_time(rf->sf, rf->bw, 16);
             u8 det_sec=tx_time/1000;
@@ -422,7 +423,7 @@ void nwk_master_lora_parse(u8 *recv_buff, u8 recv_len, u8 slave_addr, RfParamStr
             }
 						printf_hex("key out=", app_key, 16);
 						//组合从机数据
-            u8 uart_buff[100]={0};
+            static u8 uart_buff[100]={0};
             u8 uart_len=0;   
             uart_buff[uart_len++]=rf->freq>>24;
             uart_buff[uart_len++]=rf->freq>>16;
@@ -430,7 +431,7 @@ void nwk_master_lora_parse(u8 *recv_buff, u8 recv_len, u8 slave_addr, RfParamStr
             uart_buff[uart_len++]=rf->freq;
             uart_buff[uart_len++]=rf->sf;
             uart_buff[uart_len++]=rf->bw;
-            u8 make_buff[80]={0};
+            static u8 make_buff[80]={0};
             u8 make_len=nwk_master_make_lora_buff(opt, src_sn, pKey, NwkCmdJoin, ++pNodeToken->down_pack_num, lora_buff, lora_len, make_buff, sizeof(make_buff));
             if(make_len>0)
             {
@@ -455,7 +456,7 @@ void nwk_master_lora_parse(u8 *recv_buff, u8 recv_len, u8 slave_addr, RfParamStr
             //需要回复NwkCmdAck指令    
             u8 opt=NwkRoleGateWay | (encrypt_mode<<2) | (key_type<<4);//组合配置
             //组合回复包
-            u8 lora_buff[50]={0}; 
+            static u8 lora_buff[50]={0}; 
             u8 lora_len=0;
             u32 tx_time=nwk_master_calcu_air_time(rf->sf, rf->bw, 16);
             u8 det_sec=tx_time/1000;
@@ -468,7 +469,7 @@ void nwk_master_lora_parse(u8 *recv_buff, u8 recv_len, u8 slave_addr, RfParamStr
             lora_buff[lora_len++]=now_time>>8;
             lora_buff[lora_len++]=now_time;	
             
-            u8 uart_buff[100]={0};
+            static u8 uart_buff[100]={0};
             u8 uart_len=0;   
             uart_buff[uart_len++]=rf->freq>>24;
             uart_buff[uart_len++]=rf->freq>>16; 
@@ -476,8 +477,11 @@ void nwk_master_lora_parse(u8 *recv_buff, u8 recv_len, u8 slave_addr, RfParamStr
             uart_buff[uart_len++]=rf->freq;
             uart_buff[uart_len++]=rf->sf;
             uart_buff[uart_len++]=rf->bw;
-            u8 make_buff[80]={0};
-            u8 make_len=nwk_master_make_lora_buff(opt, src_sn, pKey, NwkCmdAck, ++pNodeToken->down_pack_num, lora_buff, lora_len, make_buff, sizeof(make_buff));
+            static u8 make_buff[80]={0};
+            u8 pack_num=nwk_get_rand();
+            if(pNodeToken)
+              pack_num=++pNodeToken->down_pack_num;
+            u8 make_len=nwk_master_make_lora_buff(opt, src_sn, pKey, NwkCmdAck, pack_num, lora_buff, lora_len, make_buff, sizeof(make_buff));
             if(make_len>0)
             {
               uart_buff[uart_len++]=make_len;

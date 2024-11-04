@@ -67,7 +67,7 @@ void app_master_uart_recv_check(void)
 	static UART_Struct *pUART=&g_sUART2; 
 	u16 recv_len;
 
-  if(pUART->iRecv>0)
+  if(pUART->iRecv>0) 
   {
     recv_len=0;
     while(recv_len<pUART->iRecv)

@@ -279,6 +279,54 @@ void nwk_get_channel(u8 chn, u8 *sf, u8 *bw)
 输出 : 
 ================================================================================
 */
+u16 nwk_cacul_sniff_time(u8 sf, u8 bw)
+{
+	float bw_value=0.f, t_s;
+	u32 tx_time=0;
+	
+	switch(bw)
+	{
+		case 0:
+			bw_value=7.8;
+			break;
+		case 1:
+			bw_value=10.4;
+			break;
+		case 2:
+			bw_value=15.6;
+			break;
+		case 3:
+			bw_value=20.8;
+			break;
+		case 4:
+			bw_value=31.25;
+			break;
+		case 5:
+			bw_value=41.6;
+			break;
+		case 6:
+			bw_value=62.5;
+			break;
+		case 7:
+			bw_value=125;
+			break;
+		case 8:
+			bw_value=250;
+			break;
+		case 9:
+			bw_value=500;
+			break;
+		default: return 0;	
+	}
+	
+	if(sf<7 || sf>12)
+	{
+		return 0;
+	}
+	t_s=1.f*(1<<sf)/bw_value;
+  tx_time=t_s*1;  
+  return tx_time;
+}
 
 /*		
 ================================================================================

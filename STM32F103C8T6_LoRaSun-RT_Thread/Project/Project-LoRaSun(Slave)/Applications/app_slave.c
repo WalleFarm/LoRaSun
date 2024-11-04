@@ -402,13 +402,13 @@ void app_slave_thread_entry(void *parameter)
   {
     app_slave_uart_recv_check();//串口接收检查
     nwk_slave_main(); 
-    if(run_cnts++%100==0)//指示灯运行
+    if(run_cnts++%200==0)//指示灯运行
     {
       led_state=!led_state;
       app_slave_led_set(led_state);
     } 
 
-    delay_os(10);
+    delay_os(5);
   }
 }
 

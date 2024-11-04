@@ -118,6 +118,7 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>DLGUARM</Key>
+          <Name></Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -149,9 +150,9 @@
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
-          <LineNumber>274</LineNumber>
+          <LineNumber>154</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134229564</Address>
+          <Address>134232078</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -160,7 +161,23 @@
           <BreakIfRCount>1</BreakIfRCount>
           <Filename>..\..\Drivers\LoRaSun\nwk_master.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\\../../Drivers/LoRaSun/nwk_master.c\274</Expression>
+          <Expression>\\KKK\../../Drivers/LoRaSun/nwk_master.c\154</Expression>
+        </Bp>
+        <Bp>
+          <Number>1</Number>
+          <Type>0</Type>
+          <LineNumber>155</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>0</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>0</BreakIfRCount>
+          <Filename>..\..\Drivers\LoRaSun\nwk_master.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression></Expression>
         </Bp>
       </Breakpoint>
       <WatchWindow1>

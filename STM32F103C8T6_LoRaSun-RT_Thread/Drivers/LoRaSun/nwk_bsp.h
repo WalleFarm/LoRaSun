@@ -113,6 +113,7 @@ u32 nwk_get_sec_counter(void);
 
 int nwk_get_rand(void);
 void nwk_get_channel(u8 chn, u8 *sf, u8 *bw);
+u16 nwk_cacul_sniff_time(u8 sf, u8 bw);
 
 
 #endif

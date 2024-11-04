@@ -13,6 +13,7 @@ NwkSlaveWorkStruct g_sNwkSlaveWork={0};
 */ 
 void nwk_slave_uart_parse(u8 *recv_buff, u16 recv_len)
 {
+  printf_hex("master buff= ", recv_buff, recv_len);
   u8 head[2]={0xAA, 0x55};
   u8 *pData=nwk_find_head(recv_buff, recv_len, head, 2);
   if(pData)
@@ -54,12 +55,13 @@ void nwk_slave_uart_parse(u8 *recv_buff, u16 recv_len)
             return;
           }
           memcpy(pSlaveBroad->broad_buff, pData, broad_len);
-//          pSlaveBroad->broad_len=broad_len;
+          pSlaveBroad->broad_len=broad_len;
 					printf_hex("broad_buff=", pSlaveBroad->broad_buff, broad_len);
           break;
         } 
         case MSCmdAckRxData://回复上行接收
         {
+          printf("MSCmdAckRxData ###\n");
           NwkSlaveRxStruct *pSlaveRx=&g_sNwkSlaveWork.slave_rx;          
           u32 freq=pData[0]<<24|pData[1]<<16|pData[2]<<8|pData[3];
           pData+=4;
@@ -70,7 +72,8 @@ void nwk_slave_uart_parse(u8 *recv_buff, u16 recv_len)
           u8 lora_len=pData[0];
           pData+=1;   
           u8 *lora_buff=pData;
-          nwk_slave_set_lora_param(freq, sf, bw);//设置通讯参数(也可以不设置)
+//          nwk_slave_set_lora_param(freq, sf, bw);//设置通讯参数(也可以不设置)
+          nwk_delay_ms(200);
           nwk_slave_send_buff(lora_buff, lora_len); 
           u32 tx_time=nwk_slave_calcu_air_time(pSlaveRx->curr_sf, pSlaveRx->curr_bw, lora_len)*1.2;//接收等待时间
           pSlaveRx->start_rtc_time=nwk_get_sec_counter();//记录当前时间,防止超时
@@ -110,7 +113,7 @@ void nwk_slave_uart_parse(u8 *recv_buff, u16 recv_len)
           }
           break;
         } 
-        case MSCmdRxData://回复LoRa接收数据
+        case MSCmdRxData://LoRa接收数据
         {
           RfParamStruct rf;
           rf.freq=pData[0]<<24|pData[1]<<16|pData[2]<<8|pData[3];
@@ -466,7 +469,8 @@ void nwk_slave_send_sniff(u8 sf, u8 bw)
 	if(g_sNwkSlaveWork.pLoRaDev==NULL)
 		return;	
   u8 buff[1]={0x01};
-  u32 tx_time=nwk_slave_calcu_air_time(sf, bw, 1);
+//  u32 tx_time=nwk_slave_calcu_air_time(sf, bw, 1);
+  u16 tx_time=nwk_cacul_sniff_time(sf, bw);
   u8 loops=(tx_time*0.1)/2+5;//计算循环次数
 //  u8 loops=2;//计算循环次数
 #if defined(LORA_SX1278)  
@@ -478,7 +482,7 @@ void nwk_slave_send_sniff(u8 sf, u8 bw)
 #elif defined(LORA_LLCC68)
 
 #endif
-  nwk_delay_ms(10);
+  nwk_delay_ms(tx_time);
 //	while(loops--)
 //  {
 //    nwk_delay_ms(2);
@@ -603,7 +607,16 @@ void nwk_slave_rx_process(void)
         } 
 				else
 				{
-					pSlaveRx->rx_state=NwkSlaveRxCadInit;//下一组参数
+          u8 sf=0, bw=0;
+          pSlaveRx->freq=NWK_GW_BASE_FREQ+(g_sNwkSlaveWork.freq_ptr+(g_sNwkSlaveWork.slave_addr-1))*2000000+pSlaveRx->group_id*500000;//计算监听频率
+          nwk_get_channel(pSlaveRx->group_id*2, &sf, &bw);
+          pSlaveRx->curr_sf=sf;
+          pSlaveRx->curr_bw=bw;      
+    //			printf("cad2 param(%.2f, %d, %d)\n", pSlaveRx->freq/1000000.0, sf, bw);
+          nwk_slave_set_lora_param(pSlaveRx->freq, sf, bw);
+          nwk_slave_cad_init();          
+          
+//					pSlaveRx->rx_state=NwkSlaveRxCadInit;//下一组参数
 				}
       }
       else if(result==CadResultSuccess)//搜索到
@@ -780,7 +793,7 @@ void nwk_slave_tx_process(void)
       printf("send wake!\n");
       if(pSlaveTx->awake_flag)
       {
-        for(u16 i=0; i<40; i++)
+        for(u16 i=0; i<60; i++)
         {
           nwk_slave_send_sniff(pSlaveTx->curr_sf, pSlaveTx->curr_bw);//发送嗅探帧,唤醒设备
         }        

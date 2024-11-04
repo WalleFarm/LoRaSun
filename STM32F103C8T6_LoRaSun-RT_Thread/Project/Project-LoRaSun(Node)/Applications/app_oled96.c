@@ -76,7 +76,7 @@ void app_oled96_show_signal(s16 rssi, s8 snr)
 {
   DrvOLED96WorkStruct *pOLED96=&g_sAppOLEDWork.oled96_work;
   char buff[30]={0};
-  sprintf(buff, "2.RSSI%ddbm, %ddbm", rssi, snr);
+  sprintf(buff, "2.SI:%ddbm, %ddbm", rssi, snr);
   drv_oled96_clear_line(pOLED96, 1);//清理
   drv_oled96_show_str_f6x8(pOLED96, 0, 1, buff);  
 }

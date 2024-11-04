@@ -23,7 +23,7 @@ void APP_Init(void)
 		
 	
 	tid = rt_thread_create("master", app_master_thread_entry, RT_NULL,  
-												 1024, RT_THREAD_PRIORITY_MAX - 15, 20);
+												 1200, RT_THREAD_PRIORITY_MAX - 15, 20);
 	RT_ASSERT(tid != RT_NULL);	
 	rt_thread_startup(tid);	
   

@@ -537,6 +537,11 @@ void app_node_thread_entry(void *parameter)
       app_oled96_show_tx_total(total_cnts, ok_cnts);//显示发送次数
 //      printf_oled("show update!!!!");
 		}
+    
+    if(run_cnts%2000==0)
+    {
+//      app_node_send_status();
+    }
 		
     delay_os(5);
   }

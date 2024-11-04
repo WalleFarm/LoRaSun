@@ -9,7 +9,7 @@
 
 
 
-//#define		USE_WDOG   //是否启用看门狗
+#define		USE_WDOG   //是否启用看门狗
 
 #define		USE_RTC    //是否启用RTC
 
