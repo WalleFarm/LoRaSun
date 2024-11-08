@@ -94,7 +94,7 @@ void nwk_master_uart_parse(u8 *recv_buff, u16 recv_len)
           pData+=1; 
           u8 data_len=pData[0];
           pData+=1;
-          printf("***** P(%.1f, %d, %d)\n", rf.freq/100000.f, rf.sf, rf.bw);
+          printf("***** P(%.1f, %d, %d)\n", rf.freq/1000000.f, rf.sf, rf.bw);
 //          printf_hex("rx=", pData, data_len);
           nwk_master_lora_parse(pData, data_len, slave_addr, &rf);          
           break;
@@ -531,7 +531,7 @@ void nwk_master_send_broad(u8 slave_addr, u32 freq, u8 sf, u8 bw)
 	make_buff[make_len++]=gw_sn>>8;
 	make_buff[make_len++]=gw_sn;
 	make_buff[make_len++]=g_sNwkMasterWork.freq_ptr;//起始频段
-	make_buff[make_len++]=NWK_GW_WIRELESS_NUM;//天线数量
+	make_buff[make_len++]=slave_addr<<4 | NWK_GW_WIRELESS_NUM;//天线序号/数量
 	make_buff[make_len++]=nwk_get_rand();//保留
 	make_len=nwk_tea_encrypt(make_buff, make_len, (u32 *)g_sNwkMasterWork.root_key);//加密广播数据
 	if(make_len>0)
@@ -540,7 +540,7 @@ void nwk_master_send_broad(u8 slave_addr, u32 freq, u8 sf, u8 bw)
 		memcpy(&uart_buff[uart_len], make_buff, make_len);
 		uart_len+=make_len;
 		nwk_master_uart_send_level(slave_addr, MSCmdBroad, uart_buff, uart_len);//发送到从机
-		printf("nwk_master_send_broad ###\n");
+		printf("nwk_master_send_broad slave_addr=%d ###\n", slave_addr);
 	}	
 
 }
@@ -749,6 +749,18 @@ void nwk_master_del_node(u32 node_sn)
 
 /*		
 ================================================================================
+描述 : 
+输入 : 
+输出 : 
+================================================================================
+*/ 
+u32 nwk_master_get_gw_sn(void)
+{
+  return g_sNwkMasterWork.gw_sn;
+}
+
+/*		
+================================================================================
 描述 : 添加下行包
 输入 : 
 输出 : 
@@ -816,6 +828,7 @@ void nwk_master_check_down_pack(void)
       {
         pTemp->down_time=now_time;
         u8 slave_addr=nwk_get_rand()%NWK_GW_WIRELESS_NUM+1;
+//        slave_addr=4;
         printf(">>>down tx node_sn=0x%08X, slave_addr=%d\n", pTemp->node_sn, slave_addr);
         nwk_master_send_down_pack(pTemp->node_sn, slave_addr, pTemp->down_buff, pTemp->down_len, awake_flag);        
       }
@@ -858,7 +871,6 @@ void nwk_master_main(void)
 	nwk_master_check_down_pack();//下行数据包检测
 	if(now_sec_time-last_sec_time>=10)
 	{
-//		nwk_master_send_broad(1, NWK_BROAD_BASE_FREQ, NWK_BROAD_SF, NWK_BROAD_BW);//广播
     u32 sum=1;
     for(u8 i=0; i<NWK_GW_WIRELESS_NUM; i++)
     {
@@ -873,6 +885,22 @@ void nwk_master_main(void)
     }    
 		last_sec_time=now_sec_time;
 	}
+  
+  if(0)
+  {
+    static u32 last_sec_time=0;
+    u32 now_sec_time=nwk_get_sec_counter();
+    if(now_sec_time-last_sec_time>=4)
+    {
+      static u8 slave_addr=1;
+      if(slave_addr>NWK_GW_WIRELESS_NUM)
+      {
+        slave_addr=1;
+      }
+      nwk_master_send_broad(slave_addr++, NWK_BROAD_BASE_FREQ, NWK_BROAD_SF, NWK_BROAD_BW);//广播      
+      last_sec_time=now_sec_time;
+    }
+  }
 }
 
 

@@ -21,9 +21,9 @@ AppNodeWorkStruct g_sAppNodeWork={0};
 static void app_node_lora_reset(void)
 {
 	GPIO_ResetBits(GPIOB, GPIO_Pin_14);
-	delay_ms(10);
+	delay_ms(1);
 	GPIO_SetBits(GPIOB, GPIO_Pin_14);
-	delay_ms(10);	
+	delay_ms(1);	
 
 }
 
@@ -527,7 +527,7 @@ void app_node_thread_entry(void *parameter)
 //      app_node_temp_update();//温度更新
 
     }
-		if(run_cnts%400==0)//显示信息更新
+		if(1 && run_cnts%400==0)//显示信息更新
 		{
       RfParamStruct *rf_param=nwk_node_take_rf_param();
       app_oled96_show_signal(rf_param->rssi, rf_param->snr);//更新信号显示

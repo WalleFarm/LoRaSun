@@ -407,7 +407,7 @@ void app_slave_thread_entry(void *parameter)
       led_state=!led_state;
       app_slave_led_set(led_state);
     } 
-
+//    delay_ms(2);
     delay_os(5);
   }
 }

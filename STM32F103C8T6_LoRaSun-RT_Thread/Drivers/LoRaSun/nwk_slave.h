@@ -6,8 +6,8 @@
 #include "nwk_bsp.h"
 
 //定义所使用的LoRa芯片模块,只能选一种,其余注释
-//#define LORA_SX1278    
-#define LORA_SX1268    
+#define LORA_SX1278    
+//#define LORA_SX1268    
 //#define LORA_LLCC68    
 
 
@@ -97,6 +97,7 @@ typedef struct
   u8 recv_len;
 //  u8 freq_ptr;
   u8 group_id;
+  u8 cad_cnts;
   u16 wait_cnts;
   u32 freq;
   u8 curr_sf, curr_bw;
@@ -136,6 +137,7 @@ typedef struct
 void nwk_slave_set_lora_dev(LoRaDevStruct *pLoRaDev);
 void nwk_slave_set_lora_param(u32 freq, u8 sf, u8 bw);
 void nwk_slave_uart_send_register(void (*fun_send)(u8 *buff, u16 len));
+void nwk_slave_device_init(void);
 void nwk_slave_cad_init(void);
 void nwk_slave_recv_init(void);
 u8 nwk_slave_cad_check(void);

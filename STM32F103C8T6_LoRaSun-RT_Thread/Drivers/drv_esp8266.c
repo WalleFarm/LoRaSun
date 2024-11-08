@@ -292,6 +292,7 @@ void drv_esp8266_reg_process(void)
         if(strlen(g_sEsp8266Work.sta_ssid)>0)
         {
           sprintf(cmd_buff, "CWJAP_DEF=\"%s\",\"%s\"", g_sEsp8266Work.sta_ssid, g_sEsp8266Work.sta_passwd);
+//          sprintf(cmd_buff, "CWJAP=\"%s\",\"%s\"", g_sEsp8266Work.sta_ssid, g_sEsp8266Work.sta_passwd);
           drv_esp8266_send_at(cmd_buff);
           delay_os(1000);          
         }                   

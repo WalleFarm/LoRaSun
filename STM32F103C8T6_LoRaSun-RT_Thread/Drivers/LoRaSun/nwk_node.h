@@ -215,6 +215,7 @@ void nwk_node_set_wake_period(u16 period);
 void nwk_node_set_lora_dev(LoRaDevStruct *pLoRaDev);
 void nwk_node_set_led(bool state);//LED
 void nwk_node_set_lora_param(u32 freq, u8 sf, u8 bw);
+void nwk_node_device_init(void);
 void nwk_node_sleep_init(void);
 void nwk_node_cad_init(void);
 void nwk_node_recv_init(void);

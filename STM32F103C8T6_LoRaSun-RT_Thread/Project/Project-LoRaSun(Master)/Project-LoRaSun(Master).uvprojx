@@ -435,6 +435,11 @@
               <FileType>1</FileType>
               <FilePath>.\Applications\app_master.c</FilePath>
             </File>
+            <File>
+              <FileName>app_mqtt.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Applications\app_mqtt.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -464,6 +469,16 @@
               <FileName>drv_encrypt.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Drivers\drv_encrypt.c</FilePath>
+            </File>
+            <File>
+              <FileName>drv_mqtt.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Drivers\drv_mqtt.c</FilePath>
+            </File>
+            <File>
+              <FileName>drv_esp8266.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Drivers\drv_esp8266.c</FilePath>
             </File>
           </Files>
         </Group>

@@ -69,6 +69,7 @@ void nwk_master_set_freq_ptr(u8 freq_ptr);
 NwkNodeTokenStruct *nwk_master_add_node(u32 node_sn);
 NwkNodeTokenStruct *nwk_master_find_node(u32 node_sn);
 void nwk_master_del_node(u32 node_sn);
+u32 nwk_master_get_gw_sn(void);
 
 u8 nwk_master_add_down_pack(u32 dst_sn, u8 *in_buff, u8 in_len);
 void nwk_master_check_down_pack(void);

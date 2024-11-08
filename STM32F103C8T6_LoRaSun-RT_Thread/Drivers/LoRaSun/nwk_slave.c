@@ -282,6 +282,29 @@ void nwk_slave_uart_send_register(void (*fun_send)(u8 *buff, u16 len))
   g_sNwkSlaveWork.fun_send=fun_send; 
 }
 
+
+/*		
+================================================================================
+描述 : 设备初始化
+输入 : 
+输出 : 
+================================================================================
+*/ 
+void nwk_slave_device_init(void)
+{
+	printf("nwk_node_device_init ### \n");
+	if(g_sNwkSlaveWork.pLoRaDev==NULL)
+		return;
+#if defined(LORA_SX1278)  
+		drv_sx1278_init( g_sNwkSlaveWork.pLoRaDev);
+	
+#elif defined(LORA_SX1268)
+		drv_sx1268_init(g_sNwkSlaveWork.pLoRaDev);
+#elif defined(LORA_LLCC68)
+
+#endif		
+}
+
 /*		
 ================================================================================
 描述 : CAD初始化
@@ -482,7 +505,9 @@ void nwk_slave_send_sniff(u8 sf, u8 bw)
 #elif defined(LORA_LLCC68)
 
 #endif
-  nwk_delay_ms(tx_time);
+//  u16 k=100;
+//  while(k--);
+  nwk_delay_ms(5);
 //	while(loops--)
 //  {
 //    nwk_delay_ms(2);
@@ -578,6 +603,7 @@ void nwk_slave_rx_process(void)
     case NwkSlaveRxInit:
     {
       pSlaveRx->group_id=0;
+      pSlaveRx->cad_cnts=0;
       pSlaveRx->rx_state=NwkSlaveRxCadInit;
 //      printf("###### NwkSlaveRxInit!\n");        
       break;
@@ -585,11 +611,11 @@ void nwk_slave_rx_process(void)
     case NwkSlaveRxCadInit:
     {
       u8 sf=0, bw=0;
-      pSlaveRx->freq=NWK_GW_BASE_FREQ+(g_sNwkSlaveWork.freq_ptr+(g_sNwkSlaveWork.slave_addr-1))*2000000+pSlaveRx->group_id*500000;//计算监听频率
+      pSlaveRx->freq=NWK_GW_BASE_FREQ+(g_sNwkSlaveWork.freq_ptr+(g_sNwkSlaveWork.slave_addr-1))*5000000;//+pSlaveRx->group_id*500000;//计算监听频率
       nwk_get_channel(pSlaveRx->group_id*2, &sf, &bw);
       pSlaveRx->curr_sf=sf;
       pSlaveRx->curr_bw=bw;      
-//			printf("cad param(%.2f, %d, %d)\n", pSlaveRx->freq/1000000.0, sf, bw);
+//			printf("cad1 param(%.2f, %d, %d)\n", pSlaveRx->freq/1000000.0, sf, bw);
       nwk_slave_set_lora_param(pSlaveRx->freq, sf, bw);
       nwk_slave_cad_init();  
       pSlaveRx->rx_state=NwkSlaveRxCadCheck;      
@@ -600,7 +626,14 @@ void nwk_slave_rx_process(void)
       u8 result=nwk_slave_cad_check();
       if(result==CadResultFailed)//没搜索到
       {
-        pSlaveRx->group_id++;
+//        pSlaveRx->cad_cnts++;
+//        if(pSlaveRx->group_id==NWK_RF_GROUP_NUM-1 || pSlaveRx->cad_cnts>2)
+////        if(pSlaveRx->cad_cnts>2+NWK_RF_GROUP_NUM-pSlaveRx->group_id)
+//        {
+          pSlaveRx->group_id++;
+//          pSlaveRx->cad_cnts=0;          
+//        }
+//        
         if(pSlaveRx->group_id>=NWK_RF_GROUP_NUM)//NWK_RF_GROUP_NUM
         {
           pSlaveRx->rx_state=NwkSlaveRxIdel;//结束本回合
@@ -608,15 +641,15 @@ void nwk_slave_rx_process(void)
 				else
 				{
           u8 sf=0, bw=0;
-          pSlaveRx->freq=NWK_GW_BASE_FREQ+(g_sNwkSlaveWork.freq_ptr+(g_sNwkSlaveWork.slave_addr-1))*2000000+pSlaveRx->group_id*500000;//计算监听频率
+//          pSlaveRx->freq=NWK_GW_BASE_FREQ+(g_sNwkSlaveWork.freq_ptr+(g_sNwkSlaveWork.slave_addr-1))*2000000+pSlaveRx->group_id*500000;//计算监听频率
           nwk_get_channel(pSlaveRx->group_id*2, &sf, &bw);
           pSlaveRx->curr_sf=sf;
           pSlaveRx->curr_bw=bw;      
-    //			printf("cad2 param(%.2f, %d, %d)\n", pSlaveRx->freq/1000000.0, sf, bw);
+//    			printf("cad2 param(%.2f, %d, %d)\n", pSlaveRx->freq/1000000.0, sf, bw);
           nwk_slave_set_lora_param(pSlaveRx->freq, sf, bw);
           nwk_slave_cad_init();          
           
-//					pSlaveRx->rx_state=NwkSlaveRxCadInit;//下一组参数
+					pSlaveRx->rx_state=NwkSlaveRxCadInit;//下一组参数
 				}
       }
       else if(result==CadResultSuccess)//搜索到
@@ -627,17 +660,18 @@ void nwk_slave_rx_process(void)
         pSlaveRx->curr_sf=sf;
         pSlaveRx->curr_bw=bw;
         printf("group id=%d, rx sniff param(%.2f, %d, %d)\n", pSlaveRx->group_id, pSlaveRx->freq/1000000.0, sf, bw);
-        
+        nwk_delay_ms(15);
         nwk_slave_set_lora_param(pSlaveRx->freq, sf, bw);  
-        for(u8 i=0; i<3+NWK_RF_GROUP_NUM-pSlaveRx->group_id; i++)//8-pSlaveRx->group_id
+        for(u16 i=0; i<10; i++)//8-pSlaveRx->group_id
         {
           nwk_slave_send_sniff(sf, bw);//返回嗅探帧
         }
+        
         printf("into recv mode!\n"); 
         nwk_slave_recv_init();//进入接收
         u32 tx_time=nwk_slave_calcu_air_time(sf, bw, 4)*1.2;//接收等待时间
         pSlaveRx->start_rtc_time=nwk_get_sec_counter();//记录当前时间,防止超时
-        pSlaveRx->wait_cnts=tx_time/1000+1;             
+        pSlaveRx->wait_cnts=tx_time/1000+2;             
         pSlaveRx->rx_state=NwkSlaveRxCheck; 
         printf("will wait time=%ds\n", pSlaveRx->wait_cnts);  
       }        
@@ -725,6 +759,7 @@ void nwk_slave_rx_process(void)
       if(result)//发送完成
       {
         printf("ack send ok!\n");
+        nwk_slave_device_init();
         pSlaveRx->rx_state=NwkSlaveRxIdel;//结束本回合
       }
       else if(now_time-pSlaveRx->start_rtc_time>pSlaveRx->wait_cnts)//发送超时
@@ -793,7 +828,7 @@ void nwk_slave_tx_process(void)
       printf("send wake!\n");
       if(pSlaveTx->awake_flag)
       {
-        for(u16 i=0; i<60; i++)
+        for(u16 i=0; i<100; i++)
         {
           nwk_slave_send_sniff(pSlaveTx->curr_sf, pSlaveTx->curr_bw);//发送嗅探帧,唤醒设备
         }        
@@ -848,11 +883,11 @@ void nwk_slave_tx_process(void)
         return;
       }
       u8 sf=0, bw=0;
-      u32 freq=pSlaveTx->freq+pSlaveTx->group_id*500000;
+      u32 freq=pSlaveTx->freq;//+pSlaveTx->group_id*500000;
       nwk_get_channel(pSlaveTx->group_id*2, &sf, &bw); //嗅探参数
       nwk_slave_set_lora_param(freq, sf, bw);
 			 
-			for(u8 i=0; i<3+NWK_RF_GROUP_NUM-pSlaveTx->group_id; i++)//
+			for(u8 i=0; i<1; i++)//
 			{
 				nwk_slave_send_sniff(sf, bw);//发送嗅探帧
 			}
@@ -865,7 +900,39 @@ void nwk_slave_tx_process(void)
 			pSlaveTx->cad_cnts=0;
       pSlaveTx->curr_sf=sf;
       pSlaveTx->curr_bw=bw; //记录监听参数,发送时候再次使用      
-      pSlaveTx->tx_state=NwkSlaveTxAdrSniffCheck;      
+//      pSlaveTx->tx_state=NwkSlaveTxAdrSniffCheck;      
+      for(u8 i=0; i<6; )//CAD回复检测次数
+      {
+        u8 result=nwk_slave_cad_check();
+        if(result==CadResultFailed)//没搜索到
+        {
+          nwk_slave_cad_init();//继续监听
+//          printf("111 cad init\n");
+          i++;
+        }
+        else if(result==CadResultSuccess)//搜索成功
+        {
+          printf("**** CAD OK!\n");
+          nwk_delay_ms(300);//适当延时,等待对方嗅探帧发送完
+          nwk_slave_send_buff(pSlaveTx->tx_buff, pSlaveTx->tx_len);//发送数据包
+          u32 tx_time=nwk_slave_calcu_air_time(pSlaveTx->curr_sf, pSlaveTx->curr_bw, pSlaveTx->tx_len)*1.2;//发送时间,冗余
+          pSlaveTx->start_rtc_time=nwk_get_sec_counter();//记录当前时间,防止超时
+          pSlaveTx->wait_cnts=tx_time/1000+2;//等待秒数
+          pSlaveTx->tx_state=NwkSlaveTxRunning;     
+          return;          
+        }        
+      }
+      //没有检测到CAD
+      if(pSlaveTx->sniff_cnts<5)//同一组参数嗅探多次
+      {
+        pSlaveTx->tx_state=NwkSlaveTxAdrSniffInit;//继续嗅探
+      }
+      else
+      {
+        pSlaveTx->group_id++;//换下一组参数 
+        pSlaveTx->sniff_cnts=0;
+        pSlaveTx->tx_state=NwkSlaveTxAdrSniffInit;//继续嗅探          
+      }       
       break;
     }
     
@@ -880,7 +947,7 @@ void nwk_slave_tx_process(void)
         {
           nwk_slave_cad_init();//继续监听
         }
-        else if(pSlaveTx->sniff_cnts<2)
+        else if(pSlaveTx->sniff_cnts<3)
         {
           pSlaveTx->tx_state=NwkSlaveTxAdrSniffInit;//继续嗅探  
         }
@@ -909,7 +976,7 @@ void nwk_slave_tx_process(void)
       u8 result=nwk_slave_send_check();//发送完成检测
       if(result)//发送完成
       {
-        printf("send app ok!   wait ack!\n");
+        printf("send app ok!   \nwait ack!\n");
         nwk_slave_recv_init();//进入接收,等待回复
         u32 tx_time=nwk_slave_calcu_air_time(pSlaveTx->curr_sf, pSlaveTx->curr_bw, 20)*1.2;//接收回复包等待时间
         pSlaveTx->start_rtc_time=nwk_get_sec_counter();//记录当前时间,防止超时

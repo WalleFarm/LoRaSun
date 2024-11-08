@@ -3,9 +3,9 @@
 <title>Static Call Graph - [.\Objects\KKK.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\Objects\KKK.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060422: Last Updated: Mon Nov 04 18:55:28 2024
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060422: Last Updated: Sat Nov 09 00:31:17 2024
 <BR><P>
-<H3>Maximum Stack Usage =        808 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
+<H3>Maximum Stack Usage =        824 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
 app_node_thread_entry &rArr; nwk_node_main &rArr; nwk_node_work_check &rArr; nwk_node_tx_gw_process &rArr; nwk_node_recv_parse &rArr; nwk_node_make_send_buff &rArr; nwk_tea_encrypt &rArr; tea_encrypt_buff &rArr; EncryptTEA
 <P>
@@ -323,12 +323,12 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f10x_md.o(RESET)
 </UL>
-<P><STRONG><a name="[15a]"></a>rand</STRONG> (Thumb, 20 bytes, Stack size 0 bytes, rand.o(.text))
-<BR><BR>[Called By]<UL><LI><a href="#[158]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_get_rand
+<P><STRONG><a name="[159]"></a>rand</STRONG> (Thumb, 20 bytes, Stack size 0 bytes, rand.o(.text))
+<BR><BR>[Called By]<UL><LI><a href="#[157]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_get_rand
 </UL>
 
-<P><STRONG><a name="[159]"></a>srand</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, rand.o(.text))
-<BR><BR>[Called By]<UL><LI><a href="#[158]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_get_rand
+<P><STRONG><a name="[158]"></a>srand</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, rand.o(.text))
+<BR><BR>[Called By]<UL><LI><a href="#[157]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_get_rand
 </UL>
 
 <P><STRONG><a name="[7b]"></a>__aeabi_memcpy</STRONG> (Thumb, 36 bytes, Stack size 0 bytes, memcpya.o(.text))
@@ -339,8 +339,8 @@ Global Symbols
 <LI><a href="#[160]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_make_send_buff
 </UL>
 
-<P><STRONG><a name="[145]"></a>__aeabi_memcpy4</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, memcpya.o(.text))
-<BR><BR>[Called By]<UL><LI><a href="#[144]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_pa
+<P><STRONG><a name="[143]"></a>__aeabi_memcpy4</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, memcpya.o(.text))
+<BR><BR>[Called By]<UL><LI><a href="#[142]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_pa
 </UL>
 
 <P><STRONG><a name="[1c2]"></a>__aeabi_memcpy8</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, memcpya.o(.text), UNUSED)
@@ -358,7 +358,7 @@ Global Symbols
 <BR><BR>[Calls]<UL><LI><a href="#[50]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memset
 </UL>
 <BR>[Called By]<UL><LI><a href="#[ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_Clear
-<LI><a href="#[15e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_clear_tx
+<LI><a href="#[15d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_clear_tx
 </UL>
 
 <P><STRONG><a name="[da]"></a>__aeabi_memclr4</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, memseta.o(.text))
@@ -390,10 +390,10 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[38]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_uart_thread_entry
 </UL>
 
-<P><STRONG><a name="[157]"></a>memcmp</STRONG> (Thumb, 26 bytes, Stack size 12 bytes, memcmp.o(.text))
+<P><STRONG><a name="[156]"></a>memcmp</STRONG> (Thumb, 26 bytes, Stack size 12 bytes, memcmp.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 12<LI>Call Chain = memcmp
 </UL>
-<BR>[Called By]<UL><LI><a href="#[156]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_find_head
+<BR>[Called By]<UL><LI><a href="#[155]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_find_head
 </UL>
 
 <P><STRONG><a name="[52]"></a>atol</STRONG> (Thumb, 26 bytes, Stack size 16 bytes, atol.o(.text))
@@ -433,7 +433,7 @@ Global Symbols
 </UL>
 <BR>[Called By]<UL><LI><a href="#[fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_oled96_show_tx_total
 <LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_node_temp_update
-<LI><a href="#[153]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_cacul_sniff_time
+<LI><a href="#[152]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_cacul_sniff_time
 <LI><a href="#[129]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_calcu_air_time
 </UL>
 
@@ -444,7 +444,7 @@ Global Symbols
 </UL>
 <BR>[Called By]<UL><LI><a href="#[fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_oled96_show_tx_total
 <LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_node_temp_update
-<LI><a href="#[153]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_cacul_sniff_time
+<LI><a href="#[152]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_cacul_sniff_time
 <LI><a href="#[129]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_calcu_air_time
 <LI><a href="#[168]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_rx_process
 </UL>
@@ -517,7 +517,7 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[56]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_float_epilogue
 </UL>
-<BR>[Called By]<UL><LI><a href="#[153]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_cacul_sniff_time
+<BR>[Called By]<UL><LI><a href="#[152]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_cacul_sniff_time
 <LI><a href="#[129]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_calcu_air_time
 </UL>
 
@@ -553,7 +553,7 @@ Global Symbols
 
 <P><STRONG><a name="[f3]"></a>__aeabi_f2uiz</STRONG> (Thumb, 40 bytes, Stack size 0 bytes, ffixui.o(.text))
 <BR><BR>[Called By]<UL><LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_node_temp_update
-<LI><a href="#[153]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_cacul_sniff_time
+<LI><a href="#[152]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_cacul_sniff_time
 <LI><a href="#[129]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_calcu_air_time
 </UL>
 
@@ -683,7 +683,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_fp_digits
 </UL>
 
-<P><STRONG><a name="[14e]"></a>__aeabi_cdcmpeq</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, cdcmple.o(.text))
+<P><STRONG><a name="[14d]"></a>__aeabi_cdcmpeq</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, cdcmple.o(.text))
 <BR><BR>[Called By]<UL><LI><a href="#[f2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;log
 </UL>
 
@@ -784,7 +784,7 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[77]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_thread_startup
 <LI><a href="#[76]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_thread_create
 </UL>
-<BR>[Called By]<UL><LI><a href="#[14f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;$Super$$main
+<BR>[Called By]<UL><LI><a href="#[14e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;$Super$$main
 </UL>
 
 <P><STRONG><a name="[78]"></a>BKP_DeInit</STRONG> (Thumb, 16 bytes, Stack size 8 bytes, stm32f10x_bkp.o(i.BKP_DeInit))
@@ -1403,22 +1403,22 @@ Global Symbols
 <LI><a href="#[2f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART1_IRQHandler
 </UL>
 
-<P><STRONG><a name="[14a]"></a>USART_SendData</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, stm32f10x_usart.o(i.USART_SendData))
+<P><STRONG><a name="[149]"></a>USART_SendData</STRONG> (Thumb, 8 bytes, Stack size 0 bytes, stm32f10x_usart.o(i.USART_SendData))
 <BR><BR>[Called By]<UL><LI><a href="#[3a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;fputc
 </UL>
 
 <P><STRONG><a name="[5]"></a>UsageFault_Handler</STRONG> (Thumb, 4 bytes, Stack size 0 bytes, stm32f10x_it.o(i.UsageFault_Handler))
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f10x_md.o(RESET)
 </UL>
-<P><STRONG><a name="[149]"></a>WWDG_Enable</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, stm32f10x_wwdg.o(i.WWDG_Enable))
+<P><STRONG><a name="[148]"></a>WWDG_Enable</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, stm32f10x_wwdg.o(i.WWDG_Enable))
 <BR><BR>[Called By]<UL><LI><a href="#[10c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_system_reset
 </UL>
 
-<P><STRONG><a name="[147]"></a>WWDG_SetPrescaler</STRONG> (Thumb, 18 bytes, Stack size 0 bytes, stm32f10x_wwdg.o(i.WWDG_SetPrescaler))
+<P><STRONG><a name="[146]"></a>WWDG_SetPrescaler</STRONG> (Thumb, 18 bytes, Stack size 0 bytes, stm32f10x_wwdg.o(i.WWDG_SetPrescaler))
 <BR><BR>[Called By]<UL><LI><a href="#[10c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_system_reset
 </UL>
 
-<P><STRONG><a name="[148]"></a>WWDG_SetWindowValue</STRONG> (Thumb, 34 bytes, Stack size 8 bytes, stm32f10x_wwdg.o(i.WWDG_SetWindowValue))
+<P><STRONG><a name="[147]"></a>WWDG_SetWindowValue</STRONG> (Thumb, 34 bytes, Stack size 8 bytes, stm32f10x_wwdg.o(i.WWDG_SetWindowValue))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = WWDG_SetWindowValue
 </UL>
 <BR>[Called By]<UL><LI><a href="#[10c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_system_reset
@@ -1445,19 +1445,20 @@ Global Symbols
 <LI><a href="#[e3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_node_set_wake_period
 <LI><a href="#[e2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_node_set_sn
 <LI><a href="#[38]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_uart_thread_entry
-<LI><a href="#[14f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;$Super$$main
+<LI><a href="#[14e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;$Super$$main
 <LI><a href="#[175]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tea_encrypt_buff
 <LI><a href="#[174]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tea_decrypt_buff
 <LI><a href="#[af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_Init
 <LI><a href="#[111]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_rtc_init
 <LI><a href="#[110]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_common_init
-<LI><a href="#[13c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_recv_check
+<LI><a href="#[137]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_recv_check
 <LI><a href="#[15f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_work_check
 <LI><a href="#[171]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_tx_gw_process
 <LI><a href="#[16f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_search_process
 <LI><a href="#[168]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_rx_process
 <LI><a href="#[164]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_recv_parse
-<LI><a href="#[15e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_clear_tx
+<LI><a href="#[15e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_device_init
+<LI><a href="#[15d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_clear_tx
 </UL>
 
 <P><STRONG><a name="[1cf]"></a>__c89printf</STRONG> (Thumb, 0 bytes, Stack size 24 bytes, printfa.o(i.__0printf), UNUSED)
@@ -1552,7 +1553,7 @@ Global Symbols
 
 <P><STRONG><a name="[1da]"></a>__scatterload_zeroinit</STRONG> (Thumb, 14 bytes, Stack size unknown bytes, handlers.o(i.__scatterload_zeroinit), UNUSED)
 
-<P><STRONG><a name="[14d]"></a>__set_errno</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, errno.o(i.__set_errno))
+<P><STRONG><a name="[14c]"></a>__set_errno</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, errno.o(i.__set_errno))
 <BR><BR>[Called By]<UL><LI><a href="#[f2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;log
 </UL>
 
@@ -1689,7 +1690,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[39]"></a>app_node_thread_entry</STRONG> (Thumb, 220 bytes, Stack size 16 bytes, app_node.o(i.app_node_thread_entry))
-<BR><BR>[Stack]<UL><LI>Max Depth = 808<LI>Call Chain = app_node_thread_entry &rArr; nwk_node_main &rArr; nwk_node_work_check &rArr; nwk_node_tx_gw_process &rArr; nwk_node_recv_parse &rArr; nwk_node_make_send_buff &rArr; nwk_tea_encrypt &rArr; tea_encrypt_buff &rArr; EncryptTEA
+<BR><BR>[Stack]<UL><LI>Max Depth = 824<LI>Call Chain = app_node_thread_entry &rArr; nwk_node_main &rArr; nwk_node_work_check &rArr; nwk_node_tx_gw_process &rArr; nwk_node_recv_parse &rArr; nwk_node_make_send_buff &rArr; nwk_tea_encrypt &rArr; tea_encrypt_buff &rArr; EncryptTEA
 </UL>
 <BR>[Calls]<UL><LI><a href="#[f9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;printf_oled
 <LI><a href="#[f8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;printf_hex
@@ -1849,8 +1850,8 @@ Global Symbols
 <LI><a href="#[40]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_node_lora_cs0
 <LI><a href="#[38]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_uart_thread_entry
 <LI><a href="#[111]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_rtc_init
-<LI><a href="#[155]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_delay_ms
-<LI><a href="#[130]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_wakeup
+<LI><a href="#[154]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_delay_ms
+<LI><a href="#[12f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_wakeup
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> app_node.o(i.app_node_lora_init)
 </UL>
@@ -1862,7 +1863,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_oled96_init
 <LI><a href="#[39]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_node_thread_entry
 <LI><a href="#[38]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_uart_thread_entry
-<LI><a href="#[14f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;$Super$$main
+<LI><a href="#[14e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;$Super$$main
 </UL>
 
 <P><STRONG><a name="[99]"></a>delay_us</STRONG> (Thumb, 26 bytes, Stack size 0 bytes, drv_common.o(i.delay_us))
@@ -1883,7 +1884,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[180]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_hw_board_init
 </UL>
 
-<P><STRONG><a name="[154]"></a>drv_crc16</STRONG> (Thumb, 48 bytes, Stack size 16 bytes, drv_common.o(i.drv_crc16))
+<P><STRONG><a name="[153]"></a>drv_crc16</STRONG> (Thumb, 48 bytes, Stack size 16 bytes, drv_common.o(i.drv_crc16))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = drv_crc16
 </UL>
 <BR>[Called By]<UL><LI><a href="#[d9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_crc16
@@ -1897,11 +1898,11 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[104]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_oled96_show_time
 <LI><a href="#[e0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_get_rtc_counter
 <LI><a href="#[fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_oled96_main_process
-<LI><a href="#[14f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;$Super$$main
+<LI><a href="#[14e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;$Super$$main
 </UL>
 
-<P><STRONG><a name="[151]"></a>drv_get_sec_counter</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, drv_common.o(i.drv_get_sec_counter))
-<BR><BR>[Called By]<UL><LI><a href="#[14f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;$Super$$main
+<P><STRONG><a name="[150]"></a>drv_get_sec_counter</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, drv_common.o(i.drv_get_sec_counter))
+<BR><BR>[Called By]<UL><LI><a href="#[14e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;$Super$$main
 </UL>
 
 <P><STRONG><a name="[102]"></a>drv_oled96_clear</STRONG> (Thumb, 74 bytes, Stack size 16 bytes, drv_oled96.o(i.drv_oled96_clear))
@@ -2036,7 +2037,7 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[123]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_get_irq_status
 <LI><a href="#[124]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_clr_irq_status
 </UL>
-<BR>[Called By]<UL><LI><a href="#[15b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_cad_check
+<BR>[Called By]<UL><LI><a href="#[15a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_cad_check
 </UL>
 
 <P><STRONG><a name="[125]"></a>drv_sx1268_cad_init</STRONG> (Thumb, 44 bytes, Stack size 16 bytes, drv_sx1268.o(i.drv_sx1268_cad_init))
@@ -2046,7 +2047,7 @@ Global Symbols
 <LI><a href="#[126]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_standby
 <LI><a href="#[127]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_irq_parsms
 </UL>
-<BR>[Called By]<UL><LI><a href="#[15c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_cad_init
+<BR>[Called By]<UL><LI><a href="#[15b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_cad_init
 </UL>
 
 <P><STRONG><a name="[129]"></a>drv_sx1268_calcu_air_time</STRONG> (Thumb, 266 bytes, Stack size 72 bytes, drv_sx1268.o(i.drv_sx1268_calcu_air_time))
@@ -2061,15 +2062,7 @@ Global Symbols
 <LI><a href="#[68]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2uiz
 <LI><a href="#[66]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_i2d
 </UL>
-<BR>[Called By]<UL><LI><a href="#[15d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_calcu_air_time
-</UL>
-
-<P><STRONG><a name="[12a]"></a>drv_sx1268_calibrate_image</STRONG> (Thumb, 118 bytes, Stack size 16 bytes, drv_sx1268.o(i.drv_sx1268_calibrate_image))
-<BR><BR>[Stack]<UL><LI>Max Depth = 56<LI>Call Chain = drv_sx1268_calibrate_image &rArr; hal_sx1268_write_cmd &rArr; hal_sx1268_spi_rw_byte
-</UL>
-<BR>[Calls]<UL><LI><a href="#[128]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_write_cmd
-</UL>
-<BR>[Called By]<UL><LI><a href="#[d3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_init
+<BR>[Called By]<UL><LI><a href="#[15c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_calcu_air_time
 </UL>
 
 <P><STRONG><a name="[124]"></a>drv_sx1268_clr_irq_status</STRONG> (Thumb, 36 bytes, Stack size 16 bytes, drv_sx1268.o(i.drv_sx1268_clr_irq_status))
@@ -2077,81 +2070,77 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[128]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_write_cmd
 </UL>
-<BR>[Called By]<UL><LI><a href="#[142]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_send_check
-<LI><a href="#[13c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_recv_check
+<BR>[Called By]<UL><LI><a href="#[13f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_send_check
+<LI><a href="#[137]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_recv_check
 <LI><a href="#[122]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_cad_check
 </UL>
 
-<P><STRONG><a name="[143]"></a>drv_sx1268_convert_freqinhz2pllstep</STRONG> (Thumb, 36 bytes, Stack size 8 bytes, drv_sx1268.o(i.drv_sx1268_convert_freqinhz2pllstep))
+<P><STRONG><a name="[141]"></a>drv_sx1268_convert_freqinhz2pllstep</STRONG> (Thumb, 36 bytes, Stack size 8 bytes, drv_sx1268.o(i.drv_sx1268_convert_freqinhz2pllstep))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = drv_sx1268_convert_freqinhz2pllstep
 </UL>
-<BR>[Called By]<UL><LI><a href="#[134]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_freq
+<BR>[Called By]<UL><LI><a href="#[140]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_freq
 </UL>
 
 <P><STRONG><a name="[123]"></a>drv_sx1268_get_irq_status</STRONG> (Thumb, 30 bytes, Stack size 16 bytes, drv_sx1268.o(i.drv_sx1268_get_irq_status))
 <BR><BR>[Stack]<UL><LI>Max Depth = 64<LI>Call Chain = drv_sx1268_get_irq_status &rArr; hal_sx1268_read_cmd &rArr; hal_sx1268_spi_rw_byte
 </UL>
-<BR>[Calls]<UL><LI><a href="#[12b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_read_cmd
+<BR>[Calls]<UL><LI><a href="#[12a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_read_cmd
 </UL>
-<BR>[Called By]<UL><LI><a href="#[142]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_send_check
-<LI><a href="#[13c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_recv_check
+<BR>[Called By]<UL><LI><a href="#[13f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_send_check
+<LI><a href="#[137]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_recv_check
 <LI><a href="#[122]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_cad_check
 </UL>
 
-<P><STRONG><a name="[12c]"></a>drv_sx1268_get_pack_status</STRONG> (Thumb, 56 bytes, Stack size 16 bytes, drv_sx1268.o(i.drv_sx1268_get_pack_status))
+<P><STRONG><a name="[12b]"></a>drv_sx1268_get_pack_status</STRONG> (Thumb, 56 bytes, Stack size 16 bytes, drv_sx1268.o(i.drv_sx1268_get_pack_status))
 <BR><BR>[Stack]<UL><LI>Max Depth = 64<LI>Call Chain = drv_sx1268_get_pack_status &rArr; hal_sx1268_read_cmd &rArr; hal_sx1268_spi_rw_byte
 </UL>
-<BR>[Calls]<UL><LI><a href="#[12b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_read_cmd
+<BR>[Calls]<UL><LI><a href="#[12a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_read_cmd
 </UL>
 <BR>[Called By]<UL><LI><a href="#[162]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_recv_check
 </UL>
 
-<P><STRONG><a name="[12d]"></a>drv_sx1268_get_rssi_inst</STRONG> (Thumb, 34 bytes, Stack size 16 bytes, drv_sx1268.o(i.drv_sx1268_get_rssi_inst))
+<P><STRONG><a name="[12c]"></a>drv_sx1268_get_rssi_inst</STRONG> (Thumb, 34 bytes, Stack size 16 bytes, drv_sx1268.o(i.drv_sx1268_get_rssi_inst))
 <BR><BR>[Stack]<UL><LI>Max Depth = 64<LI>Call Chain = drv_sx1268_get_rssi_inst &rArr; hal_sx1268_read_cmd &rArr; hal_sx1268_spi_rw_byte
 </UL>
-<BR>[Calls]<UL><LI><a href="#[12b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_read_cmd
+<BR>[Calls]<UL><LI><a href="#[12a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_read_cmd
 </UL>
 <BR>[Called By]<UL><LI><a href="#[162]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_recv_check
 </UL>
 
-<P><STRONG><a name="[12e]"></a>drv_sx1268_get_rx_buff_status</STRONG> (Thumb, 34 bytes, Stack size 24 bytes, drv_sx1268.o(i.drv_sx1268_get_rx_buff_status))
+<P><STRONG><a name="[12d]"></a>drv_sx1268_get_rx_buff_status</STRONG> (Thumb, 34 bytes, Stack size 24 bytes, drv_sx1268.o(i.drv_sx1268_get_rx_buff_status))
 <BR><BR>[Stack]<UL><LI>Max Depth = 72<LI>Call Chain = drv_sx1268_get_rx_buff_status &rArr; hal_sx1268_read_cmd &rArr; hal_sx1268_spi_rw_byte
 </UL>
-<BR>[Calls]<UL><LI><a href="#[12b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_read_cmd
+<BR>[Calls]<UL><LI><a href="#[12a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_read_cmd
 </UL>
-<BR>[Called By]<UL><LI><a href="#[13c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_recv_check
+<BR>[Called By]<UL><LI><a href="#[137]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_recv_check
 </UL>
 
-<P><STRONG><a name="[d3]"></a>drv_sx1268_init</STRONG> (Thumb, 212 bytes, Stack size 40 bytes, drv_sx1268.o(i.drv_sx1268_init))
-<BR><BR>[Stack]<UL><LI>Max Depth = 136<LI>Call Chain = drv_sx1268_init &rArr; drv_sx1268_set_power &rArr; drv_sx1268_set_pa &rArr; hal_sx1268_write_cmd &rArr; hal_sx1268_spi_rw_byte
+<P><STRONG><a name="[d3]"></a>drv_sx1268_init</STRONG> (Thumb, 152 bytes, Stack size 24 bytes, drv_sx1268.o(i.drv_sx1268_init))
+<BR><BR>[Stack]<UL><LI>Max Depth = 120<LI>Call Chain = drv_sx1268_init &rArr; drv_sx1268_set_power &rArr; drv_sx1268_set_pa &rArr; hal_sx1268_write_cmd &rArr; hal_sx1268_spi_rw_byte
 </UL>
-<BR>[Calls]<UL><LI><a href="#[136]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_sf_bw
-<LI><a href="#[134]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_freq
-<LI><a href="#[13a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_write_reg
-<LI><a href="#[12f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_rst
-<LI><a href="#[139]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_read_reg
-<LI><a href="#[12b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_read_cmd
-<LI><a href="#[130]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_wakeup
+<BR>[Calls]<UL><LI><a href="#[12e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_rst
+<LI><a href="#[12a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_read_cmd
+<LI><a href="#[12f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_wakeup
 <LI><a href="#[126]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_standby
-<LI><a href="#[132]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_regulator_mode
-<LI><a href="#[13b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_power
-<LI><a href="#[137]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_pack_params
-<LI><a href="#[135]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_mode
+<LI><a href="#[131]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_regulator_mode
+<LI><a href="#[136]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_power
+<LI><a href="#[134]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_pack_params
+<LI><a href="#[133]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_mode
 <LI><a href="#[127]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_irq_parsms
-<LI><a href="#[131]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_dio2_switchctrl
-<LI><a href="#[138]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_cad_params
-<LI><a href="#[133]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_buff_base_addr
-<LI><a href="#[12a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_calibrate_image
+<LI><a href="#[130]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_dio2_switchctrl
+<LI><a href="#[135]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_cad_params
+<LI><a href="#[132]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_buff_base_addr
 <LI><a href="#[b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2printf
 </UL>
 <BR>[Called By]<UL><LI><a href="#[d0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_node_lora_init
+<LI><a href="#[15e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_device_init
 </UL>
 
-<P><STRONG><a name="[13c]"></a>drv_sx1268_recv_check</STRONG> (Thumb, 96 bytes, Stack size 32 bytes, drv_sx1268.o(i.drv_sx1268_recv_check))
+<P><STRONG><a name="[137]"></a>drv_sx1268_recv_check</STRONG> (Thumb, 96 bytes, Stack size 32 bytes, drv_sx1268.o(i.drv_sx1268_recv_check))
 <BR><BR>[Stack]<UL><LI>Max Depth = 104<LI>Call Chain = drv_sx1268_recv_check &rArr; drv_sx1268_get_rx_buff_status &rArr; hal_sx1268_read_cmd &rArr; hal_sx1268_spi_rw_byte
 </UL>
-<BR>[Calls]<UL><LI><a href="#[13d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_read_fifo
-<LI><a href="#[12e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_get_rx_buff_status
+<BR>[Calls]<UL><LI><a href="#[138]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_read_fifo
+<LI><a href="#[12d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_get_rx_buff_status
 <LI><a href="#[123]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_get_irq_status
 <LI><a href="#[124]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_clr_irq_status
 <LI><a href="#[b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2printf
@@ -2159,33 +2148,33 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[162]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_recv_check
 </UL>
 
-<P><STRONG><a name="[13e]"></a>drv_sx1268_recv_init</STRONG> (Thumb, 82 bytes, Stack size 24 bytes, drv_sx1268.o(i.drv_sx1268_recv_init))
+<P><STRONG><a name="[139]"></a>drv_sx1268_recv_init</STRONG> (Thumb, 82 bytes, Stack size 24 bytes, drv_sx1268.o(i.drv_sx1268_recv_init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 96<LI>Call Chain = drv_sx1268_recv_init &rArr; drv_sx1268_set_irq_parsms &rArr; hal_sx1268_write_cmd &rArr; hal_sx1268_spi_rw_byte
 </UL>
-<BR>[Calls]<UL><LI><a href="#[13a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_write_reg
+<BR>[Calls]<UL><LI><a href="#[13c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_write_reg
 <LI><a href="#[128]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_write_cmd
-<LI><a href="#[139]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_read_reg
-<LI><a href="#[13f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_stop_rxtimer_onpreamble_detect
+<LI><a href="#[13b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_read_reg
+<LI><a href="#[13a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_stop_rxtimer_onpreamble_detect
 <LI><a href="#[126]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_standby
 <LI><a href="#[127]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_irq_parsms
 </UL>
 <BR>[Called By]<UL><LI><a href="#[163]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_recv_init
 </UL>
 
-<P><STRONG><a name="[140]"></a>drv_sx1268_send</STRONG> (Thumb, 70 bytes, Stack size 24 bytes, drv_sx1268.o(i.drv_sx1268_send))
+<P><STRONG><a name="[13d]"></a>drv_sx1268_send</STRONG> (Thumb, 70 bytes, Stack size 24 bytes, drv_sx1268.o(i.drv_sx1268_send))
 <BR><BR>[Stack]<UL><LI>Max Depth = 120<LI>Call Chain = drv_sx1268_send &rArr; drv_sx1268_set_pack_params &rArr; hal_sx1268_write_reg &rArr; hal_sx1268_write_regs &rArr; hal_sx1268_spi_rw_byte
 </UL>
-<BR>[Calls]<UL><LI><a href="#[141]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_write_fifo
+<BR>[Calls]<UL><LI><a href="#[13e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_write_fifo
 <LI><a href="#[128]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_write_cmd
 <LI><a href="#[126]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_standby
-<LI><a href="#[137]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_pack_params
+<LI><a href="#[134]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_pack_params
 <LI><a href="#[127]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_irq_parsms
 </UL>
 <BR>[Called By]<UL><LI><a href="#[16c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_send_sniff
 <LI><a href="#[16d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_send_buff
 </UL>
 
-<P><STRONG><a name="[142]"></a>drv_sx1268_send_check</STRONG> (Thumb, 34 bytes, Stack size 16 bytes, drv_sx1268.o(i.drv_sx1268_send_check))
+<P><STRONG><a name="[13f]"></a>drv_sx1268_send_check</STRONG> (Thumb, 34 bytes, Stack size 16 bytes, drv_sx1268.o(i.drv_sx1268_send_check))
 <BR><BR>[Stack]<UL><LI>Max Depth = 80<LI>Call Chain = drv_sx1268_send_check &rArr; drv_sx1268_get_irq_status &rArr; hal_sx1268_read_cmd &rArr; hal_sx1268_spi_rw_byte
 </UL>
 <BR>[Calls]<UL><LI><a href="#[123]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_get_irq_status
@@ -2194,7 +2183,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[16e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_send_check
 </UL>
 
-<P><STRONG><a name="[133]"></a>drv_sx1268_set_buff_base_addr</STRONG> (Thumb, 34 bytes, Stack size 24 bytes, drv_sx1268.o(i.drv_sx1268_set_buff_base_addr))
+<P><STRONG><a name="[132]"></a>drv_sx1268_set_buff_base_addr</STRONG> (Thumb, 34 bytes, Stack size 24 bytes, drv_sx1268.o(i.drv_sx1268_set_buff_base_addr))
 <BR><BR>[Stack]<UL><LI>Max Depth = 64<LI>Call Chain = drv_sx1268_set_buff_base_addr &rArr; hal_sx1268_write_cmd &rArr; hal_sx1268_spi_rw_byte
 </UL>
 <BR>[Calls]<UL><LI><a href="#[128]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_write_cmd
@@ -2202,7 +2191,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[d3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_init
 </UL>
 
-<P><STRONG><a name="[138]"></a>drv_sx1268_set_cad_params</STRONG> (Thumb, 74 bytes, Stack size 40 bytes, drv_sx1268.o(i.drv_sx1268_set_cad_params))
+<P><STRONG><a name="[135]"></a>drv_sx1268_set_cad_params</STRONG> (Thumb, 74 bytes, Stack size 40 bytes, drv_sx1268.o(i.drv_sx1268_set_cad_params))
 <BR><BR>[Stack]<UL><LI>Max Depth = 80<LI>Call Chain = drv_sx1268_set_cad_params &rArr; hal_sx1268_write_cmd &rArr; hal_sx1268_spi_rw_byte
 </UL>
 <BR>[Calls]<UL><LI><a href="#[128]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_write_cmd
@@ -2210,7 +2199,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[d3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_init
 </UL>
 
-<P><STRONG><a name="[131]"></a>drv_sx1268_set_dio2_switchctrl</STRONG> (Thumb, 26 bytes, Stack size 16 bytes, drv_sx1268.o(i.drv_sx1268_set_dio2_switchctrl))
+<P><STRONG><a name="[130]"></a>drv_sx1268_set_dio2_switchctrl</STRONG> (Thumb, 26 bytes, Stack size 16 bytes, drv_sx1268.o(i.drv_sx1268_set_dio2_switchctrl))
 <BR><BR>[Stack]<UL><LI>Max Depth = 56<LI>Call Chain = drv_sx1268_set_dio2_switchctrl &rArr; hal_sx1268_write_cmd &rArr; hal_sx1268_spi_rw_byte
 </UL>
 <BR>[Calls]<UL><LI><a href="#[128]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_write_cmd
@@ -2218,14 +2207,13 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[d3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_init
 </UL>
 
-<P><STRONG><a name="[134]"></a>drv_sx1268_set_freq</STRONG> (Thumb, 58 bytes, Stack size 24 bytes, drv_sx1268.o(i.drv_sx1268_set_freq))
+<P><STRONG><a name="[140]"></a>drv_sx1268_set_freq</STRONG> (Thumb, 58 bytes, Stack size 24 bytes, drv_sx1268.o(i.drv_sx1268_set_freq))
 <BR><BR>[Stack]<UL><LI>Max Depth = 64<LI>Call Chain = drv_sx1268_set_freq &rArr; hal_sx1268_write_cmd &rArr; hal_sx1268_spi_rw_byte
 </UL>
 <BR>[Calls]<UL><LI><a href="#[128]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_write_cmd
-<LI><a href="#[143]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_convert_freqinhz2pllstep
+<LI><a href="#[141]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_convert_freqinhz2pllstep
 </UL>
-<BR>[Called By]<UL><LI><a href="#[d3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_init
-<LI><a href="#[16a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_set_lora_param
+<BR>[Called By]<UL><LI><a href="#[16a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_set_lora_param
 </UL>
 
 <P><STRONG><a name="[127]"></a>drv_sx1268_set_irq_parsms</STRONG> (Thumb, 78 bytes, Stack size 32 bytes, drv_sx1268.o(i.drv_sx1268_set_irq_parsms))
@@ -2234,12 +2222,12 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[128]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_write_cmd
 </UL>
 <BR>[Called By]<UL><LI><a href="#[d3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_init
-<LI><a href="#[140]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_send
-<LI><a href="#[13e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_recv_init
+<LI><a href="#[13d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_send
+<LI><a href="#[139]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_recv_init
 <LI><a href="#[125]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_cad_init
 </UL>
 
-<P><STRONG><a name="[135]"></a>drv_sx1268_set_mode</STRONG> (Thumb, 18 bytes, Stack size 16 bytes, drv_sx1268.o(i.drv_sx1268_set_mode))
+<P><STRONG><a name="[133]"></a>drv_sx1268_set_mode</STRONG> (Thumb, 18 bytes, Stack size 16 bytes, drv_sx1268.o(i.drv_sx1268_set_mode))
 <BR><BR>[Stack]<UL><LI>Max Depth = 56<LI>Call Chain = drv_sx1268_set_mode &rArr; hal_sx1268_write_cmd &rArr; hal_sx1268_spi_rw_byte
 </UL>
 <BR>[Calls]<UL><LI><a href="#[128]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_write_cmd
@@ -2247,38 +2235,38 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[d3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_init
 </UL>
 
-<P><STRONG><a name="[144]"></a>drv_sx1268_set_pa</STRONG> (Thumb, 44 bytes, Stack size 32 bytes, drv_sx1268.o(i.drv_sx1268_set_pa))
+<P><STRONG><a name="[142]"></a>drv_sx1268_set_pa</STRONG> (Thumb, 44 bytes, Stack size 32 bytes, drv_sx1268.o(i.drv_sx1268_set_pa))
 <BR><BR>[Stack]<UL><LI>Max Depth = 72<LI>Call Chain = drv_sx1268_set_pa &rArr; hal_sx1268_write_cmd &rArr; hal_sx1268_spi_rw_byte
 </UL>
 <BR>[Calls]<UL><LI><a href="#[128]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_write_cmd
-<LI><a href="#[145]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memcpy4
+<LI><a href="#[143]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memcpy4
 </UL>
-<BR>[Called By]<UL><LI><a href="#[13b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_power
+<BR>[Called By]<UL><LI><a href="#[136]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_power
 </UL>
 
-<P><STRONG><a name="[137]"></a>drv_sx1268_set_pack_params</STRONG> (Thumb, 88 bytes, Stack size 32 bytes, drv_sx1268.o(i.drv_sx1268_set_pack_params))
+<P><STRONG><a name="[134]"></a>drv_sx1268_set_pack_params</STRONG> (Thumb, 88 bytes, Stack size 32 bytes, drv_sx1268.o(i.drv_sx1268_set_pack_params))
 <BR><BR>[Stack]<UL><LI>Max Depth = 96<LI>Call Chain = drv_sx1268_set_pack_params &rArr; hal_sx1268_write_reg &rArr; hal_sx1268_write_regs &rArr; hal_sx1268_spi_rw_byte
 </UL>
-<BR>[Calls]<UL><LI><a href="#[13a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_write_reg
+<BR>[Calls]<UL><LI><a href="#[13c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_write_reg
 <LI><a href="#[128]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_write_cmd
-<LI><a href="#[139]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_read_reg
+<LI><a href="#[13b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_read_reg
 </UL>
 <BR>[Called By]<UL><LI><a href="#[d3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_init
-<LI><a href="#[140]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_send
+<LI><a href="#[13d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_send
 </UL>
 
-<P><STRONG><a name="[13b]"></a>drv_sx1268_set_power</STRONG> (Thumb, 88 bytes, Stack size 24 bytes, drv_sx1268.o(i.drv_sx1268_set_power))
+<P><STRONG><a name="[136]"></a>drv_sx1268_set_power</STRONG> (Thumb, 88 bytes, Stack size 24 bytes, drv_sx1268.o(i.drv_sx1268_set_power))
 <BR><BR>[Stack]<UL><LI>Max Depth = 96<LI>Call Chain = drv_sx1268_set_power &rArr; drv_sx1268_set_pa &rArr; hal_sx1268_write_cmd &rArr; hal_sx1268_spi_rw_byte
 </UL>
-<BR>[Calls]<UL><LI><a href="#[13a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_write_reg
+<BR>[Calls]<UL><LI><a href="#[13c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_write_reg
 <LI><a href="#[128]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_write_cmd
-<LI><a href="#[139]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_read_reg
-<LI><a href="#[144]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_pa
+<LI><a href="#[13b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_read_reg
+<LI><a href="#[142]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_pa
 </UL>
 <BR>[Called By]<UL><LI><a href="#[d3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_init
 </UL>
 
-<P><STRONG><a name="[132]"></a>drv_sx1268_set_regulator_mode</STRONG> (Thumb, 26 bytes, Stack size 16 bytes, drv_sx1268.o(i.drv_sx1268_set_regulator_mode))
+<P><STRONG><a name="[131]"></a>drv_sx1268_set_regulator_mode</STRONG> (Thumb, 26 bytes, Stack size 16 bytes, drv_sx1268.o(i.drv_sx1268_set_regulator_mode))
 <BR><BR>[Stack]<UL><LI>Max Depth = 56<LI>Call Chain = drv_sx1268_set_regulator_mode &rArr; hal_sx1268_write_cmd &rArr; hal_sx1268_spi_rw_byte
 </UL>
 <BR>[Calls]<UL><LI><a href="#[128]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_write_cmd
@@ -2286,13 +2274,12 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[d3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_init
 </UL>
 
-<P><STRONG><a name="[136]"></a>drv_sx1268_set_sf_bw</STRONG> (Thumb, 48 bytes, Stack size 24 bytes, drv_sx1268.o(i.drv_sx1268_set_sf_bw))
+<P><STRONG><a name="[144]"></a>drv_sx1268_set_sf_bw</STRONG> (Thumb, 48 bytes, Stack size 24 bytes, drv_sx1268.o(i.drv_sx1268_set_sf_bw))
 <BR><BR>[Stack]<UL><LI>Max Depth = 64<LI>Call Chain = drv_sx1268_set_sf_bw &rArr; hal_sx1268_write_cmd &rArr; hal_sx1268_spi_rw_byte
 </UL>
 <BR>[Calls]<UL><LI><a href="#[128]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_write_cmd
 </UL>
-<BR>[Called By]<UL><LI><a href="#[d3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_init
-<LI><a href="#[16a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_set_lora_param
+<BR>[Called By]<UL><LI><a href="#[16a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_set_lora_param
 </UL>
 
 <P><STRONG><a name="[126]"></a>drv_sx1268_set_standby</STRONG> (Thumb, 18 bytes, Stack size 16 bytes, drv_sx1268.o(i.drv_sx1268_set_standby))
@@ -2301,25 +2288,25 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[128]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_write_cmd
 </UL>
 <BR>[Called By]<UL><LI><a href="#[d3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_init
-<LI><a href="#[140]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_send
-<LI><a href="#[13e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_recv_init
+<LI><a href="#[13d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_send
+<LI><a href="#[139]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_recv_init
 <LI><a href="#[125]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_cad_init
 </UL>
 
-<P><STRONG><a name="[13f]"></a>drv_sx1268_set_stop_rxtimer_onpreamble_detect</STRONG> (Thumb, 18 bytes, Stack size 16 bytes, drv_sx1268.o(i.drv_sx1268_set_stop_rxtimer_onpreamble_detect))
+<P><STRONG><a name="[13a]"></a>drv_sx1268_set_stop_rxtimer_onpreamble_detect</STRONG> (Thumb, 18 bytes, Stack size 16 bytes, drv_sx1268.o(i.drv_sx1268_set_stop_rxtimer_onpreamble_detect))
 <BR><BR>[Stack]<UL><LI>Max Depth = 56<LI>Call Chain = drv_sx1268_set_stop_rxtimer_onpreamble_detect &rArr; hal_sx1268_write_cmd &rArr; hal_sx1268_spi_rw_byte
 </UL>
 <BR>[Calls]<UL><LI><a href="#[128]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_write_cmd
 </UL>
-<BR>[Called By]<UL><LI><a href="#[13e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_recv_init
+<BR>[Called By]<UL><LI><a href="#[139]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_recv_init
 </UL>
 
-<P><STRONG><a name="[130]"></a>drv_sx1268_wakeup</STRONG> (Thumb, 40 bytes, Stack size 8 bytes, drv_sx1268.o(i.drv_sx1268_wakeup))
+<P><STRONG><a name="[12f]"></a>drv_sx1268_wakeup</STRONG> (Thumb, 40 bytes, Stack size 8 bytes, drv_sx1268.o(i.drv_sx1268_wakeup))
 <BR><BR>[Stack]<UL><LI>Max Depth = 56<LI>Call Chain = drv_sx1268_wakeup &rArr; hal_sx1268_read_cmd &rArr; hal_sx1268_spi_rw_byte
 </UL>
 <BR>[Calls]<UL><LI><a href="#[44]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;delay_ms
-<LI><a href="#[146]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_spi_rw_byte
-<LI><a href="#[12b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_read_cmd
+<LI><a href="#[145]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_spi_rw_byte
+<LI><a href="#[12a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_read_cmd
 </UL>
 <BR>[Called By]<UL><LI><a href="#[d3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_init
 </UL>
@@ -2327,17 +2314,17 @@ Global Symbols
 <P><STRONG><a name="[10c]"></a>drv_system_reset</STRONG> (Thumb, 44 bytes, Stack size 8 bytes, drv_common.o(i.drv_system_reset))
 <BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = drv_system_reset &rArr; __2printf
 </UL>
-<BR>[Calls]<UL><LI><a href="#[148]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WWDG_SetWindowValue
-<LI><a href="#[147]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WWDG_SetPrescaler
-<LI><a href="#[149]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WWDG_Enable
+<BR>[Calls]<UL><LI><a href="#[147]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WWDG_SetWindowValue
+<LI><a href="#[146]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WWDG_SetPrescaler
+<LI><a href="#[148]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WWDG_Enable
 <LI><a href="#[ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RCC_APB1PeriphClockCmd
 <LI><a href="#[b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2printf
 </UL>
 <BR>[Called By]<UL><LI><a href="#[38]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_uart_thread_entry
 </UL>
 
-<P><STRONG><a name="[150]"></a>drv_wdog_feed</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, drv_common.o(i.drv_wdog_feed))
-<BR><BR>[Called By]<UL><LI><a href="#[14f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;$Super$$main
+<P><STRONG><a name="[14f]"></a>drv_wdog_feed</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, drv_common.o(i.drv_wdog_feed))
+<BR><BR>[Called By]<UL><LI><a href="#[14e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;$Super$$main
 </UL>
 
 <P><STRONG><a name="[181]"></a>drv_wdog_init</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, drv_common.o(i.drv_wdog_init))
@@ -2347,52 +2334,51 @@ Global Symbols
 <P><STRONG><a name="[3a]"></a>fputc</STRONG> (Thumb, 32 bytes, Stack size 16 bytes, drv_uart.o(i.fputc))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = fputc
 </UL>
-<BR>[Calls]<UL><LI><a href="#[14a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART_SendData
+<BR>[Calls]<UL><LI><a href="#[149]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART_SendData
 <LI><a href="#[b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART_GetFlagStatus
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> printfa.o(i.__0printf)
 </UL>
-<P><STRONG><a name="[12b]"></a>hal_sx1268_read_cmd</STRONG> (Thumb, 72 bytes, Stack size 32 bytes, hal_sx1268.o(i.hal_sx1268_read_cmd))
+<P><STRONG><a name="[12a]"></a>hal_sx1268_read_cmd</STRONG> (Thumb, 72 bytes, Stack size 32 bytes, hal_sx1268.o(i.hal_sx1268_read_cmd))
 <BR><BR>[Stack]<UL><LI>Max Depth = 48<LI>Call Chain = hal_sx1268_read_cmd &rArr; hal_sx1268_spi_rw_byte
 </UL>
-<BR>[Calls]<UL><LI><a href="#[146]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_spi_rw_byte
+<BR>[Calls]<UL><LI><a href="#[145]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_spi_rw_byte
 </UL>
 <BR>[Called By]<UL><LI><a href="#[d3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_init
-<LI><a href="#[12d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_get_rssi_inst
-<LI><a href="#[12c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_get_pack_status
-<LI><a href="#[130]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_wakeup
-<LI><a href="#[12e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_get_rx_buff_status
+<LI><a href="#[12c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_get_rssi_inst
+<LI><a href="#[12b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_get_pack_status
+<LI><a href="#[12f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_wakeup
+<LI><a href="#[12d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_get_rx_buff_status
 <LI><a href="#[123]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_get_irq_status
 </UL>
 
-<P><STRONG><a name="[13d]"></a>hal_sx1268_read_fifo</STRONG> (Thumb, 76 bytes, Stack size 24 bytes, hal_sx1268.o(i.hal_sx1268_read_fifo))
+<P><STRONG><a name="[138]"></a>hal_sx1268_read_fifo</STRONG> (Thumb, 76 bytes, Stack size 24 bytes, hal_sx1268.o(i.hal_sx1268_read_fifo))
 <BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = hal_sx1268_read_fifo &rArr; hal_sx1268_spi_rw_byte
 </UL>
-<BR>[Calls]<UL><LI><a href="#[146]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_spi_rw_byte
+<BR>[Calls]<UL><LI><a href="#[145]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_spi_rw_byte
 </UL>
-<BR>[Called By]<UL><LI><a href="#[13c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_recv_check
+<BR>[Called By]<UL><LI><a href="#[137]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_recv_check
 </UL>
 
-<P><STRONG><a name="[139]"></a>hal_sx1268_read_reg</STRONG> (Thumb, 28 bytes, Stack size 16 bytes, hal_sx1268.o(i.hal_sx1268_read_reg))
+<P><STRONG><a name="[13b]"></a>hal_sx1268_read_reg</STRONG> (Thumb, 28 bytes, Stack size 16 bytes, hal_sx1268.o(i.hal_sx1268_read_reg))
 <BR><BR>[Stack]<UL><LI>Max Depth = 56<LI>Call Chain = hal_sx1268_read_reg &rArr; hal_sx1268_read_regs &rArr; hal_sx1268_spi_rw_byte
 </UL>
-<BR>[Calls]<UL><LI><a href="#[14b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_read_regs
+<BR>[Calls]<UL><LI><a href="#[14a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_read_regs
 </UL>
-<BR>[Called By]<UL><LI><a href="#[d3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_init
-<LI><a href="#[13e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_recv_init
-<LI><a href="#[13b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_power
-<LI><a href="#[137]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_pack_params
+<BR>[Called By]<UL><LI><a href="#[139]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_recv_init
+<LI><a href="#[136]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_power
+<LI><a href="#[134]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_pack_params
 </UL>
 
-<P><STRONG><a name="[14b]"></a>hal_sx1268_read_regs</STRONG> (Thumb, 84 bytes, Stack size 24 bytes, hal_sx1268.o(i.hal_sx1268_read_regs))
+<P><STRONG><a name="[14a]"></a>hal_sx1268_read_regs</STRONG> (Thumb, 84 bytes, Stack size 24 bytes, hal_sx1268.o(i.hal_sx1268_read_regs))
 <BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = hal_sx1268_read_regs &rArr; hal_sx1268_spi_rw_byte
 </UL>
-<BR>[Calls]<UL><LI><a href="#[146]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_spi_rw_byte
+<BR>[Calls]<UL><LI><a href="#[145]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_spi_rw_byte
 </UL>
-<BR>[Called By]<UL><LI><a href="#[139]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_read_reg
+<BR>[Called By]<UL><LI><a href="#[13b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_read_reg
 </UL>
 
-<P><STRONG><a name="[12f]"></a>hal_sx1268_rst</STRONG> (Thumb, 10 bytes, Stack size 8 bytes, hal_sx1268.o(i.hal_sx1268_rst))
+<P><STRONG><a name="[12e]"></a>hal_sx1268_rst</STRONG> (Thumb, 10 bytes, Stack size 8 bytes, hal_sx1268.o(i.hal_sx1268_rst))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = hal_sx1268_rst
 </UL>
 <BR>[Called By]<UL><LI><a href="#[d3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_init
@@ -2404,68 +2390,66 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[169]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_set_led
 </UL>
 
-<P><STRONG><a name="[146]"></a>hal_sx1268_spi_rw_byte</STRONG> (Thumb, 18 bytes, Stack size 16 bytes, hal_sx1268.o(i.hal_sx1268_spi_rw_byte))
+<P><STRONG><a name="[145]"></a>hal_sx1268_spi_rw_byte</STRONG> (Thumb, 18 bytes, Stack size 16 bytes, hal_sx1268.o(i.hal_sx1268_spi_rw_byte))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = hal_sx1268_spi_rw_byte
 </UL>
-<BR>[Called By]<UL><LI><a href="#[14c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_write_regs
-<LI><a href="#[14b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_read_regs
-<LI><a href="#[141]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_write_fifo
+<BR>[Called By]<UL><LI><a href="#[14b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_write_regs
+<LI><a href="#[14a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_read_regs
+<LI><a href="#[13e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_write_fifo
 <LI><a href="#[128]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_write_cmd
-<LI><a href="#[13d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_read_fifo
-<LI><a href="#[12b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_read_cmd
-<LI><a href="#[130]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_wakeup
+<LI><a href="#[138]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_read_fifo
+<LI><a href="#[12a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_read_cmd
+<LI><a href="#[12f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_wakeup
 </UL>
 
 <P><STRONG><a name="[128]"></a>hal_sx1268_write_cmd</STRONG> (Thumb, 58 bytes, Stack size 24 bytes, hal_sx1268.o(i.hal_sx1268_write_cmd))
 <BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = hal_sx1268_write_cmd &rArr; hal_sx1268_spi_rw_byte
 </UL>
-<BR>[Calls]<UL><LI><a href="#[146]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_spi_rw_byte
+<BR>[Calls]<UL><LI><a href="#[145]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_spi_rw_byte
 </UL>
-<BR>[Called By]<UL><LI><a href="#[136]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_sf_bw
-<LI><a href="#[134]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_freq
-<LI><a href="#[140]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_send
-<LI><a href="#[13e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_recv_init
+<BR>[Called By]<UL><LI><a href="#[144]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_sf_bw
+<LI><a href="#[140]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_freq
+<LI><a href="#[13d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_send
+<LI><a href="#[139]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_recv_init
 <LI><a href="#[125]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_cad_init
-<LI><a href="#[13f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_stop_rxtimer_onpreamble_detect
+<LI><a href="#[13a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_stop_rxtimer_onpreamble_detect
 <LI><a href="#[126]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_standby
-<LI><a href="#[132]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_regulator_mode
-<LI><a href="#[13b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_power
-<LI><a href="#[137]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_pack_params
-<LI><a href="#[144]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_pa
-<LI><a href="#[135]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_mode
+<LI><a href="#[131]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_regulator_mode
+<LI><a href="#[136]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_power
+<LI><a href="#[134]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_pack_params
+<LI><a href="#[142]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_pa
+<LI><a href="#[133]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_mode
 <LI><a href="#[127]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_irq_parsms
-<LI><a href="#[131]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_dio2_switchctrl
-<LI><a href="#[138]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_cad_params
-<LI><a href="#[133]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_buff_base_addr
+<LI><a href="#[130]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_dio2_switchctrl
+<LI><a href="#[135]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_cad_params
+<LI><a href="#[132]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_buff_base_addr
 <LI><a href="#[124]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_clr_irq_status
-<LI><a href="#[12a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_calibrate_image
 </UL>
 
-<P><STRONG><a name="[141]"></a>hal_sx1268_write_fifo</STRONG> (Thumb, 68 bytes, Stack size 24 bytes, hal_sx1268.o(i.hal_sx1268_write_fifo))
+<P><STRONG><a name="[13e]"></a>hal_sx1268_write_fifo</STRONG> (Thumb, 68 bytes, Stack size 24 bytes, hal_sx1268.o(i.hal_sx1268_write_fifo))
 <BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = hal_sx1268_write_fifo &rArr; hal_sx1268_spi_rw_byte
 </UL>
-<BR>[Calls]<UL><LI><a href="#[146]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_spi_rw_byte
+<BR>[Calls]<UL><LI><a href="#[145]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_spi_rw_byte
 </UL>
-<BR>[Called By]<UL><LI><a href="#[140]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_send
+<BR>[Called By]<UL><LI><a href="#[13d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_send
 </UL>
 
-<P><STRONG><a name="[13a]"></a>hal_sx1268_write_reg</STRONG> (Thumb, 20 bytes, Stack size 24 bytes, hal_sx1268.o(i.hal_sx1268_write_reg))
+<P><STRONG><a name="[13c]"></a>hal_sx1268_write_reg</STRONG> (Thumb, 20 bytes, Stack size 24 bytes, hal_sx1268.o(i.hal_sx1268_write_reg))
 <BR><BR>[Stack]<UL><LI>Max Depth = 64<LI>Call Chain = hal_sx1268_write_reg &rArr; hal_sx1268_write_regs &rArr; hal_sx1268_spi_rw_byte
 </UL>
-<BR>[Calls]<UL><LI><a href="#[14c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_write_regs
+<BR>[Calls]<UL><LI><a href="#[14b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_write_regs
 </UL>
-<BR>[Called By]<UL><LI><a href="#[d3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_init
-<LI><a href="#[13e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_recv_init
-<LI><a href="#[13b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_power
-<LI><a href="#[137]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_pack_params
+<BR>[Called By]<UL><LI><a href="#[139]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_recv_init
+<LI><a href="#[136]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_power
+<LI><a href="#[134]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_pack_params
 </UL>
 
-<P><STRONG><a name="[14c]"></a>hal_sx1268_write_regs</STRONG> (Thumb, 74 bytes, Stack size 24 bytes, hal_sx1268.o(i.hal_sx1268_write_regs))
+<P><STRONG><a name="[14b]"></a>hal_sx1268_write_regs</STRONG> (Thumb, 74 bytes, Stack size 24 bytes, hal_sx1268.o(i.hal_sx1268_write_regs))
 <BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = hal_sx1268_write_regs &rArr; hal_sx1268_spi_rw_byte
 </UL>
-<BR>[Calls]<UL><LI><a href="#[146]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_spi_rw_byte
+<BR>[Calls]<UL><LI><a href="#[145]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_spi_rw_byte
 </UL>
-<BR>[Called By]<UL><LI><a href="#[13a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_write_reg
+<BR>[Called By]<UL><LI><a href="#[13c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_write_reg
 </UL>
 
 <P><STRONG><a name="[f2]"></a>log</STRONG> (Thumb, 808 bytes, Stack size 96 bytes, log.o(i.log))
@@ -2477,9 +2461,9 @@ Global Symbols
 <LI><a href="#[62]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
 <LI><a href="#[66]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_i2d
 <LI><a href="#[61]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_drsub
-<LI><a href="#[14e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_cdcmpeq
+<LI><a href="#[14d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_cdcmpeq
 <LI><a href="#[be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__ARM_scalbn
-<LI><a href="#[14d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__set_errno
+<LI><a href="#[14c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__set_errno
 <LI><a href="#[bb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__kernel_poly
 <LI><a href="#[bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_dbl_invalid
 <LI><a href="#[bd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__mathlib_dbl_infnan
@@ -2488,11 +2472,11 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_node_temp_update
 </UL>
 
-<P><STRONG><a name="[14f]"></a>$Super$$main</STRONG> (Thumb, 70 bytes, Stack size 0 bytes, main.o(i.main))
+<P><STRONG><a name="[14e]"></a>$Super$$main</STRONG> (Thumb, 70 bytes, Stack size 0 bytes, main.o(i.main))
 <BR><BR>[Stack]<UL><LI>Max Depth = 208<LI>Call Chain = $Super$$main &rArr; APP_Init &rArr; rt_thread_create &rArr; rt_object_allocate &rArr; rt_malloc &rArr; rt_sem_take &rArr; rt_ipc_list_suspend &rArr; rt_thread_suspend &rArr; rt_timer_stop &rArr; _rt_timer_remove
 </UL>
-<BR>[Calls]<UL><LI><a href="#[150]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_wdog_feed
-<LI><a href="#[151]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_get_sec_counter
+<BR>[Calls]<UL><LI><a href="#[14f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_wdog_feed
+<LI><a href="#[150]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_get_sec_counter
 <LI><a href="#[103]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_get_rtc_counter
 <LI><a href="#[ff]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;delay_os
 <LI><a href="#[75]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;APP_Init
@@ -2504,12 +2488,12 @@ Global Symbols
 <P><STRONG><a name="[46]"></a>main_thread_entry</STRONG> (Thumb, 14 bytes, Stack size 8 bytes, components.o(i.main_thread_entry))
 <BR><BR>[Stack]<UL><LI>Max Depth = 216<LI>Call Chain = main_thread_entry &rArr; $Super$$main &rArr; APP_Init &rArr; rt_thread_create &rArr; rt_object_allocate &rArr; rt_malloc &rArr; rt_sem_take &rArr; rt_ipc_list_suspend &rArr; rt_thread_suspend &rArr; rt_timer_stop &rArr; _rt_timer_remove
 </UL>
-<BR>[Calls]<UL><LI><a href="#[14f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;$Super$$main
-<LI><a href="#[152]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_components_init
+<BR>[Calls]<UL><LI><a href="#[14e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;$Super$$main
+<LI><a href="#[151]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_components_init
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> components.o(i.rt_application_init)
 </UL>
-<P><STRONG><a name="[153]"></a>nwk_cacul_sniff_time</STRONG> (Thumb, 144 bytes, Stack size 32 bytes, nwk_bsp.o(i.nwk_cacul_sniff_time))
+<P><STRONG><a name="[152]"></a>nwk_cacul_sniff_time</STRONG> (Thumb, 144 bytes, Stack size 32 bytes, nwk_bsp.o(i.nwk_cacul_sniff_time))
 <BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = nwk_cacul_sniff_time &rArr; __aeabi_fmul
 </UL>
 <BR>[Calls]<UL><LI><a href="#[f0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fmul
@@ -2523,7 +2507,7 @@ Global Symbols
 <P><STRONG><a name="[d9]"></a>nwk_crc16</STRONG> (Thumb, 16 bytes, Stack size 16 bytes, nwk_bsp.o(i.nwk_crc16))
 <BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = nwk_crc16 &rArr; drv_crc16
 </UL>
-<BR>[Calls]<UL><LI><a href="#[154]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_crc16
+<BR>[Calls]<UL><LI><a href="#[153]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_crc16
 </UL>
 <BR>[Called By]<UL><LI><a href="#[db]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_node_write_config
 <LI><a href="#[d8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_node_read_config
@@ -2533,19 +2517,20 @@ Global Symbols
 <LI><a href="#[160]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_make_send_buff
 </UL>
 
-<P><STRONG><a name="[155]"></a>nwk_delay_ms</STRONG> (Thumb, 12 bytes, Stack size 8 bytes, nwk_bsp.o(i.nwk_delay_ms))
+<P><STRONG><a name="[154]"></a>nwk_delay_ms</STRONG> (Thumb, 12 bytes, Stack size 8 bytes, nwk_bsp.o(i.nwk_delay_ms))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = nwk_delay_ms
 </UL>
 <BR>[Calls]<UL><LI><a href="#[44]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;delay_ms
 </UL>
 <BR>[Called By]<UL><LI><a href="#[171]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_tx_gw_process
 <LI><a href="#[16c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_send_sniff
+<LI><a href="#[15e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_device_init
 </UL>
 
-<P><STRONG><a name="[156]"></a>nwk_find_head</STRONG> (Thumb, 72 bytes, Stack size 32 bytes, nwk_bsp.o(i.nwk_find_head))
+<P><STRONG><a name="[155]"></a>nwk_find_head</STRONG> (Thumb, 72 bytes, Stack size 32 bytes, nwk_bsp.o(i.nwk_find_head))
 <BR><BR>[Stack]<UL><LI>Max Depth = 44<LI>Call Chain = nwk_find_head &rArr; memcmp
 </UL>
-<BR>[Calls]<UL><LI><a href="#[157]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;memcmp
+<BR>[Calls]<UL><LI><a href="#[156]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;memcmp
 </UL>
 <BR>[Called By]<UL><LI><a href="#[16f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_search_process
 <LI><a href="#[168]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_rx_process
@@ -2557,12 +2542,12 @@ Global Symbols
 <LI><a href="#[168]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_rx_process
 </UL>
 
-<P><STRONG><a name="[158]"></a>nwk_get_rand</STRONG> (Thumb, 38 bytes, Stack size 8 bytes, nwk_bsp.o(i.nwk_get_rand))
+<P><STRONG><a name="[157]"></a>nwk_get_rand</STRONG> (Thumb, 38 bytes, Stack size 8 bytes, nwk_bsp.o(i.nwk_get_rand))
 <BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = nwk_get_rand &rArr; nwk_get_rtc_counter &rArr; drv_get_rtc_counter
 </UL>
 <BR>[Calls]<UL><LI><a href="#[e0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_get_rtc_counter
-<LI><a href="#[159]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srand
-<LI><a href="#[15a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rand
+<LI><a href="#[158]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;srand
+<LI><a href="#[159]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rand
 </UL>
 <BR>[Called By]<UL><LI><a href="#[15f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_work_check
 <LI><a href="#[171]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_tx_gw_process
@@ -2575,7 +2560,7 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[103]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_get_rtc_counter
 </UL>
 <BR>[Called By]<UL><LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_node_send_status
-<LI><a href="#[158]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_get_rand
+<LI><a href="#[157]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_get_rand
 <LI><a href="#[15f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_work_check
 <LI><a href="#[171]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_tx_gw_process
 <LI><a href="#[16f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_search_process
@@ -2591,7 +2576,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[d8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_node_read_config
 </UL>
 
-<P><STRONG><a name="[15b]"></a>nwk_node_cad_check</STRONG> (Thumb, 26 bytes, Stack size 8 bytes, nwk_node.o(i.nwk_node_cad_check))
+<P><STRONG><a name="[15a]"></a>nwk_node_cad_check</STRONG> (Thumb, 26 bytes, Stack size 8 bytes, nwk_node.o(i.nwk_node_cad_check))
 <BR><BR>[Stack]<UL><LI>Max Depth = 88<LI>Call Chain = nwk_node_cad_check &rArr; drv_sx1268_cad_check &rArr; drv_sx1268_get_irq_status &rArr; hal_sx1268_read_cmd &rArr; hal_sx1268_spi_rw_byte
 </UL>
 <BR>[Calls]<UL><LI><a href="#[122]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_cad_check
@@ -2601,7 +2586,7 @@ Global Symbols
 <LI><a href="#[168]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_rx_process
 </UL>
 
-<P><STRONG><a name="[15c]"></a>nwk_node_cad_init</STRONG> (Thumb, 26 bytes, Stack size 8 bytes, nwk_node.o(i.nwk_node_cad_init))
+<P><STRONG><a name="[15b]"></a>nwk_node_cad_init</STRONG> (Thumb, 26 bytes, Stack size 8 bytes, nwk_node.o(i.nwk_node_cad_init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 96<LI>Call Chain = nwk_node_cad_init &rArr; drv_sx1268_cad_init &rArr; drv_sx1268_set_irq_parsms &rArr; hal_sx1268_write_cmd &rArr; hal_sx1268_spi_rw_byte
 </UL>
 <BR>[Calls]<UL><LI><a href="#[125]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_cad_init
@@ -2610,7 +2595,7 @@ Global Symbols
 <LI><a href="#[168]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_rx_process
 </UL>
 
-<P><STRONG><a name="[15d]"></a>nwk_node_calcu_air_time</STRONG> (Thumb, 30 bytes, Stack size 24 bytes, nwk_node.o(i.nwk_node_calcu_air_time))
+<P><STRONG><a name="[15c]"></a>nwk_node_calcu_air_time</STRONG> (Thumb, 30 bytes, Stack size 24 bytes, nwk_node.o(i.nwk_node_calcu_air_time))
 <BR><BR>[Stack]<UL><LI>Max Depth = 184<LI>Call Chain = nwk_node_calcu_air_time &rArr; drv_sx1268_calcu_air_time &rArr; __aeabi_dadd &rArr; _double_epilogue &rArr; _double_round
 </UL>
 <BR>[Calls]<UL><LI><a href="#[129]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_calcu_air_time
@@ -2619,7 +2604,7 @@ Global Symbols
 <LI><a href="#[168]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_rx_process
 </UL>
 
-<P><STRONG><a name="[15e]"></a>nwk_node_clear_tx</STRONG> (Thumb, 30 bytes, Stack size 8 bytes, nwk_node.o(i.nwk_node_clear_tx))
+<P><STRONG><a name="[15d]"></a>nwk_node_clear_tx</STRONG> (Thumb, 30 bytes, Stack size 8 bytes, nwk_node.o(i.nwk_node_clear_tx))
 <BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = nwk_node_clear_tx &rArr; __2printf
 </UL>
 <BR>[Calls]<UL><LI><a href="#[b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2printf
@@ -2629,8 +2614,18 @@ Global Symbols
 <LI><a href="#[164]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_recv_parse
 </UL>
 
+<P><STRONG><a name="[15e]"></a>nwk_node_device_init</STRONG> (Thumb, 38 bytes, Stack size 8 bytes, nwk_node.o(i.nwk_node_device_init))
+<BR><BR>[Stack]<UL><LI>Max Depth = 128<LI>Call Chain = nwk_node_device_init &rArr; drv_sx1268_init &rArr; drv_sx1268_set_power &rArr; drv_sx1268_set_pa &rArr; hal_sx1268_write_cmd &rArr; hal_sx1268_spi_rw_byte
+</UL>
+<BR>[Calls]<UL><LI><a href="#[d3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_init
+<LI><a href="#[154]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_delay_ms
+<LI><a href="#[b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2printf
+</UL>
+<BR>[Called By]<UL><LI><a href="#[171]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_tx_gw_process
+</UL>
+
 <P><STRONG><a name="[f6]"></a>nwk_node_main</STRONG> (Thumb, 114 bytes, Stack size 16 bytes, nwk_node.o(i.nwk_node_main))
-<BR><BR>[Stack]<UL><LI>Max Depth = 792<LI>Call Chain = nwk_node_main &rArr; nwk_node_work_check &rArr; nwk_node_tx_gw_process &rArr; nwk_node_recv_parse &rArr; nwk_node_make_send_buff &rArr; nwk_tea_encrypt &rArr; tea_encrypt_buff &rArr; EncryptTEA
+<BR><BR>[Stack]<UL><LI>Max Depth = 808<LI>Call Chain = nwk_node_main &rArr; nwk_node_work_check &rArr; nwk_node_tx_gw_process &rArr; nwk_node_recv_parse &rArr; nwk_node_make_send_buff &rArr; nwk_tea_encrypt &rArr; tea_encrypt_buff &rArr; EncryptTEA
 </UL>
 <BR>[Calls]<UL><LI><a href="#[15f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_work_check
 </UL>
@@ -2652,9 +2647,9 @@ Global Symbols
 <P><STRONG><a name="[162]"></a>nwk_node_recv_check</STRONG> (Thumb, 76 bytes, Stack size 24 bytes, nwk_node.o(i.nwk_node_recv_check))
 <BR><BR>[Stack]<UL><LI>Max Depth = 128<LI>Call Chain = nwk_node_recv_check &rArr; drv_sx1268_recv_check &rArr; drv_sx1268_get_rx_buff_status &rArr; hal_sx1268_read_cmd &rArr; hal_sx1268_spi_rw_byte
 </UL>
-<BR>[Calls]<UL><LI><a href="#[13c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_recv_check
-<LI><a href="#[12d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_get_rssi_inst
-<LI><a href="#[12c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_get_pack_status
+<BR>[Calls]<UL><LI><a href="#[137]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_recv_check
+<LI><a href="#[12c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_get_rssi_inst
+<LI><a href="#[12b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_get_pack_status
 </UL>
 <BR>[Called By]<UL><LI><a href="#[171]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_tx_gw_process
 <LI><a href="#[16f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_search_process
@@ -2668,7 +2663,7 @@ Global Symbols
 <P><STRONG><a name="[163]"></a>nwk_node_recv_init</STRONG> (Thumb, 26 bytes, Stack size 8 bytes, nwk_node.o(i.nwk_node_recv_init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 104<LI>Call Chain = nwk_node_recv_init &rArr; drv_sx1268_recv_init &rArr; drv_sx1268_set_irq_parsms &rArr; hal_sx1268_write_cmd &rArr; hal_sx1268_spi_rw_byte
 </UL>
-<BR>[Calls]<UL><LI><a href="#[13e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_recv_init
+<BR>[Calls]<UL><LI><a href="#[139]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_recv_init
 </UL>
 <BR>[Called By]<UL><LI><a href="#[171]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_tx_gw_process
 <LI><a href="#[16f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_search_process
@@ -2685,11 +2680,11 @@ Global Symbols
 <LI><a href="#[161]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_tea_encrypt
 <LI><a href="#[166]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_tea_decrypt
 <LI><a href="#[167]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_set_rtc_counter
-<LI><a href="#[158]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_get_rand
-<LI><a href="#[156]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_find_head
+<LI><a href="#[157]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_get_rand
+<LI><a href="#[155]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_find_head
 <LI><a href="#[165]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_search_gw
 <LI><a href="#[160]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_make_send_buff
-<LI><a href="#[15e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_clear_tx
+<LI><a href="#[15d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_clear_tx
 <LI><a href="#[b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2printf
 <LI><a href="#[da]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr4
 <LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memcpy
@@ -2703,7 +2698,7 @@ Global Symbols
 <LI><a href="#[15f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_work_check
 </UL>
 
-<P><STRONG><a name="[168]"></a>nwk_node_rx_process</STRONG> (Thumb, 1442 bytes, Stack size 56 bytes, nwk_node.o(i.nwk_node_rx_process))
+<P><STRONG><a name="[168]"></a>nwk_node_rx_process</STRONG> (Thumb, 1414 bytes, Stack size 56 bytes, nwk_node.o(i.nwk_node_rx_process))
 <BR><BR>[Stack]<UL><LI>Max Depth = 744<LI>Call Chain = nwk_node_rx_process &rArr; nwk_node_recv_parse &rArr; nwk_node_make_send_buff &rArr; nwk_tea_encrypt &rArr; tea_encrypt_buff &rArr; EncryptTEA
 </UL>
 <BR>[Calls]<UL><LI><a href="#[f8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;printf_hex
@@ -2714,7 +2709,7 @@ Global Symbols
 <LI><a href="#[f1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2d
 <LI><a href="#[63]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
 <LI><a href="#[16b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_get_channel
-<LI><a href="#[156]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_find_head
+<LI><a href="#[155]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_find_head
 <LI><a href="#[67]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ui2d
 <LI><a href="#[62]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
 <LI><a href="#[68]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2uiz
@@ -2726,9 +2721,9 @@ Global Symbols
 <LI><a href="#[164]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_recv_parse
 <LI><a href="#[163]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_recv_init
 <LI><a href="#[162]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_recv_check
-<LI><a href="#[15d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_calcu_air_time
-<LI><a href="#[15c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_cad_init
-<LI><a href="#[15b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_cad_check
+<LI><a href="#[15c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_calcu_air_time
+<LI><a href="#[15b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_cad_init
+<LI><a href="#[15a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_cad_check
 <LI><a href="#[b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2printf
 </UL>
 <BR>[Called By]<UL><LI><a href="#[15f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_work_check
@@ -2742,19 +2737,19 @@ Global Symbols
 <LI><a href="#[164]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_recv_parse
 </UL>
 
-<P><STRONG><a name="[16f]"></a>nwk_node_search_process</STRONG> (Thumb, 446 bytes, Stack size 48 bytes, nwk_node.o(i.nwk_node_search_process))
-<BR><BR>[Stack]<UL><LI>Max Depth = 248<LI>Call Chain = nwk_node_search_process &rArr; printf_oled &rArr; app_oled96_show_debug &rArr; drv_oled96_show_str_f6x8 &rArr; drv_oled96_show_char &rArr; drv_oled96_set_pos &rArr; drv_oled96_write_byte &rArr; IIC_WaitAck &rArr; IIC_SdaOutMode &rArr; GPIO_Init
+<P><STRONG><a name="[16f]"></a>nwk_node_search_process</STRONG> (Thumb, 476 bytes, Stack size 56 bytes, nwk_node.o(i.nwk_node_search_process))
+<BR><BR>[Stack]<UL><LI>Max Depth = 256<LI>Call Chain = nwk_node_search_process &rArr; printf_oled &rArr; app_oled96_show_debug &rArr; drv_oled96_show_str_f6x8 &rArr; drv_oled96_show_char &rArr; drv_oled96_set_pos &rArr; drv_oled96_write_byte &rArr; IIC_WaitAck &rArr; IIC_SdaOutMode &rArr; GPIO_Init
 </UL>
 <BR>[Calls]<UL><LI><a href="#[f9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;printf_oled
 <LI><a href="#[f8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;printf_hex
 <LI><a href="#[e0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_get_rtc_counter
 <LI><a href="#[166]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_tea_decrypt
-<LI><a href="#[156]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_find_head
+<LI><a href="#[155]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_find_head
 <LI><a href="#[16a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_set_lora_param
 <LI><a href="#[165]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_search_gw
 <LI><a href="#[163]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_recv_init
 <LI><a href="#[162]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_recv_check
-<LI><a href="#[15b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_cad_check
+<LI><a href="#[15a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_cad_check
 <LI><a href="#[b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2printf
 </UL>
 <BR>[Called By]<UL><LI><a href="#[15f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_work_check
@@ -2777,7 +2772,7 @@ Global Symbols
 <P><STRONG><a name="[16d]"></a>nwk_node_send_buff</STRONG> (Thumb, 34 bytes, Stack size 16 bytes, nwk_node.o(i.nwk_node_send_buff))
 <BR><BR>[Stack]<UL><LI>Max Depth = 136<LI>Call Chain = nwk_node_send_buff &rArr; drv_sx1268_send &rArr; drv_sx1268_set_pack_params &rArr; hal_sx1268_write_reg &rArr; hal_sx1268_write_regs &rArr; hal_sx1268_spi_rw_byte
 </UL>
-<BR>[Calls]<UL><LI><a href="#[140]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_send
+<BR>[Calls]<UL><LI><a href="#[13d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_send
 </UL>
 <BR>[Called By]<UL><LI><a href="#[171]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_tx_gw_process
 <LI><a href="#[168]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_rx_process
@@ -2786,7 +2781,7 @@ Global Symbols
 <P><STRONG><a name="[16e]"></a>nwk_node_send_check</STRONG> (Thumb, 26 bytes, Stack size 8 bytes, nwk_node.o(i.nwk_node_send_check))
 <BR><BR>[Stack]<UL><LI>Max Depth = 88<LI>Call Chain = nwk_node_send_check &rArr; drv_sx1268_send_check &rArr; drv_sx1268_get_irq_status &rArr; hal_sx1268_read_cmd &rArr; hal_sx1268_spi_rw_byte
 </UL>
-<BR>[Calls]<UL><LI><a href="#[142]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_send_check
+<BR>[Calls]<UL><LI><a href="#[13f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_send_check
 </UL>
 <BR>[Called By]<UL><LI><a href="#[171]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_tx_gw_process
 <LI><a href="#[168]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_rx_process
@@ -2797,9 +2792,9 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[63]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
 <LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dadd
-<LI><a href="#[155]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_delay_ms
-<LI><a href="#[153]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_cacul_sniff_time
-<LI><a href="#[140]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_send
+<LI><a href="#[154]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_delay_ms
+<LI><a href="#[152]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_cacul_sniff_time
+<LI><a href="#[13d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_send
 <LI><a href="#[67]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ui2d
 <LI><a href="#[62]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
 <LI><a href="#[68]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2uiz
@@ -2824,8 +2819,8 @@ Global Symbols
 <P><STRONG><a name="[16a]"></a>nwk_node_set_lora_param</STRONG> (Thumb, 48 bytes, Stack size 16 bytes, nwk_node.o(i.nwk_node_set_lora_param))
 <BR><BR>[Stack]<UL><LI>Max Depth = 80<LI>Call Chain = nwk_node_set_lora_param &rArr; drv_sx1268_set_sf_bw &rArr; hal_sx1268_write_cmd &rArr; hal_sx1268_spi_rw_byte
 </UL>
-<BR>[Calls]<UL><LI><a href="#[136]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_sf_bw
-<LI><a href="#[134]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_freq
+<BR>[Calls]<UL><LI><a href="#[144]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_sf_bw
+<LI><a href="#[140]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_freq
 </UL>
 <BR>[Called By]<UL><LI><a href="#[171]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_tx_gw_process
 <LI><a href="#[16f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_search_process
@@ -2852,17 +2847,17 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[15f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_work_check
 </UL>
 
-<P><STRONG><a name="[171]"></a>nwk_node_tx_gw_process</STRONG> (Thumb, 1556 bytes, Stack size 56 bytes, nwk_node.o(i.nwk_node_tx_gw_process))
-<BR><BR>[Stack]<UL><LI>Max Depth = 744<LI>Call Chain = nwk_node_tx_gw_process &rArr; nwk_node_recv_parse &rArr; nwk_node_make_send_buff &rArr; nwk_tea_encrypt &rArr; tea_encrypt_buff &rArr; EncryptTEA
+<P><STRONG><a name="[171]"></a>nwk_node_tx_gw_process</STRONG> (Thumb, 1762 bytes, Stack size 72 bytes, nwk_node.o(i.nwk_node_tx_gw_process))
+<BR><BR>[Stack]<UL><LI>Max Depth = 760<LI>Call Chain = nwk_node_tx_gw_process &rArr; nwk_node_recv_parse &rArr; nwk_node_make_send_buff &rArr; nwk_tea_encrypt &rArr; tea_encrypt_buff &rArr; EncryptTEA
 </UL>
 <BR>[Calls]<UL><LI><a href="#[f9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;printf_oled
 <LI><a href="#[f8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;printf_hex
 <LI><a href="#[e0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_get_rtc_counter
 <LI><a href="#[d9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_crc16
 <LI><a href="#[63]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
-<LI><a href="#[158]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_get_rand
+<LI><a href="#[157]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_get_rand
 <LI><a href="#[16b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_get_channel
-<LI><a href="#[155]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_delay_ms
+<LI><a href="#[154]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_delay_ms
 <LI><a href="#[67]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ui2d
 <LI><a href="#[62]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
 <LI><a href="#[68]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2uiz
@@ -2877,21 +2872,22 @@ Global Symbols
 <LI><a href="#[163]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_recv_init
 <LI><a href="#[162]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_recv_check
 <LI><a href="#[160]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_make_send_buff
-<LI><a href="#[15e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_clear_tx
-<LI><a href="#[15d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_calcu_air_time
-<LI><a href="#[15c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_cad_init
-<LI><a href="#[15b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_cad_check
+<LI><a href="#[15e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_device_init
+<LI><a href="#[15d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_clear_tx
+<LI><a href="#[15c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_calcu_air_time
+<LI><a href="#[15b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_cad_init
+<LI><a href="#[15a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_cad_check
 <LI><a href="#[b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2printf
 </UL>
 <BR>[Called By]<UL><LI><a href="#[15f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_work_check
 </UL>
 
-<P><STRONG><a name="[15f]"></a>nwk_node_work_check</STRONG> (Thumb, 716 bytes, Stack size 32 bytes, nwk_node.o(i.nwk_node_work_check))
-<BR><BR>[Stack]<UL><LI>Max Depth = 776<LI>Call Chain = nwk_node_work_check &rArr; nwk_node_tx_gw_process &rArr; nwk_node_recv_parse &rArr; nwk_node_make_send_buff &rArr; nwk_tea_encrypt &rArr; tea_encrypt_buff &rArr; EncryptTEA
+<P><STRONG><a name="[15f]"></a>nwk_node_work_check</STRONG> (Thumb, 718 bytes, Stack size 32 bytes, nwk_node.o(i.nwk_node_work_check))
+<BR><BR>[Stack]<UL><LI>Max Depth = 792<LI>Call Chain = nwk_node_work_check &rArr; nwk_node_tx_gw_process &rArr; nwk_node_recv_parse &rArr; nwk_node_make_send_buff &rArr; nwk_tea_encrypt &rArr; tea_encrypt_buff &rArr; EncryptTEA
 </UL>
 <BR>[Calls]<UL><LI><a href="#[e0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_get_rtc_counter
 <LI><a href="#[10e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_req_join
-<LI><a href="#[158]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_get_rand
+<LI><a href="#[157]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_get_rand
 <LI><a href="#[171]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_tx_gw_process
 <LI><a href="#[173]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_tx_d2d_process
 <LI><a href="#[16f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_search_process
@@ -2967,7 +2963,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[180]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_hw_board_init
 </UL>
 
-<P><STRONG><a name="[152]"></a>rt_components_init</STRONG> (Thumb, 20 bytes, Stack size 8 bytes, components.o(i.rt_components_init))
+<P><STRONG><a name="[151]"></a>rt_components_init</STRONG> (Thumb, 20 bytes, Stack size 8 bytes, components.o(i.rt_components_init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = rt_components_init
 </UL>
 <BR>[Called By]<UL><LI><a href="#[46]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main_thread_entry
@@ -3530,7 +3526,7 @@ Local Symbols
 <BR>[Address Reference Count : 1]<UL><LI> app_node.o(i.app_node_lora_init)
 </UL>
 <P><STRONG><a name="[d0]"></a>app_node_lora_init</STRONG> (Thumb, 270 bytes, Stack size 32 bytes, app_node.o(i.app_node_lora_init))
-<BR><BR>[Stack]<UL><LI>Max Depth = 168<LI>Call Chain = app_node_lora_init &rArr; drv_sx1268_init &rArr; drv_sx1268_set_power &rArr; drv_sx1268_set_pa &rArr; hal_sx1268_write_cmd &rArr; hal_sx1268_spi_rw_byte
+<BR><BR>[Stack]<UL><LI>Max Depth = 152<LI>Call Chain = app_node_lora_init &rArr; drv_sx1268_init &rArr; drv_sx1268_set_power &rArr; drv_sx1268_set_pa &rArr; hal_sx1268_write_cmd &rArr; hal_sx1268_spi_rw_byte
 </UL>
 <BR>[Calls]<UL><LI><a href="#[d4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_set_lora_dev
 <LI><a href="#[d3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_init

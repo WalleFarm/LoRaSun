@@ -1,6 +1,7 @@
 
 #include "app_master.h" 
 
+#include "app_mqtt.h" 
 
 
 /*		
@@ -104,6 +105,8 @@ void app_master_recv_parse(void)
         break;
       }
     }
+    //同时转发到MQTT
+    app_mqtt_pub_data(pRecvFrom->app_data, pRecvFrom->data_len);
   }
 }
 
@@ -134,13 +137,14 @@ void app_master_thread_entry(void *parameter)
     nwk_master_send_freq_ptr(slave);
     delay_os(100);
   }
+  app_mqtt_init();
 //  nwk_master_add_token(0x12345678);//测试
   while(1)
   {
     app_master_uart_recv_check();//串口接收检查
     app_master_recv_parse();//应用层接收解析
     nwk_master_main(); 
-    
+    app_mqtt_main();//MQTT
     if(run_cnts++%100==0)//指示灯运行
     {
       led_state=!led_state;

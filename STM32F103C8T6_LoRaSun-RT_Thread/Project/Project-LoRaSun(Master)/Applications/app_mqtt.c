@@ -1,8 +1,9 @@
 
 #include "app_mqtt.h" 
+#include "nwk_master.h" 
 
-#include "app_air.h" 
-
+#define ESP8266_LINK_ID    3 //WIFI连接ID
+#define MQTT_CONN_ID       0 //MQTT连接ID
 /*		
 ================================================================================
 描述 : 
@@ -12,15 +13,16 @@
 */
 void app_mqtt_init(void)
 {
-  //4G 参数配置
-  drv_air780_init(&g_sUART2);
+  //WIFI 参数配置
+  drv_esp8266_init(&g_sUART3, "LoRaSun", "123456789");
+//  drv_esp8266_init(&g_sUART3, "", "");
     
-  drv_air780_set_client(3, "broker.emqx.io", 1883, "TCP");//EMQ官方测试服务器
+  drv_esp8266_set_client(ESP8266_LINK_ID, "broker.emqx.io", 1883, "TCP");
   
-  drv_air780_fun_register(app_esp8266_recv);//注册ESP8266 接收处理函数
+  drv_esp8266_fun_register(app_esp8266_recv);//注册ESP8266 接收处理函数(将数据放入MQTT缓冲区)
   
   //MQTT 参数配置
-  u32 device_sn=app_air_take_sn();
+  u32 device_sn=nwk_master_get_gw_sn();
   static char *usr_name="usr_dev";
   static char *passwd="123456789";
   static char client_id01[20]={0};
@@ -37,7 +39,7 @@ void app_mqtt_init(void)
   
   //话题订阅
   static char data_topic1[30]={0};//
-  sprintf(data_topic1, "air/dev/sub/%08X", device_sn);
+  sprintf(data_topic1, "lora/dev/sub/%08X", device_sn);
 //  static char *data_topic2="air/dev/sub/002";
   u32 base_msg_id=0xBB01;
 
@@ -86,7 +88,7 @@ void app_mqtt_put_data(u8 index, u8 *buff, u16 len)
 */
 int app_mqtt_send0(u8 *buff, u16 len)
 {
-	drv_air780_send_data(0, buff, len);
+	drv_esp8266_send_data(ESP8266_LINK_ID, buff, len);//WIFI发送
   return len;
 }
  
@@ -99,37 +101,7 @@ int app_mqtt_send0(u8 *buff, u16 len)
 */ 
 int app_mqtt_recv0(u8 *buff, int len)
 {
-	struct rt_ringbuffer *rb=drv_mqtt_take_rb(0);
-	if(rb==NULL)
-	{
-		return 0;
-	}
-	return rt_ringbuffer_get(rb, buff, len);  
-}
-
-/*		
-================================================================================
-描述 :
-输入 : 
-输出 : 
-================================================================================
-*/
-int app_mqtt_send1(u8 *buff, u16 len)
-{
-	drv_air780_send_data(1, buff, len);
-  return len;
-}
-
-/*		
-================================================================================
-描述 :
-输入 : 
-输出 : 
-================================================================================
-*/ 
-int app_mqtt_recv1(u8 *buff, int len)
-{
-	struct rt_ringbuffer *rb=drv_mqtt_take_rb(1);
+	struct rt_ringbuffer *rb=drv_mqtt_take_rb(MQTT_CONN_ID);
 	if(rb==NULL)
 	{
 		return 0;
@@ -148,18 +120,11 @@ void app_esp8266_recv(u8 sock_id, u8 *buff, u16 len)
 {
   switch(sock_id)
   {
-    case 3://AIR780 link_id=3
+    case ESP8266_LINK_ID:
     {
-      u8 conn_id=0;
-      app_mqtt_put_data(conn_id, buff, len);
+      app_mqtt_put_data(MQTT_CONN_ID, buff, len);
       break;
-    }
-//    case 4://ESP8266 link_id=4
-//    {
-//      u8 conn_id=1;
-//      app_mqtt_put_data(conn_id, buff, len);
-//      break;
-//    }    
+    }  
   }
 }
 
@@ -175,7 +140,7 @@ void app_mqtt_recv_parse(u8 index, char *topic, u8 *buff, u16 len)
   printf("mqtt conn id=%d, topic=%s\n", index, topic);
   printf("recv size=%d, buff=%s\n", len, buff);
   
-  app_air_recv_parse(buff, len);
+
 }
 
 /*		
@@ -187,10 +152,8 @@ void app_mqtt_recv_parse(u8 index, char *topic, u8 *buff, u16 len)
 */
 void app_mqtt_pub_data(u8 *buff, u16 len)
 {
-  static char *pub_topic="air/dev/pub/data";
-  drv_mqtt_publish(0, buff, len, pub_topic);
-//  delay_os(200);
-//  drv_mqtt_publish(1, buff, len, pub_topic);
+  static char *pub_topic="lora/dev/pub/data";
+  drv_mqtt_publish(MQTT_CONN_ID, buff, len, pub_topic);
   
 }
 
@@ -204,8 +167,8 @@ void app_mqtt_pub_data(u8 *buff, u16 len)
 */
 void app_mqtt_main(void)
 {
-  drv_air780_main();
-  drv_mqtt_main();
+  drv_esp8266_main();
+  drv_mqtt_main(); 
 }
 
 /*		
