@@ -828,7 +828,7 @@ void nwk_master_check_down_pack(void)
       {
         pTemp->down_time=now_time;
         u8 slave_addr=nwk_get_rand()%NWK_GW_WIRELESS_NUM+1;
-//        slave_addr=4;
+        slave_addr=1;
         printf(">>>down tx node_sn=0x%08X, slave_addr=%d\n", pTemp->node_sn, slave_addr);
         nwk_master_send_down_pack(pTemp->node_sn, slave_addr, pTemp->down_buff, pTemp->down_len, awake_flag);        
       }

@@ -543,7 +543,7 @@ void app_node_thread_entry(void *parameter)
 //      app_node_send_status();
     }
 		
-    delay_os(5);
+    delay_os(nwk_get_rand()%5+5);
   }
 }
 

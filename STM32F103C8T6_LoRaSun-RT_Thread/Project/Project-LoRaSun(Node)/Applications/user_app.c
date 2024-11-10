@@ -93,7 +93,27 @@ void app_uart_thread_entry(void *parameter)
         pData+=5;
         u16 wake_period=atol(pData);
         app_node_set_wake_period(wake_period);
-      }			
+      }		
+      else if((pData=strstr(pBuff, "sniff:"))!=NULL)
+      {
+        pData+=strlen("sniff:");
+        u8 group_id=atol(pData);
+        pData=strstr(pData, ",");
+        pData+=1;
+        u16 cnts=atol(pData);
+        
+        u8 sf=0, bw=0;
+        nwk_get_up_channel(group_id, &sf, &bw);
+        printf("test sniff sf=%d, bw=%d, cnts=%d\n", sf, bw, cnts);
+        u32 freq=NWK_GW_BASE_FREQ+0*1000000;
+        nwk_node_set_lora_param(freq, sf, bw);
+        for(u16 i=0; i<cnts; i++)
+        {
+          nwk_node_send_sniff(sf, bw);//发送嗅探帧
+          nwk_node_cad_init(); 
+        }
+        printf("sniff ok!\n");
+      }			      
 			UART_Clear(pUART);
 		}		
 

@@ -759,19 +759,27 @@ void nwk_node_clear_tx(void)
 */ 
 u8 nwk_node_send2gateway(u8 *in_buff, u8 in_len)
 {
+  static u8 join_flag=0;
+  if(join_flag==0)//首次按钮进行入网
+  {
+    join_flag=1;
+    nwk_node_req_join(0xC1011234);//请求入网
+    printf_oled("***req join!");
+  }
   NwkNodeTxGwStruct *pNodeTxGw=&g_sNwkNodeWork.node_tx_gw;
   if(pNodeTxGw->tx_len>0 || in_len>NWK_TRANSMIT_MAX_SIZE)
   {
     printf("tx task is busy!\n");
     return 0;
   }
-  
+
   memcpy(pNodeTxGw->tx_buff, in_buff, in_len);
   pNodeTxGw->tx_len=in_len;
   pNodeTxGw->tx_cmd=NwkCmdDataOnce;
   pNodeTxGw->try_cnts=0;
   pNodeTxGw->tx_total_cnts++;
-	printf("send to gw!\n");
+  pNodeTxGw->group_id=nwk_get_rand()%5;
+	printf("***send to gw! group_id=%d\n", pNodeTxGw->group_id);
   return 0;
 }
 
@@ -791,6 +799,8 @@ void nwk_node_req_join(u32 gw_sn)
   pNodeTxGw->tx_len=2;
   pNodeTxGw->tx_cmd=NwkCmdJoin;
   pNodeTxGw->try_cnts=0;
+  pNodeTxGw->group_id=nwk_get_rand()%5;
+	printf("***req_join! group_id=%d\n", pNodeTxGw->group_id);  
 }
 
 /*		
@@ -1012,7 +1022,7 @@ void nwk_node_rx_process(void)
       }
       else if(result==CadResultSuccess)//搜索到
       {
-        printf("rx cad ok! awake!\n");
+        printf("***rx cad ok! awake!\n");
         nwk_node_recv_init();//进入接收,等待回复
         u32 tx_time=nwk_node_calcu_air_time(pNodeRx->curr_sf, pNodeRx->curr_bw, 8)*1.2;//接收等待时间
         pNodeRx->start_rtc_time=nwk_get_rtc_counter();//记录当前时间,防止超时
@@ -1069,7 +1079,7 @@ void nwk_node_rx_process(void)
 		{
 			u8 sf, bw;
 			u32 freq=pNodeRx->freq;//+pNodeRx->group_id*500000;
-      nwk_get_channel(pNodeRx->group_id*2, &sf, &bw);
+      nwk_get_down_channel(pNodeRx->group_id, &sf, &bw);
       pNodeRx->curr_sf=sf;
       pNodeRx->curr_bw=bw;      
 //			printf("cad param(%.2f, %d, %d)\n", pSlaveRx->freq/1000000.0, sf, bw);
@@ -1084,7 +1094,7 @@ void nwk_node_rx_process(void)
       if(result==CadResultFailed)//没搜索到
       {
         pNodeRx->group_id++;
-        if(pNodeRx->group_id>=NWK_RF_GROUP_NUM)//NWK_RF_GROUP_NUM
+        if(pNodeRx->group_id>=NWK_DOWN_CHANNEL_NUM)//NWK_RF_GROUP_NUM
         {
 					pNodeRx->listen_cnts++;
 					if(pNodeRx->listen_cnts<30)//扫描轮次
@@ -1105,16 +1115,14 @@ void nwk_node_rx_process(void)
       }
       else if(result==CadResultSuccess)//搜索到
 			{
-				u32 freq=pNodeRx->freq;//+pNodeRx->group_id*500000;
-        printf("cad OK***(%.2f, %d, %d)\n", freq/1000000.0, pNodeRx->curr_sf, pNodeRx->curr_bw);
-        u8 sf=0, bw=0;
-        nwk_get_channel(pNodeRx->group_id*2+1, &sf, &bw);//以本通道组的第二个参数作为CAD监听参数
-        pNodeRx->curr_sf=sf;
-        pNodeRx->curr_bw=bw;
+        printf("cad OK***(%.2f, %d, %d)\n", pNodeRx->freq/1000000.0, pNodeRx->curr_sf, pNodeRx->curr_bw);
+				u32 freq=pNodeRx->freq+1000000;//+pNodeRx->group_id*500000;
+        u8 sf=pNodeRx->curr_sf;
+        u8 bw=pNodeRx->curr_bw;
         printf("group id=%d, rx sniff param(%.2f, %d, %d)\n", pNodeRx->group_id, freq/1000000.0, sf, bw);
         
         nwk_node_set_lora_param(freq, sf, bw);  
-        for(u8 i=0; i<10; i++)
+        for(u8 i=0; i<30; i++)
         {
           nwk_node_send_sniff(sf, bw);//返回嗅探帧
         }
@@ -1245,14 +1253,14 @@ void nwk_node_tx_gw_process(void)
         //组合发送数据
         make_len=nwk_node_make_send_buff(opt, pGateWay->gw_sn, pKey, pNodeTxGw->tx_cmd, ++pGateWay->up_pack_num, pNodeTxGw->tx_buff, pNodeTxGw->tx_len, pMakeBuff, make_size);
 				printf_hex("make buff=", pMakeBuff, make_len);        
-        pNodeTxGw->group_id=0;//通道组,从0开始,也可以根据信号强度选择较高的通道组
+//        pNodeTxGw->group_id=4;//通道组,从0开始,也可以根据信号强度选择较高的通道组
         pNodeTxGw->wireless_ptr=0;
-        if(pNodeTxGw->pGateWay->wireless_num>0)
-        {
-          pNodeTxGw->wireless_ptr=nwk_get_rand()%pNodeTxGw->pGateWay->wireless_num;//随机选择天线
-					printf("wireless_ptr=%d\n", pNodeTxGw->wireless_ptr);
-					
-        }
+//        if(pNodeTxGw->pGateWay->wireless_num>0)
+//        {
+//          pNodeTxGw->wireless_ptr=nwk_get_rand()%pNodeTxGw->pGateWay->wireless_num;//随机选择天线
+//					printf("wireless_ptr=%d\n", pNodeTxGw->wireless_ptr);
+//					
+//        }
         printf_oled("wireless_ptr=%d\n", pNodeTxGw->wireless_ptr);
         pNodeTxGw->tx_state=NwkNodeTxGwLBTInit;//下一步      
       }
@@ -1265,7 +1273,7 @@ void nwk_node_tx_gw_process(void)
     }    
     case NwkNodeTxGwLBTInit://传输前监听
     { 
-      if(pNodeTxGw->group_id>=NWK_RF_GROUP_NUM)//所有通道都无法到达 NWK_RF_GROUP_NUM
+      if(pNodeTxGw->group_id>=NWK_UP_CHANNEL_NUM)//所有通道都无法到达 NWK_RF_GROUP_NUM
       {
         pNodeTxGw->pGateWay->err_cnts++;
         pNodeTxGw->tx_state=NwkNodeTxGwExit;//退出,重新开始
@@ -1306,26 +1314,31 @@ void nwk_node_tx_gw_process(void)
     case NwkNodeTxGwSniffInit://嗅探
     {
       u8 sf=0, bw=0;
-      nwk_get_channel(pNodeTxGw->group_id*2, &sf, &bw); //嗅探参数
+      nwk_get_up_channel(pNodeTxGw->group_id, &sf, &bw);
+//      nwk_get_channel(pNodeTxGw->group_id*2, &sf, &bw); //嗅探参数
       nwk_node_set_lora_param(pNodeTxGw->freq, sf, bw);
-			 
-			for(u8 i=0; i<2; i++)//+NWK_RF_GROUP_NUM-pNodeTxGw->group_id
+			printf("start sniff!\n");
+			for(u8 i=0; i<10; i++)//+NWK_RF_GROUP_NUM-pNodeTxGw->group_id
 			{
 				nwk_node_send_sniff(sf, bw);//发送嗅探帧
+//        nwk_node_cad_init();//状态切换,停止嗅探
+//        nwk_delay_ms(1);
 			}
       nwk_node_cad_init();//状态切换,停止嗅探
       pNodeTxGw->sniff_cnts++;
       printf("***group id=%d, send sniff (%.2f, %d, %d), cnts=%d\n", pNodeTxGw->group_id, pNodeTxGw->freq/1000000.0, sf, bw, pNodeTxGw->sniff_cnts);
-      nwk_get_channel(pNodeTxGw->group_id*2+1, &sf, &bw);//以本通道组的第二个参数作为CAD监听参数
-      nwk_node_set_lora_param(pNodeTxGw->freq, sf, bw);
+//      nwk_get_channel(pNodeTxGw->group_id*2+1, &sf, &bw);//以本通道组的第二个参数作为CAD监听参数
+      u32 freq=pNodeTxGw->freq+1000000;
+      nwk_node_set_lora_param(freq, sf, bw);
       nwk_node_cad_init(); //开始监听返回
 			pNodeTxGw->cad_cnts=0;
       pNodeTxGw->sf=sf;
       pNodeTxGw->bw=bw; //记录监听参数,发送时候再次使用   
+      printf("***wait cad ack (%.2f, %d, %d)\n", freq/1000000.0, sf, bw);
 //      pNodeTxGw->tx_state=NwkNodeTxGwSniffCheck;
-      nwk_delay_ms(5);
+//      nwk_delay_ms(5);
       //新版测试
-      for(u8 i=0; i<3; )//CAD回复检测次数
+      for(u8 i=0; i<10; )//CAD回复检测次数
       {
         u8 result=nwk_node_cad_check();
         if(result==CadResultFailed)//没搜索到
@@ -1337,7 +1350,7 @@ void nwk_node_tx_gw_process(void)
         else if(result==CadResultSuccess)//搜索成功
         {
           printf("************cad ack!\n");
-          nwk_delay_ms(300);//适当延时,等待对方嗅探帧发送完
+          nwk_delay_ms(500);//适当延时,等待对方嗅探帧发送完
           pNodeTxGw->tx_step=0;
           u8 will_buff[5]={0};
           u8 will_len=0;
@@ -1357,57 +1370,59 @@ void nwk_node_tx_gw_process(void)
         }
       }
       //没有检测到CAD
-      if(pNodeTxGw->sniff_cnts<5)//同一组参数嗅探多次
+      if(pNodeTxGw->sniff_cnts<10)//同一组参数嗅探多次
       {
         pNodeTxGw->tx_state=NwkNodeTxGwSniffInit;//继续嗅探
       }
       else
       {
-        pNodeTxGw->group_id++;//换下一组参数 
-        pNodeTxGw->tx_state=NwkNodeTxGwLBTInit;//继续嗅探          
+//        pNodeTxGw->group_id++;//换下一组参数 
+//        pNodeTxGw->tx_state=NwkNodeTxGwLBTInit;//继续嗅探  
+        pNodeTxGw->sniff_cnts=0;
+        pNodeTxGw->tx_state=NwkNodeTxGwExit;//退出        
       }      
       break;
     }    
     case NwkNodeTxGwSniffCheck://嗅探返回检测
     {
-      u8 result=nwk_node_cad_check();
-      if(result==CadResultFailed)//没搜索到
-      {
-        pNodeTxGw->cad_cnts++;
-				if(pNodeTxGw->cad_cnts<10)//10-pNodeTxGw->group_id
-				{
-					nwk_node_cad_init();//继续监听
-				}
-        else if(pNodeTxGw->sniff_cnts<10)//同一组参数嗅探多次
-        {
-          pNodeTxGw->tx_state=NwkNodeTxGwSniffInit;//继续嗅探
-        }
-        else
-        {
-          pNodeTxGw->group_id++;//换下一组参数 
-          pNodeTxGw->tx_state=NwkNodeTxGwLBTInit;//继续嗅探          
-        }
-      }
-      else if(result==CadResultSuccess)//搜索成功 
-      {
-				printf("************cad ack!\n");
-        nwk_delay_ms(300);//适当延时,等待对方嗅探帧发送完
-				pNodeTxGw->tx_step=0;
-				u8 will_buff[5]={0};
-				u8 will_len=0;
-				will_buff[will_len++]=0xA8;
-				will_buff[will_len++]=make_len;
-				u16 crcValue=nwk_crc16(will_buff, 2);
-				will_buff[will_len++]=crcValue>>8;
-				will_buff[will_len++]=crcValue;
-				
-        nwk_node_send_buff(will_buff, will_len);//发送长度包
-        u32 tx_time=nwk_node_calcu_air_time(pNodeTxGw->sf, pNodeTxGw->bw, will_len)*1.2;//发送时间,冗余
-        pNodeTxGw->start_rtc_time=nwk_get_rtc_counter();//记录当前时间,防止超时
-        pNodeTxGw->wait_cnts=tx_time/1000+1;//等待秒数
-        pNodeTxGw->tx_state=NwkNodeTxGwRunning;
-				printf("send will buff\n");
-      }      
+//      u8 result=nwk_node_cad_check();
+//      if(result==CadResultFailed)//没搜索到
+//      {
+//        pNodeTxGw->cad_cnts++;
+//				if(pNodeTxGw->cad_cnts<10)//10-pNodeTxGw->group_id
+//				{
+//					nwk_node_cad_init();//继续监听
+//				}
+//        else if(pNodeTxGw->sniff_cnts<10)//同一组参数嗅探多次
+//        {
+//          pNodeTxGw->tx_state=NwkNodeTxGwSniffInit;//继续嗅探
+//        }
+//        else
+//        {
+//          pNodeTxGw->group_id++;//换下一组参数 
+//          pNodeTxGw->tx_state=NwkNodeTxGwLBTInit;//继续嗅探          
+//        }
+//      }
+//      else if(result==CadResultSuccess)//搜索成功 
+//      {
+//				printf("************cad ack!\n");
+//        nwk_delay_ms(300);//适当延时,等待对方嗅探帧发送完
+//				pNodeTxGw->tx_step=0;
+//				u8 will_buff[5]={0};
+//				u8 will_len=0;
+//				will_buff[will_len++]=0xA8;
+//				will_buff[will_len++]=make_len;
+//				u16 crcValue=nwk_crc16(will_buff, 2);
+//				will_buff[will_len++]=crcValue>>8;
+//				will_buff[will_len++]=crcValue;
+//				
+//        nwk_node_send_buff(will_buff, will_len);//发送长度包
+//        u32 tx_time=nwk_node_calcu_air_time(pNodeTxGw->sf, pNodeTxGw->bw, will_len)*1.2;//发送时间,冗余
+//        pNodeTxGw->start_rtc_time=nwk_get_rtc_counter();//记录当前时间,防止超时
+//        pNodeTxGw->wait_cnts=tx_time/1000+1;//等待秒数
+//        pNodeTxGw->tx_state=NwkNodeTxGwRunning;
+//				printf("send will buff\n");
+//      }      
       break;
     }
     case NwkNodeTxGwRunning:
@@ -1417,7 +1432,7 @@ void nwk_node_tx_gw_process(void)
       if(result)//发送完成
       {
         printf("tx ok!\n");
-				if(pNodeTxGw->tx_step==0)//正式数据包
+				if(pNodeTxGw->tx_step==0)//准备发送正式数据包
 				{
 					pNodeTxGw->tx_step++;
 					nwk_node_send_buff(pMakeBuff, make_len);//发送数据包
@@ -1429,6 +1444,7 @@ void nwk_node_tx_gw_process(void)
 				}
 				else
 				{
+          printf("into recv, wait ack, P(%.2f, %d, %d)\n", pNodeTxGw->freq/1000000.f+1, pNodeTxGw->sf, pNodeTxGw->bw);
 					nwk_node_recv_init();//进入接收,等待回复
 					u32 tx_time=nwk_node_calcu_air_time(pNodeTxGw->sf, pNodeTxGw->bw, 20)*1.2;//接收回复包等待时间
 					pNodeTxGw->start_rtc_time=nwk_get_rtc_counter();//记录当前时间,防止超时
@@ -1459,8 +1475,9 @@ void nwk_node_tx_gw_process(void)
       else if(now_time-pNodeTxGw->start_rtc_time>pNodeTxGw->wait_cnts)//超时
       {
 				printf("wait ack time out!\n");
-        pNodeTxGw->group_id++;//换下一组参数 
-        pNodeTxGw->tx_state=NwkNodeTxGwLBTInit;//继续嗅探   
+//        pNodeTxGw->group_id++;//换下一组参数 
+//        pNodeTxGw->tx_state=NwkNodeTxGwLBTInit;//继续嗅探   
+        pNodeTxGw->tx_state=NwkNodeTxGwExit;
       }      
       break;
     }
@@ -1469,7 +1486,7 @@ void nwk_node_tx_gw_process(void)
     {
       pNodeTxGw->try_cnts++;
         printf("try_cnts=%d\n", pNodeTxGw->try_cnts);        
-      if(pNodeTxGw->try_cnts>=1)//结束发送
+      if(pNodeTxGw->try_cnts>=3)//结束发送
       {
         nwk_node_clear_tx();       
         pNodeTxGw->alarm_rtc_time=0xFFFFFFFF;//不唤醒
@@ -1480,7 +1497,13 @@ void nwk_node_tx_gw_process(void)
         pNodeTxGw->wait_cnts=nwk_get_rand()%20+3;//随机延时,再次尝试
         pNodeTxGw->start_rtc_time=now_time;
         pNodeTxGw->alarm_rtc_time=now_time+pNodeTxGw->wait_cnts;//闹钟时间
+        pNodeTxGw->group_id+=nwk_get_rand()%3;
+        if(pNodeTxGw->group_id>=NWK_UP_CHANNEL_NUM-1)
+        {
+          pNodeTxGw->group_id=NWK_UP_CHANNEL_NUM-1;
+        }
         printf("tx wait time=%ds\n", pNodeTxGw->wait_cnts);        
+        printf_oled("tx wait time=%ds\n", pNodeTxGw->wait_cnts);        
       }
       nwk_node_set_led(false);
       pNodeTxGw->tx_state=NwkNodeTxGwIdel;//回合结束
