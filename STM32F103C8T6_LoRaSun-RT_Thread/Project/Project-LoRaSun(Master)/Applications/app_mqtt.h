@@ -18,7 +18,7 @@ void app_mqtt_recv_parse(u8 index, char *topic, u8 *buff, u16 len);
 
 void app_mqtt_main(void);
 
-void app_mqtt_pub_data(u8 *buff, u16 len); 
+int app_mqtt_pub_data(u8 *buff, u16 len); 
 
 
 

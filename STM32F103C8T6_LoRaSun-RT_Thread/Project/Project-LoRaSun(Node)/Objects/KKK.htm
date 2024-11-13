@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\Objects\KKK.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\Objects\KKK.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060422: Last Updated: Mon Nov 11 00:21:34 2024
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060422: Last Updated: Tue Nov 12 23:04:29 2024
 <BR><P>
 <H3>Maximum Stack Usage =        824 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -1563,7 +1563,7 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[cb]"></a>app_node_key_check</STRONG> (Thumb, 54 bytes, Stack size 8 bytes, app_node.o(i.app_node_key_check))
-<BR><BR>[Stack]<UL><LI>Max Depth = 384<LI>Call Chain = app_node_key_check &rArr; app_node_send_status &rArr; app_node_temp_update &rArr; log &rArr; __kernel_poly &rArr; __aeabi_dadd &rArr; _double_epilogue &rArr; _double_round
+<BR><BR>[Stack]<UL><LI>Max Depth = 392<LI>Call Chain = app_node_key_check &rArr; app_node_send_status &rArr; app_node_temp_update &rArr; log &rArr; __kernel_poly &rArr; __aeabi_dadd &rArr; _double_epilogue &rArr; _double_round
 </UL>
 <BR>[Calls]<UL><LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_ReadInputDataBit
 <LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_node_send_status
@@ -1624,8 +1624,8 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[39]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_node_thread_entry
 </UL>
 
-<P><STRONG><a name="[cc]"></a>app_node_send_status</STRONG> (Thumb, 100 bytes, Stack size 40 bytes, app_node.o(i.app_node_send_status))
-<BR><BR>[Stack]<UL><LI>Max Depth = 376<LI>Call Chain = app_node_send_status &rArr; app_node_temp_update &rArr; log &rArr; __kernel_poly &rArr; __aeabi_dadd &rArr; _double_epilogue &rArr; _double_round
+<P><STRONG><a name="[cc]"></a>app_node_send_status</STRONG> (Thumb, 158 bytes, Stack size 48 bytes, app_node.o(i.app_node_send_status))
+<BR><BR>[Stack]<UL><LI>Max Depth = 384<LI>Call Chain = app_node_send_status &rArr; app_node_temp_update &rArr; log &rArr; __kernel_poly &rArr; __aeabi_dadd &rArr; _double_epilogue &rArr; _double_round
 </UL>
 <BR>[Calls]<UL><LI><a href="#[e0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_get_rtc_counter
 <LI><a href="#[df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_node_temp_update
@@ -1634,6 +1634,7 @@ Global Symbols
 <LI><a href="#[da]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr4
 </UL>
 <BR>[Called By]<UL><LI><a href="#[cb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_node_key_check
+<LI><a href="#[39]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_node_thread_entry
 </UL>
 
 <P><STRONG><a name="[e2]"></a>app_node_set_sn</STRONG> (Thumb, 22 bytes, Stack size 8 bytes, app_node.o(i.app_node_set_sn))
@@ -1694,7 +1695,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_node_send_status
 </UL>
 
-<P><STRONG><a name="[39]"></a>app_node_thread_entry</STRONG> (Thumb, 236 bytes, Stack size 16 bytes, app_node.o(i.app_node_thread_entry))
+<P><STRONG><a name="[39]"></a>app_node_thread_entry</STRONG> (Thumb, 258 bytes, Stack size 16 bytes, app_node.o(i.app_node_thread_entry))
 <BR><BR>[Stack]<UL><LI>Max Depth = 824<LI>Call Chain = app_node_thread_entry &rArr; nwk_node_main &rArr; nwk_node_work_check &rArr; nwk_node_tx_gw_process &rArr; nwk_node_recv_parse &rArr; nwk_node_make_send_buff &rArr; nwk_tea_encrypt &rArr; tea_encrypt_buff &rArr; EncryptTEA
 </UL>
 <BR>[Calls]<UL><LI><a href="#[f9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;printf_oled
@@ -1710,6 +1711,7 @@ Global Symbols
 <LI><a href="#[fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_oled96_main_process
 <LI><a href="#[f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_oled96_init
 <LI><a href="#[e4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_node_temp_init
+<LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_node_send_status
 <LI><a href="#[d8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_node_read_config
 <LI><a href="#[cf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_node_led_set_green
 <LI><a href="#[45]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_node_led_set_blue
@@ -2551,7 +2553,7 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[16b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_rx_process
 </UL>
 
-<P><STRONG><a name="[ff]"></a>nwk_get_rand</STRONG> (Thumb, 38 bytes, Stack size 8 bytes, nwk_bsp.o(i.nwk_get_rand))
+<P><STRONG><a name="[ff]"></a>nwk_get_rand</STRONG> (Thumb, 34 bytes, Stack size 8 bytes, nwk_bsp.o(i.nwk_get_rand))
 <BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = nwk_get_rand &rArr; nwk_get_rtc_counter &rArr; drv_get_rtc_counter
 </UL>
 <BR>[Calls]<UL><LI><a href="#[e0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_get_rtc_counter
@@ -2876,7 +2878,7 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[162]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_node_work_check
 </UL>
 
-<P><STRONG><a name="[172]"></a>nwk_node_tx_gw_process</STRONG> (Thumb, 1718 bytes, Stack size 72 bytes, nwk_node.o(i.nwk_node_tx_gw_process))
+<P><STRONG><a name="[172]"></a>nwk_node_tx_gw_process</STRONG> (Thumb, 1754 bytes, Stack size 72 bytes, nwk_node.o(i.nwk_node_tx_gw_process))
 <BR><BR>[Stack]<UL><LI>Max Depth = 760<LI>Call Chain = nwk_node_tx_gw_process &rArr; nwk_node_recv_parse &rArr; nwk_node_make_send_buff &rArr; nwk_tea_encrypt &rArr; tea_encrypt_buff &rArr; EncryptTEA
 </UL>
 <BR>[Calls]<UL><LI><a href="#[f9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;printf_oled

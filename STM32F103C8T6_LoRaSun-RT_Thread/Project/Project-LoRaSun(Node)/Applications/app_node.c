@@ -468,8 +468,9 @@ void app_node_set_wake_period(u16 wake_period)
 */
 void app_node_send_status(void)
 {
+  static u16 pack_id=0;
 	printf("app_node_send_status  ###\n");
-	u8 make_buff[20]={0};
+	u8 make_buff[30]={0};
 	u8 make_len=0;
 	u16 temp_val=app_node_temp_update();//温度更新
 	u32 now_time=nwk_get_rtc_counter();
@@ -480,6 +481,9 @@ void app_node_send_status(void)
 	make_buff[make_len++]=now_time>>16;
 	make_buff[make_len++]=now_time>>8;
 	make_buff[make_len++]=now_time;
+	make_buff[make_len++]=pack_id>>8;
+	make_buff[make_len++]=pack_id;  
+  pack_id++;
 	nwk_node_send2gateway(make_buff, make_len);
 }
 
@@ -538,9 +542,9 @@ void app_node_thread_entry(void *parameter)
 //      printf_oled("show update!!!!");
 		}
     
-    if(run_cnts%2000==0)
+    if(run_cnts%4000==0)
     {
-//      app_node_send_status();
+      app_node_send_status();
     }
 		
     delay_os(nwk_get_rand()%5+5);

@@ -20,7 +20,6 @@ void nwk_master_uart_send_register(u8 index, u8 slave_adddr, void (*fun_send)(u8
     pSlaveToken->fun_send=fun_send;
     pSlaveToken->slave_addr=slave_adddr;
   }
-  g_sNwkMasterWork.gw_sn=0xC1011234;//测试
 }
 
 /*		
@@ -86,6 +85,8 @@ void nwk_master_uart_parse(u8 *recv_buff, u16 recv_len)
           RfParamStruct rf;
           rf.rssi=pData[0]<<8|pData[1];
           pData+=2;
+          rf.snr=pData[0];
+          pData+=1;
           rf.freq=pData[0]<<24|pData[1]<<16|pData[2]<<8|pData[3];
           pData+=4;
           rf.sf=pData[0];
@@ -374,7 +375,17 @@ void nwk_master_lora_parse(u8 *recv_buff, u8 recv_len, u8 slave_addr, RfParamStr
                 memset(pNwkNode->down_buff, 0, sizeof(pNwkNode->down_buff));
                 pNwkNode->down_len=0;
                 printf("clear down buff!\n");
+                NwkMasterEventStruct *pEvent=&g_sNwkMasterWork.event;
+                pEvent->event=NwkMasterEventDownAck;
+                u8 *pData=pEvent->params;
+                u8 param_len=0;
+                pData[param_len++]=src_sn>>24;
+                pData[param_len++]=src_sn>>16;
+                pData[param_len++]=src_sn>>8;
+                pData[param_len++]=src_sn;
+                pData[param_len++]=NwkMasterDownResultSuccess;
               }
+              
             }
 						break;
 					}					
@@ -450,6 +461,7 @@ void nwk_master_lora_parse(u8 *recv_buff, u8 recv_len, u8 slave_addr, RfParamStr
             memcpy(pRecvFrom->app_data, pData, pRecvFrom->data_len);
             pRecvFrom->src_sn=src_sn;
             pRecvFrom->read_flag=true;//通知应用层读取
+            pRecvFrom->up_pack_num=pack_num;//包序号
             memcpy(&pRecvFrom->rf_param, rf, sizeof(RfParamStruct));//复制无线参数
             
             printf_hex("app_buff=", pRecvFrom->app_data, pRecvFrom->data_len);
@@ -746,6 +758,18 @@ void nwk_master_del_node(u32 node_sn)
   }  
 }
 
+/*		
+================================================================================
+描述 : 
+输入 : 
+输出 : 
+================================================================================
+*/ 
+void nwk_master_set_gw_sn(u32 gw_sn)
+{
+  g_sNwkMasterWork.gw_sn=gw_sn;
+}
+
 
 /*		
 ================================================================================
@@ -768,6 +792,7 @@ u32 nwk_master_get_gw_sn(void)
 */ 
 u8 nwk_master_add_down_pack(u32 dst_sn, u8 *in_buff, u8 in_len)
 {
+  u8 result=NwkMasterDownResultErrUnknow;
   NwkNodeTokenStruct *pNwkNode=nwk_master_find_node(dst_sn);
   if(pNwkNode)
   {
@@ -775,19 +800,21 @@ u8 nwk_master_add_down_pack(u32 dst_sn, u8 *in_buff, u8 in_len)
     {
       memcpy(pNwkNode->down_buff, in_buff, in_len);
       pNwkNode->down_len=in_len;
-      printf("add down pack ok!\n");
-      return 1;
+      printf("add down pack ok! len=%d\n", in_len);
+      result=NwkMasterDownResultAddOK;
     }
     else
     {
       printf("have down buff!\n");
+      result=NwkMasterDownResultFull;
     }
   }
   else
   {
     printf("no found dst_sn=0x%08X\n", dst_sn);
+    result=NwkMasterDownResultErrSn;
   }
-  return 0;
+  return result;
 }
 
 /*		
@@ -853,6 +880,23 @@ NwkMasterRecvFromStruct *nwk_master_recv_from_check(void)
   {
     pRecvFrom->read_flag=false;
     return pRecvFrom;
+  }
+  return NULL;
+}
+
+/*		
+================================================================================
+描述 : 事件检测
+输入 : 
+输出 : 
+================================================================================
+*/ 
+NwkMasterEventStruct *nwk_master_event_check(void)
+{
+  NwkMasterEventStruct *pEvent=&g_sNwkMasterWork.event;
+  if(pEvent->event>0)
+  {
+    return pEvent;
   }
   return NULL;
 }

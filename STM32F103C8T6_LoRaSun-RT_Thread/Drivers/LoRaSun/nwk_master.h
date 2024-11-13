@@ -8,6 +8,23 @@
 #define NWK_NODE_MAX_NUM        100  //节点最大数量,根据芯片RAM确定  
 //#define NWK_MASTER_USE_AES        //是否启用AES加密,根据芯片能力和需求确定
 
+typedef enum
+{
+  NwkMasterEventNone,
+  NwkMasterEventDownAck,//下发回复
+}NwkMasterEvent;//事件类型
+
+typedef enum
+{
+  NwkMasterDownResultAddOK=0,//添加成功
+  NwkMasterDownResultFull, //缓冲区已满
+  NwkMasterDownResultErrSn, //设备不存在
+  NwkMasterDownResultTimeOut,//超时,失败
+  NwkMasterDownResultSuccess,//下发成功
+  
+  NwkMasterDownResultErrUnknow=100,//未知错误
+}NwkMasterDownResult;
+
 typedef struct NwkNodeTokenStruct
 {
   u32 node_sn;
@@ -38,8 +55,17 @@ typedef struct
   u8 app_data[300];//应用数据指针
   u16 data_len;//数据长度
   bool read_flag;//读取标志
+  u8 up_pack_num;//上行包序号
   RfParamStruct rf_param;
 }NwkMasterRecvFromStruct;//数据接收结构体
+
+typedef struct
+{
+  u8 event;
+  u8 params[50];
+}NwkMasterEventStruct;//事件
+
+
 
 typedef struct
 {
@@ -50,6 +76,7 @@ typedef struct
   u8 freq_ptr;//频段序号
   NwkSlaveTokenStruct slave_token_list[NWK_GW_WIRELESS_NUM];
   NwkMasterRecvFromStruct recv_from;
+  NwkMasterEventStruct event;
 }NwkMasterWorkStruct;
 
 
@@ -69,12 +96,15 @@ void nwk_master_set_freq_ptr(u8 freq_ptr);
 NwkNodeTokenStruct *nwk_master_add_node(u32 node_sn);
 NwkNodeTokenStruct *nwk_master_find_node(u32 node_sn);
 void nwk_master_del_node(u32 node_sn);
+
+void nwk_master_set_gw_sn(u32 gw_sn);
 u32 nwk_master_get_gw_sn(void);
 
 u8 nwk_master_add_down_pack(u32 dst_sn, u8 *in_buff, u8 in_len);
 void nwk_master_check_down_pack(void);
 
 NwkMasterRecvFromStruct *nwk_master_recv_from_check(void);
+NwkMasterEventStruct *nwk_master_event_check(void);
 void nwk_master_main(void);
 
 #endif

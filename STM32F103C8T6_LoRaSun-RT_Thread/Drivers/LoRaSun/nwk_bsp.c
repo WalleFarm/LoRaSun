@@ -21,15 +21,10 @@ static const u8 rf_table[][2]={  //SF,BW  无线参数表,可根据自己的需�
 
 static const u8 up_table[][2]={  //SF,BW  无线参数表,可根据自己的需求配置,独立网络中一致即可
   9, 9,  
-  10, 9,
-  8, 7,  
+  10, 9, 
   11, 9,  
-  8, 6,  
-  12, 9,  
-
   11, 8,  
-  12, 8,  
-  12, 7,  
+  11, 7,  
   11, 6,  
 
 };
@@ -271,10 +266,11 @@ int nwk_get_rand(void)
   if(srand_num==0)
   {
     srand_num=nwk_get_rtc_counter();
+    srand(srand_num);
   }
-  srand(srand_num);
+  
   int rand_num=rand();
-  srand_num=rand_num;
+//  srand_num=rand_num;
   return rand_num;
 }
 

@@ -205,6 +205,7 @@ void nwk_slave_uart_send_rx(u8 *buff, u8 len, RfParamStruct *rf)
   
   in_buff[in_len++]=rf->rssi>>8;
   in_buff[in_len++]=rf->rssi; 
+  in_buff[in_len++]=rf->snr;   
   in_buff[in_len++]=rf->freq>>24;
   in_buff[in_len++]=rf->freq>>16;
   in_buff[in_len++]=rf->freq>>8;
@@ -381,7 +382,7 @@ u8 nwk_slave_cad_check(void)
 输出 : 
 ================================================================================
 */ 
-u8 nwk_slave_recv_check(u8 *buff, int16_t *rssi)
+u8 nwk_slave_recv_check(u8 *buff, RfParamStruct *rf_param)
 {
 	u8 read_size=0;
 	if(g_sNwkSlaveWork.pLoRaDev==NULL)
@@ -392,18 +393,17 @@ u8 nwk_slave_recv_check(u8 *buff, int16_t *rssi)
 	read_size=drv_sx1278_recv_check(g_sNwkSlaveWork.pLoRaDev, buff); 
 	if(read_size>0)
 	{
-		*rssi=drv_sx1278_read_rssi(g_sNwkSlaveWork.pLoRaDev);
-    s8 snr=drv_sx1278_read_snr(g_sNwkSlaveWork.pLoRaDev);
-    printf("snr=%d dbm\n", snr);
+		rf_param->rssi=drv_sx1278_read_rssi(g_sNwkSlaveWork.pLoRaDev);
+    rf_param->snr=drv_sx1278_read_snr(g_sNwkSlaveWork.pLoRaDev);
 	}
 #elif defined(LORA_SX1268)
 	read_size=drv_sx1268_recv_check(g_sNwkSlaveWork.pLoRaDev, buff, 256); 
 	if(read_size>0)
 	{
-		*rssi=drv_sx1268_get_rssi_inst(g_sNwkSlaveWork.pLoRaDev);
     Sx1268PacketStatusStruct status;
     drv_sx1268_get_pack_status(g_sNwkSlaveWork.pLoRaDev, &status);
-    printf("rssi=%d dbm, snr=%ddbm\n", status.RssiPkt, status.SnrPkt);
+    rf_param->snr=status.SnrPkt;
+		rf_param->rssi=drv_sx1268_get_rssi_inst(g_sNwkSlaveWork.pLoRaDev);    
 	}
   
 #elif defined(LORA_LLCC68)
@@ -693,7 +693,7 @@ void nwk_slave_rx_process(void)
     {
       u32 now_time=nwk_get_sec_counter();
       int16_t rssi;
-      u8 recv_len=nwk_slave_recv_check(g_sNwkSlaveWork.slave_rx.recv_buff, &rssi); 
+      u8 recv_len=nwk_slave_recv_check(g_sNwkSlaveWork.slave_rx.recv_buff, &g_sNwkSlaveWork.rf_param); 
       if(recv_len>0)
       {
         printf("recv rssi=%ddbm\n", rssi);
@@ -719,13 +719,12 @@ void nwk_slave_rx_process(void)
         }
         
         //应用数据解析
-        g_sNwkSlaveWork.recv_rssi=rssi; 
-        RfParamStruct rf;
-        rf.rssi=rssi;
-        rf.freq=pSlaveRx->freq;
-        rf.sf=pSlaveRx->curr_sf;
-        rf.bw=pSlaveRx->curr_bw;
-        nwk_slave_uart_send_rx(pBuff, recv_len, &rf);//无线数据发送到主机
+        
+        g_sNwkSlaveWork.rf_param.freq=pSlaveRx->freq;
+        g_sNwkSlaveWork.rf_param.sf=pSlaveRx->curr_sf;
+        g_sNwkSlaveWork.rf_param.bw=pSlaveRx->curr_bw;
+        
+        nwk_slave_uart_send_rx(pBuff, recv_len, &g_sNwkSlaveWork.rf_param);//无线数据发送到主机
         pSlaveRx->start_rtc_time=nwk_get_sec_counter();//记录当前时间,防止超时
         pSlaveRx->wait_cnts=2;         
         pSlaveRx->rx_state=NwkSlaveRxAckWait;//等待主机回复
@@ -1010,7 +1009,7 @@ void nwk_slave_tx_process(void)
     {
       u32 now_time=nwk_get_sec_counter();
       int16_t rssi;
-      u8 recv_len=nwk_slave_recv_check(g_sNwkSlaveWork.slave_rx.recv_buff, &rssi);
+      u8 recv_len=nwk_slave_recv_check(g_sNwkSlaveWork.slave_rx.recv_buff, &g_sNwkSlaveWork.rf_param);
       if(recv_len>0)
       {
         //数据解析
@@ -1018,14 +1017,11 @@ void nwk_slave_tx_process(void)
         printf("clear tx buff!\n");
         pSlaveTx->tx_len=0;
         
-        
-        g_sNwkSlaveWork.recv_rssi=rssi;
-        RfParamStruct rf;
-        rf.freq=pSlaveTx->freq;
-        rf.sf=pSlaveTx->curr_sf;
-        rf.bw=pSlaveTx->curr_bw;
-        rf.rssi=rssi;
-        nwk_slave_uart_send_rx(g_sNwkSlaveWork.slave_rx.recv_buff, recv_len, &rf);//无线数据发送到主机
+        g_sNwkSlaveWork.rf_param.freq=pSlaveTx->freq;
+        g_sNwkSlaveWork.rf_param.sf=pSlaveTx->curr_sf;
+        g_sNwkSlaveWork.rf_param.bw=pSlaveTx->curr_bw;
+
+        nwk_slave_uart_send_rx(g_sNwkSlaveWork.slave_rx.recv_buff, recv_len, &g_sNwkSlaveWork.rf_param);//无线数据发送到主机
         pSlaveTx->tx_state=NwkSlaveTxIdel;
       }   
       else if(now_time-pSlaveTx->start_rtc_time>pSlaveTx->wait_cnts)//超时

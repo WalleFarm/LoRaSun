@@ -480,6 +480,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\Drivers\drv_esp8266.c</FilePath>
             </File>
+            <File>
+              <FileName>drv_server.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Drivers\drv_server.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

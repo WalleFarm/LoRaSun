@@ -115,7 +115,7 @@ void drv_mqtt_publish(u8 index, u8 *msg_buff, u16 msg_len, char *topic)
 void drv_mqtt_connect(void)
 {
 	static u32 last_sec_time=0;
-	static u8 make_buff[80]={0};
+	static u8 make_buff[200]={0};
 	const int make_size=sizeof(make_buff);
 	int make_len;	
 	u32 now_sec_time=drv_get_sec_counter();
@@ -284,7 +284,7 @@ void drv_mqtt_recv_check(void)
 					char *pTopic=receivedTopic.lenstring.data;
           if(g_sMqttWork.mqtt_recv_parse!=NULL)
           {
-            char topic[30]={0};
+            char topic[50]={0};
             int len=(char*)payload_in-pTopic;//topic 长度
             if(len>sizeof(topic))
             {

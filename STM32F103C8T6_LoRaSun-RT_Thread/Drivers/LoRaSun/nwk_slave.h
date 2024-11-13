@@ -127,6 +127,7 @@ typedef struct
   u8 work_state;
   int recv_rssi;
   LoRaDevStruct *pLoRaDev;
+  RfParamStruct rf_param;
 
   NwkSlaveBroadStruct slave_broad;
   NwkSlaveRxStruct slave_rx;
@@ -141,7 +142,7 @@ void nwk_slave_device_init(void);
 void nwk_slave_cad_init(void);
 void nwk_slave_recv_init(void);
 u8 nwk_slave_cad_check(void);
-u8 nwk_slave_recv_check(u8 *buff, int16_t *rssi);
+u8 nwk_slave_recv_check(u8 *buff, RfParamStruct *rf_param);
 u32 nwk_slave_calcu_air_time(u8 sf, u8 bw, u16 data_len);
 void nwk_slave_send_buff(u8 *buff, u16 len);
 u8 nwk_slave_send_check(void);

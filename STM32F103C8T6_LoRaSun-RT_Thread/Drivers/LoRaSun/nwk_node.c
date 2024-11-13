@@ -778,7 +778,7 @@ u8 nwk_node_send2gateway(u8 *in_buff, u8 in_len)
   pNodeTxGw->tx_cmd=NwkCmdDataOnce;
   pNodeTxGw->try_cnts=0;
   pNodeTxGw->tx_total_cnts++;
-  pNodeTxGw->group_id=nwk_get_rand()%5;
+  pNodeTxGw->group_id=nwk_get_rand()%3;
 	printf("***send to gw! group_id=%d\n", pNodeTxGw->group_id);
   return 0;
 }
@@ -799,7 +799,7 @@ void nwk_node_req_join(u32 gw_sn)
   pNodeTxGw->tx_len=2;
   pNodeTxGw->tx_cmd=NwkCmdJoin;
   pNodeTxGw->try_cnts=0;
-  pNodeTxGw->group_id=nwk_get_rand()%5;
+  pNodeTxGw->group_id=nwk_get_rand()%3;
 	printf("***req_join! group_id=%d\n", pNodeTxGw->group_id);  
 }
 
@@ -1255,12 +1255,12 @@ void nwk_node_tx_gw_process(void)
 				printf_hex("make buff=", pMakeBuff, make_len);        
 //        pNodeTxGw->group_id=4;//通道组,从0开始,也可以根据信号强度选择较高的通道组
         pNodeTxGw->wireless_ptr=0;
-//        if(pNodeTxGw->pGateWay->wireless_num>0)
-//        {
-//          pNodeTxGw->wireless_ptr=nwk_get_rand()%pNodeTxGw->pGateWay->wireless_num;//随机选择天线
-//					printf("wireless_ptr=%d\n", pNodeTxGw->wireless_ptr);
-//					
-//        }
+        if(pNodeTxGw->pGateWay->wireless_num>0)
+        {
+          pNodeTxGw->wireless_ptr=nwk_get_rand()%pNodeTxGw->pGateWay->wireless_num;//随机选择天线
+					printf("wireless_ptr=%d\n", pNodeTxGw->wireless_ptr);
+					
+        }
         printf_oled("wireless_ptr=%d\n", pNodeTxGw->wireless_ptr);
         pNodeTxGw->tx_state=NwkNodeTxGwLBTInit;//下一步      
       }
@@ -1497,7 +1497,7 @@ void nwk_node_tx_gw_process(void)
         pNodeTxGw->wait_cnts=nwk_get_rand()%20+3;//随机延时,再次尝试
         pNodeTxGw->start_rtc_time=now_time;
         pNodeTxGw->alarm_rtc_time=now_time+pNodeTxGw->wait_cnts;//闹钟时间
-        pNodeTxGw->group_id+=nwk_get_rand()%3;
+        pNodeTxGw->group_id+=nwk_get_rand()%3+1;
         if(pNodeTxGw->group_id>=NWK_UP_CHANNEL_NUM-1)
         {
           pNodeTxGw->group_id=NWK_UP_CHANNEL_NUM-1;

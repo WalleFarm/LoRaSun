@@ -22,7 +22,7 @@ typedef   signed           int s32;
 //以下宏定义 在同一个网络系统中必须保持一致
 //#define   NWK_RF_CHANNEL_NUM        8  //SF,BW通道数量,节点与网关要保持一致
 //#define   NWK_RF_GROUP_NUM          4   //通道数量组数
-#define   NWK_UP_CHANNEL_NUM        10   //上行通道数量
+#define   NWK_UP_CHANNEL_NUM        6   //上行通道数量
 #define   NWK_DOWN_CHANNEL_NUM      4   //下行通道数量
 #define   NWK_TRANSMIT_MAX_SIZE     200  //传输最大应用数据
 #define   NWK_TIME_STAMP_THRESH     1726658962U //时间戳阈值

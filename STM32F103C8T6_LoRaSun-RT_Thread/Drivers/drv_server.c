@@ -25,7 +25,7 @@ void drv_server_read(void)
     printf("server read new!\n");
   }
 //  printf("read app_id=%u, gw_sn=0x%08X\n", g_sServerSave.app_id, g_sServerSave.gw_sn);
-}
+} 
 
 /*		
 ================================================================================
