@@ -74,9 +74,9 @@ void nwk_master_uart_parse(u8 *recv_buff, u16 recv_len)
           
           break;
         }
-        case MSCmdSetFreqPtr://从机请求设置基础频率
+        case MSCmdSetSlaveCfg://从机请求设置基础频率
         {
-          nwk_master_set_freq_ptr(slave_addr);
+          nwk_master_send_slave_config(slave_addr);
           break;
         }        
         case MSCmdRxData://接收数据
@@ -321,6 +321,7 @@ void nwk_master_lora_parse(u8 *recv_buff, u8 recv_len, u8 slave_addr, RfParamStr
 				break;
 			}			
 		}
+    #define   NWK_UP_ACK_WAIT_TIME    10  //上行回复包延时
 		if(union_len>0)
 		{
 			pData=union_buff;
@@ -409,7 +410,7 @@ void nwk_master_lora_parse(u8 *recv_buff, u8 recv_len, u8 slave_addr, RfParamStr
             //组合LoRa回复包
             static u8 lora_buff[50]={0};
             u8 lora_len=0;						
-            u32 tx_time=nwk_master_calcu_air_time(rf->sf, rf->bw, 16);
+            u32 tx_time=nwk_master_calcu_air_time(rf->sf, rf->bw, 16)+NWK_UP_ACK_WAIT_TIME;
             u8 det_sec=tx_time/1000;
             if(tx_time%1000>500)det_sec+=1;//四舍五入
             now_time+=det_sec;//增加延时
@@ -450,6 +451,7 @@ void nwk_master_lora_parse(u8 *recv_buff, u8 recv_len, u8 slave_addr, RfParamStr
               memcpy(&uart_buff[uart_len], make_buff, make_len);
               uart_len+=make_len;
               nwk_master_uart_send_level(slave_addr, MSCmdAckRxData, uart_buff, uart_len);//发送到从机
+              delay_os(NWK_UP_ACK_WAIT_TIME);//等待节点做好准备
             }						
 						break;
 					}
@@ -470,7 +472,7 @@ void nwk_master_lora_parse(u8 *recv_buff, u8 recv_len, u8 slave_addr, RfParamStr
             //组合回复包
             static u8 lora_buff[50]={0}; 
             u8 lora_len=0;
-            u32 tx_time=nwk_master_calcu_air_time(rf->sf, rf->bw, 16);
+            u32 tx_time=nwk_master_calcu_air_time(rf->sf, rf->bw, 16)+NWK_UP_ACK_WAIT_TIME;
             u8 det_sec=tx_time/1000;
             if(tx_time%1000>500)det_sec+=1;//四舍五入
             now_time+=det_sec;//增加延时          
@@ -500,6 +502,7 @@ void nwk_master_lora_parse(u8 *recv_buff, u8 recv_len, u8 slave_addr, RfParamStr
               memcpy(&uart_buff[uart_len], make_buff, make_len);
               uart_len+=make_len;
               nwk_master_uart_send_level(slave_addr, MSCmdAckRxData, uart_buff, uart_len);//发送到从机
+              delay_os(NWK_UP_ACK_WAIT_TIME);//等待节点做好准备
             }
             break;
 					}
@@ -542,7 +545,7 @@ void nwk_master_send_broad(u8 slave_addr, u32 freq, u8 sf, u8 bw)
 	make_buff[make_len++]=gw_sn>>16;
 	make_buff[make_len++]=gw_sn>>8;
 	make_buff[make_len++]=gw_sn;
-	make_buff[make_len++]=g_sNwkMasterWork.freq_ptr;//起始频段
+	make_buff[make_len++]=g_sNwkMasterWork.freq_ptr | (g_sNwkMasterWork.run_mode<<7);//起始频段+运行模式
 	make_buff[make_len++]=slave_addr<<4 | NWK_GW_WIRELESS_NUM;//天线序号/数量
 	make_buff[make_len++]=nwk_get_rand();//保留
 	make_len=nwk_tea_encrypt(make_buff, make_len, (u32 *)g_sNwkMasterWork.root_key);//加密广播数据
@@ -564,13 +567,14 @@ void nwk_master_send_broad(u8 slave_addr, u32 freq, u8 sf, u8 bw)
 输出 : 
 ================================================================================
 */
-void nwk_master_send_freq_ptr(u8 slave_addr)
+void nwk_master_send_slave_config(u8 slave_addr)
 {
 	u8 uart_buff[50]={0};
 	u8 uart_len=0; 	
   uart_buff[uart_len++]=g_sNwkMasterWork.freq_ptr;
-  nwk_master_uart_send_level(slave_addr, MSCmdSetFreqPtr, uart_buff, uart_len);//发送到从机	
-}
+  uart_buff[uart_len++]=g_sNwkMasterWork.run_mode;
+  nwk_master_uart_send_level(slave_addr, MSCmdSetSlaveCfg, uart_buff, uart_len);//发送到从机	
+} 
 
 /*		
 ================================================================================
@@ -659,9 +663,10 @@ void nwk_master_set_root_key(u8 *key)
 输出 : 
 ================================================================================
 */ 
-void nwk_master_set_freq_ptr(u8 freq_ptr)
+void nwk_master_set_config(u8 freq_ptr, u8 run_mode)
 {
   g_sNwkMasterWork.freq_ptr=freq_ptr;
+  g_sNwkMasterWork.run_mode=run_mode;
 }
 
 /*		
@@ -768,6 +773,7 @@ void nwk_master_del_node(u32 node_sn)
 void nwk_master_set_gw_sn(u32 gw_sn)
 {
   g_sNwkMasterWork.gw_sn=gw_sn;
+  printf("### set gw_sn=0x%08X\n", gw_sn); 
 }
 
 
@@ -800,6 +806,7 @@ u8 nwk_master_add_down_pack(u32 dst_sn, u8 *in_buff, u8 in_len)
     {
       memcpy(pNwkNode->down_buff, in_buff, in_len);
       pNwkNode->down_len=in_len;
+      pNwkNode->down_cnts=0;
       printf("add down pack ok! len=%d\n", in_len);
       result=NwkMasterDownResultAddOK;
     }
@@ -853,11 +860,26 @@ void nwk_master_check_down_pack(void)
       }  
       if(send_flag)
       {
+        pTemp->down_cnts++;
+        if(pTemp->down_cnts>3)
+        {
+          printf("down_cnts>3\n");
+          NwkMasterEventStruct *pEvent=&g_sNwkMasterWork.event;
+          pEvent->event=NwkMasterEventDownAck;
+          u8 *pData=pEvent->params;
+          u8 param_len=0;
+          u32 node_sn=pTemp->node_sn;
+          pData[param_len++]=node_sn>>24;
+          pData[param_len++]=node_sn>>16;
+          pData[param_len++]=node_sn>>8;
+          pData[param_len++]=node_sn;
+          pData[param_len++]=NwkMasterDownResultTimeOut;          
+        }
         pTemp->down_time=now_time;
         u8 slave_addr=nwk_get_rand()%NWK_GW_WIRELESS_NUM+1;
         slave_addr=1;
         printf(">>>down tx node_sn=0x%08X, slave_addr=%d\n", pTemp->node_sn, slave_addr);
-        nwk_master_send_down_pack(pTemp->node_sn, slave_addr, pTemp->down_buff, pTemp->down_len, awake_flag);        
+        nwk_master_send_down_pack(pTemp->node_sn, slave_addr, pTemp->down_buff, pTemp->down_len, awake_flag);         
       }
     }
 

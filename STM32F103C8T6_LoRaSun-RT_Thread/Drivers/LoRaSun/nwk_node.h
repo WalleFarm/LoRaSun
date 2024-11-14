@@ -76,15 +76,19 @@ typedef enum
 {
   NwkNodeTxGwIdel=0,
   NwkNodeTxGwInit,
-  NwkNodeTxGwLBTInit,
-  NwkNodeTxGwLBTCheck,
-  NwkNodeTxGwSniffInit,//嗅探
-  NwkNodeTxGwSniffCheck,
+  NwkNodeTxGwFreqInit,
+  NwkNodeTxGwSniff,//嗅探
   NwkNodeTxGwRunning,
   NwkNodeTxGwAck,
+
+  NwkNodeTxStaticInit=50,//静态参数初始化
+  NwkNodeTxStaticFirstCheck,
+  NwkNodeTxStaticFirstAck,
+  NwkNodeTxStaticAppCheck,
+  NwkNodeTxStaticAppAck,
 	
-  
   NwkNodeTxGwExit=100,
+  NwkNodeTxStaticExit,
 
 }NwkNodeTxGwState;//发送状态
 
@@ -102,10 +106,11 @@ typedef struct
   u32 gw_sn; //网关序列号
   u8 base_freq_ptr;//基础频率序号
   u8 wireless_num;//天线数量
-  u8 payload_percent;//网关负载百分比
+  u8 run_mode;//网关运行模式(静态/动态)
   u8 err_cnts;//出错次数
   s16 rssi;//信号强度
 	s8 snr;
+  s8 snr_array[NWK_WIRE_MAX_NUM];//记录每根天线的信噪比,用以判定初始参数
   u32 keep_rtc_time;//最近通信时间
 	u8 app_key[16];//应用密码
 	u8 join_state;//入网状态
@@ -209,7 +214,7 @@ typedef struct
 
 void nwk_node_set_sn(u32 node_sn);
 void nwk_node_set_root_key(u8 *key);
-void nwk_node_add_gw(u32 gw_sn, u8 base_freq, u8 wireless_num);
+void nwk_node_add_gw(u32 gw_sn, u8 base_freq, u8 wireless_num, u8 run_mode);
 void nwk_node_del_gw(u32 gw_sn);
 void nwk_node_set_wake_period(u16 period);
 void nwk_node_set_lora_dev(LoRaDevStruct *pLoRaDev);

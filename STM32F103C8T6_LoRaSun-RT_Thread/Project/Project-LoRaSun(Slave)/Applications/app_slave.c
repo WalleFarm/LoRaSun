@@ -397,7 +397,9 @@ void app_slave_thread_entry(void *parameter)
   app_slave_uart_init();
   nwk_slave_uart_send_register(app_slave_uart_send);
 //  nwk_slave_uart_set_addr(1);//设置本机地址码
-  
+  delay_os(nwk_get_rand()%100);
+  nwk_slave_uart_req_config();//请求配置参数
+  delay_os(1000);
   while(1)
   {
     app_slave_uart_recv_check();//串口接收检查

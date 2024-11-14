@@ -30,6 +30,7 @@ typedef struct NwkNodeTokenStruct
   u32 node_sn;
   u8 down_buff[256];//下行缓冲区
   u8 down_len; 
+  u8 down_cnts;
   u8 join_state;
   u16 wake_period;//唤醒周期
   s16 rssi;
@@ -74,6 +75,7 @@ typedef struct
   NwkNodeTokenStruct *pNodeHead;
   u16 node_cnts;
   u8 freq_ptr;//频段序号
+  u8 run_mode;
   NwkSlaveTokenStruct slave_token_list[NWK_GW_WIRELESS_NUM];
   NwkMasterRecvFromStruct recv_from;
   NwkMasterEventStruct event;
@@ -87,12 +89,12 @@ void nwk_master_uart_send_level(u8 index, u8 cmd_type, u8 *in_buff, u16 in_len);
 u8 nwk_master_make_lora_buff(u8 opt, u32 dst_sn, u8 *key, u8 cmd_type, u8 pack_num, u8 *in_buff, u8 in_len, u8 *out_buff, u8 out_size);
 void nwk_master_lora_parse(u8 *recv_buff, u8 recv_len, u8 slave_addr, RfParamStruct *rf);
 void nwk_master_send_broad(u8 slave_addr, u32 freq, u8 sf, u8 bw); 
-void nwk_master_send_freq_ptr(u8 slave_addr);
+void nwk_master_send_slave_config(u8 slave_addr);
 void nwk_master_send_down_pack(u32 dst_sn, u8 slave_addr, u8 *in_buff, u8 in_len, u8 flag);
 
 NwkSlaveTokenStruct *nwk_master_find_slave(u8 slave_addr);
 void nwk_master_set_root_key(u8 *key);
-void nwk_master_set_freq_ptr(u8 freq_ptr);
+void nwk_master_set_config(u8 freq_ptr, u8 run_mode);
 NwkNodeTokenStruct *nwk_master_add_node(u32 node_sn);
 NwkNodeTokenStruct *nwk_master_find_node(u32 node_sn);
 void nwk_master_del_node(u32 node_sn);

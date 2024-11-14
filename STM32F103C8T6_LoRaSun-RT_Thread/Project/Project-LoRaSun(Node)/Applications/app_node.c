@@ -416,10 +416,11 @@ void app_node_read_config(void)
     printf("app_node_read_config new!\n");
   }
   printf("read node_sn=0x%08X, period=%ds\n", g_sAppNodeSave.node_sn, g_sAppNodeSave.wake_period);
-	nwk_node_add_gw(0xC1011234, 0, 4);//添加目标网关
+	nwk_node_add_gw(0xC1011234, 13, 4, NwkRunModeDynamic);//添加目标网关
 	nwk_node_set_sn(g_sAppNodeSave.node_sn);//设置节点SN
 	nwk_node_set_wake_period(g_sAppNodeSave.wake_period);  //设置节点唤醒周期
-  
+  u8 root_key[17]={"0123456789ABCDEF"};//根密码,跟网关保持一致
+  nwk_node_set_root_key(root_key);
 }
 
 /*		
@@ -448,6 +449,7 @@ void app_node_set_wake_period(u16 wake_period)
   printf("set wake period=%ds\n", wake_period);
   g_sAppNodeSave.wake_period=wake_period;
   app_node_write_config();
+  nwk_node_set_wake_period(wake_period);
 }
 
 /*		
@@ -522,7 +524,7 @@ void app_node_thread_entry(void *parameter)
       printf_hex("app buff=", recv_from->app_data, recv_from->data_len);
       printf_oled("rx=%s", recv_from->app_data);
     }
-    app_oled96_main_process();//屏幕显示
+//    app_oled96_main_process();//屏幕显示
     app_node_key_check();//按键检测
     if(run_cnts++%200==0)//指示灯运行
     {
@@ -531,7 +533,7 @@ void app_node_thread_entry(void *parameter)
 //      app_node_temp_update();//温度更新
 
     }
-		if(1 && run_cnts%400==0)//显示信息更新
+		if(0 && run_cnts%400==0)//显示信息更新
 		{
       RfParamStruct *rf_param=nwk_node_take_rf_param();
       app_oled96_show_signal(rf_param->rssi, rf_param->snr);//更新信号显示
@@ -544,7 +546,7 @@ void app_node_thread_entry(void *parameter)
     
     if(run_cnts%4000==0)
     {
-      app_node_send_status();
+//      app_node_send_status();
     }
 		
     delay_os(nwk_get_rand()%5+5);

@@ -163,6 +163,7 @@ void app_master_event_parse(void)
     switch(pEvent->event)//事件处理
     {
       case NwkMasterEventDownAck://下发回复
+      case NwkMasterDownResultTimeOut://下发超时
       {
         u8 *pData=pEvent->params;
         u8 param_len=5;//4字节的sn+1字节的result
@@ -266,12 +267,15 @@ void app_master_thread_entry(void *parameter)
   nwk_master_uart_send_register(wireless++, slave_addr++, app_master_uart_send);
   nwk_master_uart_send_register(wireless++, slave_addr++, app_master_uart_send);
   
-  u8 freq_ptr=0;
-  nwk_master_set_freq_ptr(freq_ptr);//设置基础频段
-  for(u8 i=0; i<4; i++)
+  u8 freq_ptr=13;
+  nwk_master_set_config(freq_ptr, NwkRunModeDynamic);//设置配置信息
+  
+  u8 root_key[17]={"0123456789ABCDEF"};//根密码, 跟节点保持一致
+  nwk_master_set_root_key(root_key);
+  for(u8 i=0; i<NWK_GW_WIRELESS_NUM; i++)
   {
     u8 slave=i+1;
-    nwk_master_send_freq_ptr(slave);
+    nwk_master_send_slave_config(slave); 
     delay_os(100);
   }
   app_mqtt_init();
@@ -285,7 +289,7 @@ void app_master_thread_entry(void *parameter)
     app_mqtt_main();//MQTT
     if(run_cnts++%100==0)//指示灯运行
     {
-      led_state=!led_state;
+      led_state=!led_state; 
       app_master_led_set(led_state);
     } 
     

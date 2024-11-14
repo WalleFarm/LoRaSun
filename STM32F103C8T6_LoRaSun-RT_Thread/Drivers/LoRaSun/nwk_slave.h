@@ -55,6 +55,11 @@ typedef enum
   NwkSlaveRxCheck,
   NwkSlaveRxAckWait,//等待主机的回复包
   NwkSlaveRxAckCheck,//回复节点
+  
+  NwkSlaveRxStaticInit=50,
+  NwkSlaveRxStaticFirstCheck,
+  NwkSlaveRxStaticAckCheck,
+  NwkSlaveRxStaticAppCheck,
 
 }NwkSlaveRxState;//从机接收状态
 
@@ -62,8 +67,6 @@ typedef enum
 {
   NwkSlaveTxIdel=0,
   NwkSlaveTxInit,
-//  NwkSlaveTxLBTInit,
-//  NwkSlaveTxLBTCheck,
   NwkSlaveTxWake,
   NwkSlaveTxSnCheck,
   
@@ -95,7 +98,8 @@ typedef struct
   u8 rx_state;
   u8 recv_buff[255];
   u8 recv_len;
-//  u8 freq_ptr;
+  u8 will_len;
+  u8 run_mode;
   u8 group_id;
   u8 cad_cnts;
   u16 wait_cnts;
@@ -151,6 +155,7 @@ void nwk_slave_send_sniff(u8 sf, u8 bw);
 void nwk_slave_uart_parse(u8 *recv_buff, u16 recv_len);
 void nwk_slave_uart_send_level(u8 cmd_type, u8 *in_buff, u16 in_len);
 void nwk_slave_uart_send_heart(void);
+void nwk_slave_uart_req_config(void);
 void nwk_slave_uart_send_rx(u8 *buff, u8 len, RfParamStruct *rf);
 void nwk_slave_set_addr(u8 slave_addr);
 

@@ -91,6 +91,7 @@ void rt_hw_board_init()
 #endif
 }
 extern u32 g_u32SecCounter;
+
 void SysTick_Handler(void)
 {
 	static u32 tickets=0;

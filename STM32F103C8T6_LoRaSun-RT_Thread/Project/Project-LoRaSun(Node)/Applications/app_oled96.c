@@ -149,7 +149,7 @@ void printf_oled(char const *const format, ...)
 	va_start(arglist, format);
 	vsnprintf(show_buff, sizeof(show_buff), format, arglist);
 	va_end(arglist); 
-  app_oled96_show_debug(show_buff);
+//  app_oled96_show_debug(show_buff);
 }
 
 /*		
