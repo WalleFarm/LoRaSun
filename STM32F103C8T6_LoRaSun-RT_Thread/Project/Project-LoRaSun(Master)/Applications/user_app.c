@@ -1,6 +1,7 @@
 
 #include "user_app.h"
 #include "app_master.h" 
+#include "app_mqtt.h" 
 
 
 
@@ -27,7 +28,10 @@ void APP_Init(void)
 	RT_ASSERT(tid != RT_NULL);	
 	rt_thread_startup(tid);	
   
-  
+	tid = rt_thread_create("mqtt", app_mqtt_thread_entry, RT_NULL,  
+												 1200, RT_THREAD_PRIORITY_MAX - 15, 20);
+	RT_ASSERT(tid != RT_NULL);	 
+	rt_thread_startup(tid);	  
 }
 
 /*		
@@ -74,6 +78,20 @@ void app_uart_thread_entry(void *parameter)
         printf("*** reset!\n");
         drv_system_reset();
       }
+			else if((pData=strstr(pBuff, "reg app:"))!=NULL)
+			{
+				pData+=strlen("reg app:");
+        u32 app_id=atol(pData); 
+        drv_server_set_app_id(app_id);//设置应用ID
+        drv_system_reset();
+			}  
+			else if((pData=strstr(pBuff, "set sn:"))!=NULL)
+			{
+				pData+=strlen("set sn:");
+        u32 gw_sn=atol(pData); 
+        drv_server_set_gw_sn(gw_sn);//设置网关SN
+        drv_system_reset();
+			}          
 			else if((pData=strstr(pBuff, "down:"))!=NULL)
 			{
 				pData+=strlen("down:");
@@ -87,7 +105,25 @@ void app_uart_thread_entry(void *parameter)
         printf("set time=%us\n", time);
         nwk_set_rtc_counter(time);
 			}     
-      
+ 			else if((pData=strstr(pBuff, "broad:"))!=NULL)
+			{
+        pData+=strlen("broad:");
+        u8 slave_addr=atoi(pData);
+				nwk_master_send_broad(slave_addr);
+			}        
+      else if((pData=strstr(pBuff, "mode:"))!=NULL)
+      {
+        pData+=strlen("mode:");
+        u8 freq_ptr=atoi(pData);
+        if(freq_ptr<10)
+          pData+=2;
+        else
+          pData+=3;
+        u8 run_mode=atoi(pData);
+        printf("set freq_ptr=%d, run_mode=%d\n", freq_ptr, run_mode);
+        
+        nwk_master_set_config(freq_ptr, run_mode);//设置配置信息       
+      }
 
 			UART_Clear(pUART);
 		}		

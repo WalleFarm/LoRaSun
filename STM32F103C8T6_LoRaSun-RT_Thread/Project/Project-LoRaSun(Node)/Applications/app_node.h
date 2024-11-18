@@ -27,6 +27,7 @@ typedef struct
 }AppNodeWorkStruct;
 
 
+
 void app_node_set_sn(u32 node_sn);
 void app_node_set_wake_period(u16 wake_period);
 

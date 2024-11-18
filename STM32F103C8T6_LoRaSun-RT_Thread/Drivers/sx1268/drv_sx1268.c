@@ -28,15 +28,10 @@ void drv_sx1268_init(DrvSx1268Struct *psx1268)
                            SX1268_IRQ_RADIO_ALL, 
                            SX1268_IRQ_RADIO_NONE,
                            SX1268_IRQ_RADIO_NONE );  
-//  u32 freq=475000000;
-//  u8 sf=11, bw=9;
-//  drv_sx1268_calibrate_image(psx1268, freq);//470M频段校准
-//  drv_sx1268_set_freq(psx1268, freq);
   
   drv_sx1268_set_standby(psx1268, SX1268_STDBY_RC);
   drv_sx1268_set_mode(psx1268, SX1268_MODEM_LORA);
 
-//  drv_sx1268_set_sf_bw(psx1268, sf, bw);
   drv_sx1268_set_pack_params(psx1268, 25);//包格式初始化,前导码等  
 
 //  drv_sx1268_set_cad_params(psx1268, SX1268_CAD_08_SYMBOL, 24, 20, SX1268_CAD_ONLY, 100);  

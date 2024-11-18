@@ -33,6 +33,8 @@ typedef   signed           int s32;
 #define   NWK_BROAD_BW              6   //广播BW
 #define   NWK_WIRE_MAX_NUM          16   //天线最大数量
 
+#define   NWK_LORASUN_VERSION       0x0101  //协议栈版本,主版本+子版本
+
 typedef enum
 {
   CadResultRunning=0,
@@ -119,7 +121,6 @@ int nwk_get_rand(void);
 void nwk_get_up_channel(u8 chn, u8 *sf, u8 *bw);
 void nwk_get_down_channel(u8 chn, u8 *sf, u8 *bw);
 void nwk_get_static_channel4(u8 chn, u8 *sf, u8 *bw);
-u16 nwk_cacul_sniff_time(u8 sf, u8 bw);
 u32 nwk_get_sn_freq(u32 node_sn);
 
 

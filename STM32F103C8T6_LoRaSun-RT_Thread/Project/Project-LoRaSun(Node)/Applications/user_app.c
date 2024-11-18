@@ -1,7 +1,7 @@
 
 #include "user_app.h"
 #include "app_node.h" 
-
+#include "app_oled96.h"
 
 /*		
 ================================================================================
@@ -26,7 +26,10 @@ void APP_Init(void)
 	RT_ASSERT(tid != RT_NULL);	
 	rt_thread_startup(tid);	
   
-  
+	tid = rt_thread_create("oled", app_oled96_thread_entry, RT_NULL,  
+												 1024, RT_THREAD_PRIORITY_MAX - 12, 20);
+	RT_ASSERT(tid != RT_NULL);	
+	rt_thread_startup(tid);	  
 }
 
 /*		

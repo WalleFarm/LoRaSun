@@ -32,7 +32,7 @@
 
 
 
-//#define		MQTT_CONN_NUM				2   //重定义MQTT连接数量
+#define		MQTT_CONN_NUM				2   //重定义MQTT连接数量
 
 #define   M2M_DEV_TYPE      (u32)(0xC101)  //设备型号
 

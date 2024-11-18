@@ -296,7 +296,9 @@ void drv_esp8266_reg_process(void)
           drv_esp8266_send_at(cmd_buff);
           delay_os(1000);          
         }                   
-        drv_esp8266_send_at("RST");//复位模块        
+        drv_esp8266_send_at("RST");//复位模块   
+//        delay_os(200);          
+//        drv_esp8266_send_at("RST");//复位模块   
 				g_sEsp8266Work.state=ESP8266_INIT;		
         wait_time=3;			
 				break;

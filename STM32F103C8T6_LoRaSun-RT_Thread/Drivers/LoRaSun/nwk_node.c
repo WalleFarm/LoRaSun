@@ -11,7 +11,6 @@ NwkNodeWorkStruct g_sNwkNodeWork={0};
 
 
 extern void printf_oled(char const *const format, ...);//OLED打印输出,可以注释
-
 /*		
 ================================================================================
 描述 : 节点SN存储
@@ -379,8 +378,6 @@ void nwk_node_send_sniff(u8 sf, u8 bw)
 	if(g_sNwkNodeWork.pLoRaDev==NULL)
 		return;	
   u8 buff[1]={0x01};
-  u16 tx_time=nwk_cacul_sniff_time(sf, bw);//nwk_node_calcu_air_time(sf, bw, 1);
-  u8 loops=(tx_time*0.1)/2+5;//计算循环次数
 #if defined(LORA_SX1278)  
 	drv_sx1278_send(g_sNwkNodeWork.pLoRaDev, buff, 1); 
 
@@ -389,14 +386,7 @@ void nwk_node_send_sniff(u8 sf, u8 bw)
 #elif defined(LORA_LLCC68)
 
 #endif	
-//  u16 k=100;
-//  while(k--);
-//  printf("sniff time=%dms\n", tx_time);
 	nwk_delay_ms(5);
-//	while(loops--)
-//  {
-//    nwk_delay_ms(2);
-//  }  
 }
 
 /*		
@@ -802,6 +792,7 @@ void nwk_node_req_join(u32 gw_sn)
   pNodeTxGw->tx_cmd=NwkCmdJoin;
   pNodeTxGw->try_cnts=0;
 	printf("***req_join!\n");  
+  printf_oled("***req_join!");
 }
 
 /*		
@@ -836,7 +827,6 @@ u8 nwk_node_send2node(u32 dst_node_sn, u8 *in_buff, u8 in_len)
 */ 
 void nwk_node_search_process(void)
 {
-  static u8 ptr=0;
   static const u32 base_freq=NWK_BROAD_BASE_FREQ;
   static const u8 sf=NWK_BROAD_SF, bw=NWK_BROAD_BW;
   NwkNodeSearchStruct *pSearch=&g_sNwkNodeWork.node_search;
@@ -847,47 +837,15 @@ void nwk_node_search_process(void)
       
       break;
     }
-    case NwkNodeSearchCadInit: //CAD初始化
+    case NwkNodeSearchInit: //初始化
     {
-			u32 freq=base_freq;//+ptr*1000000
+			u32 freq=base_freq;
 			printf("**search param (%d, %d, %d)\n", freq/1000000, sf, bw);
       nwk_node_set_lora_param(freq, sf, bw);
-//      nwk_node_cad_init();
-//      pSearch->search_state=NwkNodeSearchCadCheck;
 			nwk_node_recv_init();//进入接收模式
 			pSearch->search_state=NwkNodeSearchRxCheck;			
       break;
     }   
-    case NwkNodeSearchCadCheck: //CAD检测
-    {
-      u8 result=nwk_node_cad_check();
-      if(result==CadResultFailed)//没搜索到
-      {
-        ptr++;
-        if(ptr>=4)//搜索4个频段        
-        { 
-          ptr=0;
-        }
-				u32 now_time=nwk_get_rtc_counter();
-				if(now_time-pSearch->search_start_time>20)
-				{
-					printf("**** search exit!\n");
-					pSearch->search_state=NwkNodeSearchIdel;//退出
-				}
-				else
-				{
-					pSearch->search_state=NwkNodeSearchCadInit;//进行下一个频段搜索
-				}
-        
-      }
-      else if(result==CadResultSuccess)//搜索成功 
-      {
-				printf("search into recv mode!\n");
-        nwk_node_recv_init();//进入接收模式
-        pSearch->search_state=NwkNodeSearchRxCheck;
-      }
-      break;
-    }
     case NwkNodeSearchRxCheck: //接收检测
     {
       RfParamStruct *rf=&g_sNwkNodeWork.rf_param;
@@ -913,8 +871,9 @@ void nwk_node_search_process(void)
           pData+=1;
           u8 run_mode=base_freq>>7;
           base_freq&=0x7F;
-          printf_oled("search w:%d/%d,M=%d, F=%d, %ddbm, %ddbm", wireless_num>>4&0x0F, wireless_num&0x0F, 
+          printf_oled("search W:%d/%d,mode=%d, F=%d, %ddbm, %ddbm", wireless_num>>4&0x0F, wireless_num&0x0F, 
                       run_mode, base_freq, rf->rssi, rf->snr);
+          wireless_num&=0x0F;
           NwkParentWorkStrcut *pGateWay=nwk_node_search_gw(gw_sn);
           if(pGateWay==NULL)
           {
@@ -926,43 +885,37 @@ void nwk_node_search_process(void)
                 pGateWay->gw_sn=gw_sn;
                 pGateWay->base_freq_ptr=base_freq;
                 pGateWay->wireless_num=wireless_num;
-                printf("add gw_sn=0x%08X, base_freq=%d, wireless=%d\n", gw_sn, base_freq, wireless_num);
+                pGateWay->run_mode=run_mode;
+                printf("add gw_sn=0x%08X, base_freq=%d, wireless=%d, run_mode=%d\n", 
+                        gw_sn, base_freq, wireless_num, run_mode);
                 break;
               }
             }            
           }
+          else//更新该网关信息
+          {
+            pGateWay->base_freq_ptr=base_freq;
+            pGateWay->wireless_num=wireless_num;
+            pGateWay->run_mode=run_mode;     
+            printf("update gw_sn=0x%08X, base_freq=%d, wireless=%d, run_mode=%d\n", 
+                    gw_sn, base_freq, wireless_num, run_mode);            
+          }
         }
-//        pSearch->search_state=NwkNodeSearchExit;
-      }
+      } //end of recv
       else
       {
         u32 now_time=nwk_get_rtc_counter();
-        if(now_time-pSearch->search_start_time>20)//搜索时间到
+        if(now_time-pSearch->search_start_time>5)//搜索时间到
         {
-          printf("exit search!\n");
+          pSearch->alarm_rtc_time=now_time+pSearch->wait_time;
+          pSearch->search_start_time=now_time;
+          printf("exit search!\nalarm time=%us\n", pSearch->alarm_rtc_time);
+//          printf_oled("exit search!");
           pSearch->search_state=NwkNodeSearchIdel;
         }        
       }
       break;
     }    
-    case NwkNodeSearchExit:
-    {
-      u32 now_time=nwk_get_rtc_counter();
-      if(now_time-pSearch->search_start_time>11)//搜索时间到
-      {
-        pSearch->search_state=NwkNodeSearchIdel;
-      }
-      else
-      {
-        ptr++;
-        if(ptr>=4)//搜索4个频段        
-        { 
-          ptr=0;
-        }
-        pSearch->search_state=NwkNodeSearchCadInit;//进行下一个频段搜索        
-      }
-      break;
-    }
   }
 }
 
@@ -1129,7 +1082,7 @@ void nwk_node_rx_process(void)
       else if(result==CadResultSuccess)//搜索到
 			{
         printf("cad OK***(%.2f, %d, %d)\n", pNodeRx->freq/1000000.0, pNodeRx->curr_sf, pNodeRx->curr_bw);
-				u32 freq=pNodeRx->freq+1000000;//+pNodeRx->group_id*500000;
+				u32 freq=pNodeRx->freq+1000000;//
         u8 sf=pNodeRx->curr_sf;
         u8 bw=pNodeRx->curr_bw;
         printf("group id=%d, rx sniff param(%.2f, %d, %d)\n", pNodeRx->group_id, freq/1000000.0, sf, bw);
@@ -1216,7 +1169,7 @@ void nwk_node_tx_gw_process(void)
   led_state=!led_state;
   
   NwkNodeTxGwStruct *pNodeTxGw=&g_sNwkNodeWork.node_tx_gw;
-  static u8 make_buff[300]={0};  //接收缓冲区复用
+  static u8 make_buff[300]={0};  //缓冲区
   static const u8 make_size=(u8)sizeof(make_buff);
   static u8 make_len=0;
   switch(pNodeTxGw->tx_state)
@@ -1464,6 +1417,7 @@ void nwk_node_tx_gw_process(void)
           printf("tx wait time=%ds\n", pNodeTxGw->wait_cnts);        
           printf_oled("tx wait time=%ds\n", pNodeTxGw->wait_cnts);             
         }
+        printf("static alarm time=%us\n", pNodeTxGw->alarm_rtc_time);
       }
       nwk_node_set_led(false);//指示灯灭
       pNodeTxGw->tx_state=NwkNodeTxGwIdel;//回合结束
@@ -1508,7 +1462,7 @@ void nwk_node_tx_gw_process(void)
       pNodeTxGw->sf=sf;
       pNodeTxGw->bw=bw; //记录监听参数,发送时候再次使用   
       printf("***wait cad ack (%.2f, %d, %d)\n", freq/1000000.0, sf, bw);
-      for(u8 i=0; i<6; )//CAD回复检测次数
+      for(u8 i=0; i<10; )//CAD回复检测次数
       {
         u8 result=nwk_node_cad_check();
         if(result==CadResultFailed)//没搜索到
@@ -1520,7 +1474,7 @@ void nwk_node_tx_gw_process(void)
         else if(result==CadResultSuccess)//搜索成功
         {
           printf("************cad ack!\n");
-          nwk_delay_ms(100);//适当延时,等待对方嗅探帧发送完
+          nwk_delay_ms(300);//适当延时,等待对方嗅探帧发送完
           pNodeTxGw->tx_step=0;
           u8 will_buff[5]={0};
           u8 will_len=0;
@@ -1540,7 +1494,7 @@ void nwk_node_tx_gw_process(void)
         }
       }
       //没有检测到CAD
-      if(pNodeTxGw->sniff_cnts<10)//同一组参数嗅探多次
+      if(pNodeTxGw->sniff_cnts<10-pNodeTxGw->group_id)//同一组参数嗅探多次
       {
         pNodeTxGw->tx_state=NwkNodeTxGwSniff;//继续嗅探
       }
@@ -1557,7 +1511,6 @@ void nwk_node_tx_gw_process(void)
       u8 result=nwk_node_send_check();//发送完成检测
       if(result>0)//发送完成
       {
-//        nwk_node_cad_init();//状态切换
         printf("tx_step=%d tx ok!\n", pNodeTxGw->tx_step);
 				if(pNodeTxGw->tx_step>0)
 				{
@@ -1627,7 +1580,8 @@ void nwk_node_tx_gw_process(void)
           pNodeTxGw->group_id=NWK_UP_CHANNEL_NUM-1;
         }
         printf("tx wait time=%ds\n", pNodeTxGw->wait_cnts);        
-        printf_oled("tx wait time=%ds\n", pNodeTxGw->wait_cnts);        
+        printf_oled("tx wait time=%ds\n", pNodeTxGw->wait_cnts);  
+        printf("dynamic alarm time=%us\n", pNodeTxGw->alarm_rtc_time);
       }
       nwk_node_set_led(false);//指示灯灭
       pNodeTxGw->tx_state=NwkNodeTxGwIdel;//回合结束
@@ -1692,7 +1646,7 @@ void nwk_node_work_check(void)
           u32 now_time=nwk_get_rtc_counter();
           if(now_time-pNodeTxGw->start_rtc_time>=pNodeTxGw->wait_cnts)//随机延时结束
           {
-            printf("tx gw wait ok!\n");
+            printf("tx gw wait ok!  time=%us\n", now_time);
             pNodeTxGw->alarm_rtc_time=0;
             pNodeTxGw->tx_state=NwkNodeTxGwInit;//重新开始
             g_sNwkNodeWork.work_state=NwkNodeWorkTXGw;
@@ -1738,32 +1692,37 @@ void nwk_node_work_check(void)
       //搜索检查
       if(g_sNwkNodeWork.work_state==NwkNodeWorkIdel)//仍旧空闲--搜索
       {
-        //不具备有效网关就要搜索
-        u8 gw_cnts=0;
-        for(u8 i=0; i<NWK_GW_NUM; i++)
-        {
-          NwkParentWorkStrcut *pGateWay=&g_sNwkNodeWork.parent_list[i];
-          if(pGateWay->gw_sn>0)
-          {
-            gw_cnts++;
-          }
-        }
+//        //不具备有效网关就要搜索
+//        u8 gw_cnts=0;
+//        for(u8 i=0; i<NWK_GW_NUM; i++)
+//        {
+//          NwkParentWorkStrcut *pGateWay=&g_sNwkNodeWork.parent_list[i];
+//          if(pGateWay->gw_sn>0)
+//          {
+//            gw_cnts++;
+//          }
+//        }
         u32 now_time=nwk_get_rtc_counter();
-        static u32 wait_time=20;
+
         int det_time=now_time-pNodeSearch->search_start_time;
 //				printf("det_time=%d\n", det_time);
-        if(0 || (gw_cnts==0 && det_time>wait_time))//  
+        if(pNodeSearch->wait_time==0 || (det_time>0 && (now_time-9)%300==0) )//  
         {
-          wait_time*=2;
-          if(wait_time>86400)
+          if(pNodeSearch->wait_time==0)
           {
-            wait_time=86400;
-          }
-          pNodeSearch->alarm_rtc_time=now_time+wait_time;
+            pNodeSearch->wait_time=300;
+          }          
+//          pNodeSearch->wait_time*=2;
+//          if(pNodeSearch->wait_time>86400)
+//          {
+//            pNodeSearch->wait_time=86400;
+//          }
+          pNodeSearch->alarm_rtc_time=0;//禁止休眠
           pNodeSearch->search_start_time=now_time;
-          pNodeSearch->search_state=NwkNodeSearchCadInit;
+          pNodeSearch->search_state=NwkNodeSearchInit;
           g_sNwkNodeWork.work_state=NwkNodeWorkSearch;//进入搜索状态
           printf("*****start search!\n");
+          printf_oled("**start search!");
         }
         
       } 
@@ -1786,8 +1745,10 @@ void nwk_node_work_check(void)
           u32 now_time=nwk_get_rtc_counter();
           if(now_time%g_sNwkNodeWork.wake_period==0 && now_time!=last_wake_time)
           {
-						printf("wake!!!\n");
+						printf("wake!!!  time=%us\n", now_time);
+//						printf_oled("wake!!!  time=%us\n", now_time);
             pNodeRx->rx_state=NwkNodeRxInit;
+            pNodeRx->alarm_rtc_time=now_time+g_sNwkNodeWork.wake_period;//下一次唤醒周期
       			g_sNwkNodeWork.work_state=NwkNodeWorkRX;//进入接收监听  
             last_wake_time=now_time;
           }
@@ -1816,16 +1777,7 @@ void nwk_node_work_check(void)
               return;
             }            
           }
-
         }        
-      }
-      //睡眠检查
-      if(g_sNwkNodeWork.work_state==NwkNodeWorkIdel)//仍旧空闲--睡眠
-      {
-//        g_sNwkNodeWork.work_state=NwkNodeWorkSleep;//进入休眠
-        //睡眠时间更新
-        //1.网关数据延时发送 2.D2D发送  3.自身定时唤醒监听
-//        nwk_node_sleep_init();//
       }
     
 			break;
@@ -1909,10 +1861,54 @@ RfParamStruct *nwk_node_take_rf_param(void)
 输出 : 
 ================================================================================
 */ 
-void nwk_node_tx_cnts(u16 *total_cnts, u16 *ok_cnts)
+void nwk_node_take_tx_cnts(u16 *total_cnts, u16 *ok_cnts)
 {
   *total_cnts=g_sNwkNodeWork.node_tx_gw.tx_total_cnts;
   *ok_cnts=g_sNwkNodeWork.node_tx_gw.tx_ok_cnts;
+}
+
+/*		
+================================================================================
+描述 : 节点唤醒时间计算
+输入 : 
+输出 : //0~不休眠  time~唤醒时间点 FFFFFFFF~全休眠
+================================================================================
+*/ 
+u32 nwk_node_cacul_alarm_time(void)
+{
+  u32 min_alarm_time=0xFFFFFFFF;  //全休眠
+  if(g_sNwkNodeWork.work_state!=NwkNodeWorkIdel)//有任务在运行
+  {
+    return 0;//不休眠
+  }
+  if(g_sNwkNodeWork.wake_period==0)
+  {
+    return 0;//不休眠
+  }
+  u32 curr_alarm_time=g_sNwkNodeWork.node_tx_gw.alarm_rtc_time;//发送线程闹钟
+  if(curr_alarm_time>0 && curr_alarm_time<min_alarm_time)
+  {
+    min_alarm_time=curr_alarm_time;
+  }
+  
+  curr_alarm_time=g_sNwkNodeWork.node_tx_d2d.alarm_rtc_time;//D2D线程闹钟
+  if(curr_alarm_time>0 && curr_alarm_time<min_alarm_time)
+  {
+    min_alarm_time=curr_alarm_time;
+  }  
+
+  curr_alarm_time=g_sNwkNodeWork.node_search.alarm_rtc_time;//搜索线程闹钟
+  if(curr_alarm_time>0 && curr_alarm_time<min_alarm_time)
+  {
+    min_alarm_time=curr_alarm_time;
+  }
+
+  curr_alarm_time=g_sNwkNodeWork.node_rx.alarm_rtc_time;//接收线程闹钟
+  if(curr_alarm_time>0 && curr_alarm_time<min_alarm_time)
+  {
+    min_alarm_time=curr_alarm_time;
+  }    
+  return min_alarm_time;
 }
 
 
@@ -1920,109 +1916,12 @@ void nwk_node_tx_cnts(u16 *total_cnts, u16 *ok_cnts)
 ================================================================================
 描述 : 节点运行主函数
 输入 : 
-输出 : //0~不休眠  time~唤醒节点 FFFFFFFF~全休眠
+输出 :
 ================================================================================
 */ 
-NowkNodeReturnStruct *nwk_node_main(void)
+void nwk_node_main_process(void)
 {
-//	if(1)
-//	{
-//		static bool flag=false;
-//		if(flag==false)
-//		{
-//			flag=true;
-//			u8 sf=11,bw=6;
-//      nwk_node_set_lora_param(475000000, sf, bw);
-//      nwk_node_recv_init(); 			
-//		}
-//		int16_t rssi;
-//		u8 recv_len=nwk_node_recv_check(g_sNwkNodeWork.node_rx.recv_buff, &rssi);
-//		if(recv_len>0)
-//		{
-//			//数据解析
-//			g_sNwkNodeWork.recv_rssi=rssi;
-//			printf("recv rssi=%ddbm\n", rssi);
-//			printf_hex("recv=", g_sNwkNodeWork.node_rx.recv_buff, recv_len);
-//		} 		
-//		return NULL;
-//	}
-//	else
-//	{
-//    static u32 last_time=0;
-//    u32 now_time=nwk_get_rtc_counter();
-//    if(now_time-last_time>=5)
-//    {
-//      u8 test_buff[]={"0123456789012345678901234"};
-//      u8 sf=11,bw=6;
-//      nwk_node_set_lora_param(475000000, sf, bw);
-//      nwk_node_send_buff(test_buff, sizeof(test_buff));//发送数据包
-//      u32 tx_time=nwk_node_calcu_air_time(sf, bw, sizeof(test_buff))*1.2;//发送时间,冗余
-//      printf("send start***\ntx_time=%dms\n", tx_time);
-//      s8 loop_cnts=tx_time/100+1;
-//      while(loop_cnts--)
-//      {
-//        u8 result=nwk_node_send_check();//发送完成检测
-//        if(result)//发送完成
-//        {
-//          loop_cnts=1;
-//          printf("send test ok!\n");
-//          break;
-//        }
-//        delay_os(100);
-//      }
-//      if(loop_cnts<=0)
-//      {
-//        printf("send test timeout!\n");
-//      }
-//      
-//      last_time=now_time;
-//    }		
-//		return NULL;
-//	}
-//	
-  u32 min_alarm_time=0xFFFFFFFF;  
-  NowkNodeReturnStruct *pReturn=&g_sNwkNodeWork.node_return;
 	nwk_node_work_check();
-//  pReturn->pRecvFrom=nwk_node_recv_from_check();
-  
-  if(g_sNwkNodeWork.work_state!=NwkNodeWorkIdel)//有任务在运行
-  {
-    pReturn->alarm_time=0;
-    return pReturn;//不休眠
-  }
-  if(g_sNwkNodeWork.wake_period==0)
-  {
-    pReturn->alarm_time=0;
-    return pReturn;//不休眠
-  }
-  u32 curr_alarm_time=g_sNwkNodeWork.node_tx_gw.alarm_rtc_time;
-  if(curr_alarm_time>0 && curr_alarm_time<min_alarm_time)
-  {
-    min_alarm_time=curr_alarm_time;
-  }
-  
-  curr_alarm_time=g_sNwkNodeWork.node_tx_d2d.alarm_rtc_time;
-  if(curr_alarm_time>0 && curr_alarm_time<min_alarm_time)
-  {
-    min_alarm_time=curr_alarm_time;
-  }  
-
-  curr_alarm_time=g_sNwkNodeWork.node_search.alarm_rtc_time;
-  if(curr_alarm_time>0 && curr_alarm_time<min_alarm_time)
-  {
-    min_alarm_time=curr_alarm_time;
-  }
-
-  curr_alarm_time=g_sNwkNodeWork.node_rx.alarm_rtc_time;
-  if(curr_alarm_time>0 && curr_alarm_time<min_alarm_time)
-  {
-    min_alarm_time=curr_alarm_time;
-  }  
-  
-  g_sNwkNodeWork.alarm_rtc_time=min_alarm_time;
-  pReturn->alarm_time=min_alarm_time;
-  
-  return pReturn;
 }
 
 

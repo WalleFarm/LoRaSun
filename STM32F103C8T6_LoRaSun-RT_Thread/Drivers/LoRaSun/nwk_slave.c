@@ -57,6 +57,7 @@ void nwk_slave_uart_parse(u8 *recv_buff, u16 recv_len)
           memcpy(pSlaveBroad->broad_buff, pData, broad_len);
           pSlaveBroad->broad_len=broad_len;
 					printf_hex("broad_buff=", pSlaveBroad->broad_buff, broad_len);
+          g_sNwkSlaveWork.work_state=NwkSlaveWorkIdel; //优先广播
           break;
         } 
         case MSCmdAckRxData://回复上行接收
@@ -506,10 +507,7 @@ void nwk_slave_send_sniff(u8 sf, u8 bw)
 	if(g_sNwkSlaveWork.pLoRaDev==NULL)
 		return;	
   u8 buff[1]={0x01};
-//  u32 tx_time=nwk_slave_calcu_air_time(sf, bw, 1);
-  u16 tx_time=nwk_cacul_sniff_time(sf, bw);
-  u8 loops=(tx_time*0.1)/2+5;//计算循环次数
-//  u8 loops=2;//计算循环次数
+
 #if defined(LORA_SX1278)  
 	drv_sx1278_send(g_sNwkSlaveWork.pLoRaDev, buff, 1); 
 
@@ -519,13 +517,7 @@ void nwk_slave_send_sniff(u8 sf, u8 bw)
 #elif defined(LORA_LLCC68)
 
 #endif
-//  u16 k=100;
-//  while(k--);
   nwk_delay_ms(5);
-//	while(loops--)
-//  {
-//    nwk_delay_ms(2);
-//  }	
 }
 
 
@@ -787,7 +779,7 @@ void nwk_slave_rx_process(void)
         printf("group id=%d, rx sniff param(%.2f, %d, %d)\n", pSlaveRx->group_id, pSlaveRx->freq/1000000.0, sf, bw);
 //        nwk_delay_ms(20); 
         nwk_slave_set_lora_param(pSlaveRx->freq, sf, bw);  
-        for(u16 i=0; i<20; i++)//8-pSlaveRx->group_id
+        for(u16 i=0; i<40; i++)//
         {
           nwk_slave_send_sniff(sf, bw);//返回嗅探帧
         }
@@ -881,7 +873,7 @@ void nwk_slave_rx_process(void)
       if(result)//发送完成
       {
         printf("ack send ok!\n");
-        nwk_slave_device_init();
+//        nwk_slave_device_init();
         pSlaveRx->rx_state=NwkSlaveRxIdel;//结束本回合
       }
       else if(now_time-pSlaveRx->start_rtc_time>pSlaveRx->wait_cnts)//发送超时

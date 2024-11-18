@@ -49,10 +49,8 @@ typedef enum
 typedef enum
 {
   NwkNodeSearchIdel=0,
-  NwkNodeSearchCadInit,
-  NwkNodeSearchCadCheck,
+  NwkNodeSearchInit,
   NwkNodeSearchRxCheck,
-  NwkNodeSearchExit,
 
 }NwkNodeSearchState;//搜索状态
 
@@ -122,6 +120,7 @@ typedef struct
 typedef struct
 {
   u8 search_state;//搜索状态
+  u32 wait_time;//搜索间隔
   u32 search_start_time;
   u32 alarm_rtc_time;//闹钟唤醒时间点
 }NwkNodeSearchStruct;//广播搜索结构体
@@ -186,23 +185,14 @@ typedef struct
 
 typedef struct
 {
-	u8 event;//事件  
-  NwkNodeRecvFromStruct *pRecvFrom;
-  u32 alarm_time;  //闹钟时间
-}NowkNodeReturnStruct;
- 
-typedef struct
-{
   u32 node_sn;
   NwkParentWorkStrcut parent_list[NWK_GW_NUM];//网关列表
   u16 wake_period;//唤醒周期,等于0表示节点无需休眠,时刻处于接收状态
   u8 work_state;//工作状态
 
   RfParamStruct rf_param;
-  u32 alarm_rtc_time;//闹钟唤醒时间点
   LoRaDevStruct *pLoRaDev;
   NwkNodeRecvFromStruct recv_from;
-  NowkNodeReturnStruct node_return;
 
   NwkNodeSearchStruct node_search;
   NwkNodeTxGwStruct node_tx_gw;
@@ -248,8 +238,9 @@ void nwk_node_tx_d2d_process(void);
 void nwk_node_work_check(void);
 NwkNodeRecvFromStruct *nwk_node_recv_from_check(void);
 RfParamStruct *nwk_node_take_rf_param(void);
-void nwk_node_tx_cnts(u16 *total_cnts, u16 *ok_cnts);
-NowkNodeReturnStruct *nwk_node_main(void);
+void nwk_node_take_tx_cnts(u16 *total_cnts, u16 *ok_cnts);
+u32 nwk_node_cacul_alarm_time(void);
+void nwk_node_main_process(void);
 
 
 #endif

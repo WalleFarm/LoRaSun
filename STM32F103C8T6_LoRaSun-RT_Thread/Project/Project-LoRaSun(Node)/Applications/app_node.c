@@ -11,6 +11,7 @@ DrvSx1268Struct g_sDrvSx1268={0};
 
 AppNodeSaveStruct g_sAppNodeSave={0};
 AppNodeWorkStruct g_sAppNodeWork={0};
+extern AppOLEDShowNodeStruct g_sOLEDShowNode;//节点显示参数
 /*		
 ================================================================================
 描述 : 硬件复位
@@ -69,7 +70,7 @@ static u8 app_node_lora_spi_rw_byte(u8 byte)
 
 /*		
 ================================================================================
-描述 : 忙检测
+描述 : SX1268忙检测
 输入 : 
 输出 : 
 ================================================================================
@@ -135,7 +136,7 @@ void app_node_led_set_blue(bool state)
 
 /*		
 ================================================================================
-描述 : 绿灯
+描述 : 绿灯开关
 输入 : 
 输出 : 
 ================================================================================
@@ -327,7 +328,7 @@ static void app_node_lora_init(void)
 	g_sDrvSx1278.tag_hal_sx1278.set_led = app_node_led_set_blue;
 	drv_sx1278_init(&g_sDrvSx1278);//初始化
 	
-	nwk_node_set_lora_dev(&g_sDrvSx1278);
+	nwk_node_set_lora_dev(&g_sDrvSx1278);//往协议栈传递设备指针
 	printf("app_sx1278_hal_init ok!\n");
 #endif
 
@@ -347,11 +348,9 @@ static void app_node_lora_init(void)
   g_sDrvSx1268.tag_hal_sx1268.set_led = app_node_led_set_blue;
 	drv_sx1268_init(&g_sDrvSx1268);//初始化
 	 
-  nwk_node_set_lora_dev(&g_sDrvSx1268); 
+  nwk_node_set_lora_dev(&g_sDrvSx1268); //往协议栈传递设备指针
 	printf("app_sx12768_hal_init ok!\n");
 #endif  
-
-	
   
   /*   接线
   *    PB14--复位reset
@@ -362,11 +361,8 @@ static void app_node_lora_init(void)
   *    3.3V--电源
   *    GND --GND
   */
-  
-  
 }
 
-
 /*		
 ================================================================================
 描述 : 
@@ -374,15 +370,6 @@ static void app_node_lora_init(void)
 输出 : 
 ================================================================================
 */
-
-/*		
-================================================================================
-描述 : 
-输入 : 
-输出 : 
-================================================================================
-*/
-
 
 /*		
 ================================================================================
@@ -416,16 +403,21 @@ void app_node_read_config(void)
     printf("app_node_read_config new!\n");
   }
   printf("read node_sn=0x%08X, period=%ds\n", g_sAppNodeSave.node_sn, g_sAppNodeSave.wake_period);
-	nwk_node_add_gw(0xC1011234, 13, 4, NwkRunModeDynamic);//添加目标网关
+  
+  u8 base_freq_ptr=13;
+	nwk_node_add_gw(0xC1011234, base_freq_ptr, 4, NwkRunModeDynamic);//添加目标网关 NwkRunModeStatic NwkRunModeDynamic
 	nwk_node_set_sn(g_sAppNodeSave.node_sn);//设置节点SN
 	nwk_node_set_wake_period(g_sAppNodeSave.wake_period);  //设置节点唤醒周期
   u8 root_key[17]={"0123456789ABCDEF"};//根密码,跟网关保持一致
   nwk_node_set_root_key(root_key);
+  
+  g_sOLEDShowNode.node_sn=g_sAppNodeSave.node_sn;
+  g_sOLEDShowNode.wake_period=g_sAppNodeSave.wake_period;
 }
 
 /*		
 ================================================================================
-描述 : 
+描述 : 设置并保存节点SN
 输入 : 
 输出 : 
 ================================================================================
@@ -435,11 +427,12 @@ void app_node_set_sn(u32 node_sn)
   printf("set node sn=0x%08X\n", node_sn);
   g_sAppNodeSave.node_sn=node_sn;
   app_node_write_config();
+  g_sOLEDShowNode.node_sn=g_sAppNodeSave.node_sn;
 }
 
 /*		
 ================================================================================
-描述 : 
+描述 : 设置并保存唤醒周期
 输入 : 
 输出 : 
 ================================================================================
@@ -450,20 +443,12 @@ void app_node_set_wake_period(u16 wake_period)
   g_sAppNodeSave.wake_period=wake_period;
   app_node_write_config();
   nwk_node_set_wake_period(wake_period);
+  g_sOLEDShowNode.wake_period=g_sAppNodeSave.wake_period;
 }
 
 /*		
 ================================================================================
-描述 : 
-输入 : 
-输出 : 
-================================================================================
-*/
-
-
-/*		
-================================================================================
-描述 : 
+描述 : 发送节点状态信息
 输入 : 
 输出 : 
 ================================================================================
@@ -491,7 +476,35 @@ void app_node_send_status(void)
 
 /*		
 ================================================================================
-描述 : node线程
+描述 : 休眠/唤醒检测
+输入 : 
+输出 : 
+================================================================================
+*/
+void app_node_sleep_check(void)
+{
+  static u32 last_time=0;
+  u32 alarm_time=nwk_node_cacul_alarm_time();
+  if(last_time!=alarm_time)
+  {
+    last_time=alarm_time;
+    printf("******alarm_time=%us\n", alarm_time);
+    if(alarm_time>0)//可以休眠
+    {
+      //这里只进行LoRa模块的低功耗设置,没有针对整体
+      nwk_node_sleep_init();
+    }    
+    else//唤醒
+    {
+      nwk_node_device_init();
+    }
+  }
+
+}
+
+/*		
+================================================================================
+描述 : 节点线程
 输入 : 
 输出 : 
 ================================================================================
@@ -501,55 +514,69 @@ void app_node_thread_entry(void *parameter)
   static u32 run_cnts=0;
   static bool led_state=false;  
   
-  app_node_read_config();
+  app_node_read_config();//读取SN等参数
   
-  app_node_lora_init();
-  app_node_led_init();
+  app_node_lora_init();//lora初始化
+  app_node_led_init();//指示灯初始化
   
-  app_node_key_init();
-  app_node_temp_init();
+  app_node_key_init();//按键初始化
+  app_node_temp_init();//温度头初始化
+  
+  //指示灯测试
   app_node_led_set_blue(true);
   app_node_led_set_green(true);
-  
-  app_oled96_init();
-  app_oled96_show_node(g_sAppNodeSave.node_sn, g_sAppNodeSave.wake_period);//显示节点信息
+  delay_os(500);
   app_node_led_set_blue(false);
   app_node_led_set_green(false);
   while(1)
   {
-    nwk_node_main();
+    nwk_node_main_process();
     NwkNodeRecvFromStruct *recv_from=nwk_node_recv_from_check();
     if(recv_from)
     {
-      printf_hex("app buff=", recv_from->app_data, recv_from->data_len);
+      printf_hex("app buff=", recv_from->app_data, recv_from->data_len);//用户数据
       printf_oled("rx=%s", recv_from->app_data);
     }
-//    app_oled96_main_process();//屏幕显示
+    app_node_sleep_check();//休眠检测
+
     app_node_key_check();//按键检测
     if(run_cnts++%200==0)//指示灯运行
     {
       led_state=!led_state;
       app_node_led_set_green(led_state);//运行指示灯
 //      app_node_temp_update();//温度更新
-
-    }
-		if(0 && run_cnts%400==0)//显示信息更新
-		{
-      RfParamStruct *rf_param=nwk_node_take_rf_param();
-      app_oled96_show_signal(rf_param->rssi, rf_param->snr);//更新信号显示
+      
+      //显示参数复制更新
+      RfParamStruct *rf_param=nwk_node_take_rf_param();//获取最近一次接收信号
+      g_sOLEDShowNode.rssi=rf_param->rssi;
+      g_sOLEDShowNode.snr=rf_param->snr;
       
       u16 total_cnts=0, ok_cnts=0;
-      nwk_node_tx_cnts(&total_cnts, &ok_cnts);
-      app_oled96_show_tx_total(total_cnts, ok_cnts);//显示发送次数
-//      printf_oled("show update!!!!");
-		}
+      nwk_node_take_tx_cnts(&total_cnts, &ok_cnts);//总计发送次数和成功发送次数
+      g_sOLEDShowNode.total_cnts=total_cnts;
+      g_sOLEDShowNode.ok_cnts=ok_cnts;
+      
+      NwkParentWorkStrcut *pGateWay=nwk_node_select_gw();
+      if(pGateWay)
+      {
+        g_sOLEDShowNode.gw_sn=pGateWay->gw_sn;
+        g_sOLEDShowNode.freq_ptr=pGateWay->base_freq_ptr;
+        g_sOLEDShowNode.run_mode=pGateWay->run_mode;
+      }
+      else
+      {
+        g_sOLEDShowNode.gw_sn=0;
+        g_sOLEDShowNode.freq_ptr=0;
+        g_sOLEDShowNode.run_mode=0;    
+      }
+    }
     
-    if(run_cnts%4000==0)
+    if(run_cnts%12000==0)//定时发送
     {
-//      app_node_send_status();
+      app_node_send_status();
     }
 		
-    delay_os(nwk_get_rand()%5+5);
+    delay_os(5);
   }
 }
 

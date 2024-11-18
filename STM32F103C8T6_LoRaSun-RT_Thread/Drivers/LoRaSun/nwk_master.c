@@ -1,4 +1,9 @@
 
+
+
+
+
+
 #include "nwk_master.h"
 
 
@@ -321,7 +326,7 @@ void nwk_master_lora_parse(u8 *recv_buff, u8 recv_len, u8 slave_addr, RfParamStr
 				break;
 			}			
 		}
-    #define   NWK_UP_ACK_WAIT_TIME    10  //上行回复包延时
+    #define   NWK_UP_ACK_WAIT_TIME    200  //上行回复包延时
 		if(union_len>0)
 		{
 			pData=union_buff;
@@ -525,10 +530,14 @@ void nwk_master_lora_parse(u8 *recv_buff, u8 recv_len, u8 slave_addr, RfParamStr
 输出 : 
 ================================================================================
 */
-void nwk_master_send_broad(u8 slave_addr, u32 freq, u8 sf, u8 bw) 
+void nwk_master_send_broad(u8 slave_addr) 
 {
 	u8 uart_buff[100]={0};
 	u8 uart_len=0; 	
+  u32 freq=NWK_BROAD_BASE_FREQ;
+  u8 sf=NWK_BROAD_SF;
+  u8 bw=NWK_BROAD_BW;
+  
 	uart_buff[uart_len++]=freq>>24;
 	uart_buff[uart_len++]=freq>>16;
 	uart_buff[uart_len++]=freq>>8;
@@ -658,7 +667,7 @@ void nwk_master_set_root_key(u8 *key)
 
 /*		
 ================================================================================
-描述 : 设置基础频率序号
+描述 : 设置基础频率序号和运行模式
 输入 : 
 输出 : 
 ================================================================================
@@ -667,6 +676,26 @@ void nwk_master_set_config(u8 freq_ptr, u8 run_mode)
 {
   g_sNwkMasterWork.freq_ptr=freq_ptr;
   g_sNwkMasterWork.run_mode=run_mode;
+  printf("set freq_ptr=%d, run_mode=%d\n", freq_ptr, run_mode);
+  for(u8 i=0; i<NWK_GW_WIRELESS_NUM; i++)
+  {
+    u8 slave=i+1;
+    nwk_master_send_slave_config(slave); 
+    nwk_delay_ms(20);
+  }     
+}
+
+/*		
+================================================================================
+描述 : 获取基础频率序号和运行模式
+输入 : 
+输出 : 
+================================================================================
+*/ 
+void nwk_master_get_config(u8 *freq_ptr, u8 *run_mode)
+{
+  *freq_ptr=g_sNwkMasterWork.freq_ptr;
+  *run_mode=g_sNwkMasterWork.run_mode;
 }
 
 /*		
@@ -932,27 +961,45 @@ NwkMasterEventStruct *nwk_master_event_check(void)
 */ 
 void nwk_master_main(void)
 {
-  static u32 last_sec_time=0;
-	u32 now_sec_time=nwk_get_sec_counter();
-	nwk_master_check_down_pack();//下行数据包检测
-	if(now_sec_time-last_sec_time>=10)
-	{
-    u32 sum=1;
-    for(u8 i=0; i<NWK_GW_WIRELESS_NUM; i++)
+  if(1)
+  {
+    static u32 last_sec_time=0;
+    u32 now_sec_time=nwk_get_sec_counter();
+    nwk_master_check_down_pack();//下行数据包检测
+    if(now_sec_time-last_sec_time>=10)//上行天线占用比统计
     {
-      NwkSlaveTokenStruct *pNwkSlave=&g_sNwkMasterWork.slave_token_list[i];
-      sum+=pNwkSlave->counts;
-    }
-    printf("sum counts=%d\n", sum);
-    for(u8 i=0; i<NWK_GW_WIRELESS_NUM; i++)
-    {
-      NwkSlaveTokenStruct *pNwkSlave=&g_sNwkMasterWork.slave_token_list[i];
-      printf("slave addr=%d, counts=%d, percent=%.1f%%\n", i+1, pNwkSlave->counts, pNwkSlave->counts*100.f/sum);
-    }    
-		last_sec_time=now_sec_time;
-	}
+      u32 sum=1;
+      for(u8 i=0; i<NWK_GW_WIRELESS_NUM; i++)
+      {
+        NwkSlaveTokenStruct *pNwkSlave=&g_sNwkMasterWork.slave_token_list[i];
+        sum+=pNwkSlave->counts;
+      }
+      printf("sum counts=%d\n", sum);
+      for(u8 i=0; i<NWK_GW_WIRELESS_NUM; i++)
+      {
+        NwkSlaveTokenStruct *pNwkSlave=&g_sNwkMasterWork.slave_token_list[i];
+        printf("slave addr=%d, counts=%d, percent=%.1f%%\n", i+1, pNwkSlave->counts, pNwkSlave->counts*100.f/sum);
+      }    
+      last_sec_time=now_sec_time;
+    }  
+  }
   
-  if(0)
+  if(1)//定时广播
+  {
+    static u8 slave_addr=1;
+    static u32 last_broad_time=0;
+    u16 offset=10;
+    u32 now_rtc_time=nwk_get_rtc_counter();
+    if((now_rtc_time-offset)%300==0 && now_rtc_time!=last_broad_time)
+    {
+//      if(slave_addr>NWK_GW_WIRELESS_NUM)
+//        slave_addr=1;
+      nwk_master_send_broad(slave_addr);//广播  
+      last_broad_time=now_rtc_time;
+    }
+  }  
+  
+  if(0)//信号测试
   {
     static u32 last_sec_time=0;
     u32 now_sec_time=nwk_get_sec_counter();
@@ -963,7 +1010,7 @@ void nwk_master_main(void)
       {
         slave_addr=1;
       }
-      nwk_master_send_broad(slave_addr++, NWK_BROAD_BASE_FREQ, NWK_BROAD_SF, NWK_BROAD_BW);//广播      
+      nwk_master_send_broad(slave_addr++);//广播      
       last_sec_time=now_sec_time;
     }
   }

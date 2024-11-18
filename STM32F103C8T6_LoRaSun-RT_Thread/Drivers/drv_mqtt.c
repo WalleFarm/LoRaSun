@@ -301,7 +301,7 @@ void drv_mqtt_recv_check(void)
 //					printf_hex("sub buff=", make_buff, 30);
 					int count, requestedQoSs[1];
 					MQTTDeserialize_suback(&msgid, 1, &count, requestedQoSs, make_buff, make_size);
-//					debug("$$$ msgid=0x%04X\n", msgid);
+//					printf("$$$ sub msgid=0x%04X\n", msgid);
           for(u8 k=0; k<MQTT_SUB_NUM; k++)
           {
             SubPackStruct *pSub=&pClient->sub_list[k];

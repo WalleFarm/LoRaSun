@@ -2,7 +2,7 @@
 #include "nwk_bsp.h"
 
 
-static const u8 up_table[][2]={  //SF,BW  无线参数表,可根据自己的需求配置,独立网络中一致即可
+static const u8 up_table[][2]={  //SF,BW  动态上行无线参数表,可根据自己的需求配置,独立网络中一致即可
   9, 9,  
   10, 9, 
   11, 9,  
@@ -12,7 +12,7 @@ static const u8 up_table[][2]={  //SF,BW  无线参数表,可根据自己的需�
 
 };
 
-static const u8 down_table[][2]={  //SF,BW  无线参数表,可根据自己的需求配置,独立网络中一致即可  
+static const u8 down_table[][2]={  //SF,BW  下行无线参数表,可根据自己的需求配置,独立网络中一致即可  
   11, 9,   
   11, 8,  
   11, 7,  
@@ -20,7 +20,7 @@ static const u8 down_table[][2]={  //SF,BW  无线参数表,可根据自己的�
 
 };
 
-static const u8 static_table4[][2]={  //SF,BW  4天线静态模式参数表
+static const u8 static_table4[][2]={  //SF,BW  四天线静态模式参数表
   11, 9,  
   11, 8,  
   11, 7,  
@@ -225,7 +225,7 @@ void nwk_get_down_channel(u8 chn, u8 *sf, u8 *bw)
 
 /*		
 ================================================================================
-描述 : 下行参数表(动态、4天线)
+描述 : 下行参数表(静态+4天线)
 输入 : 
 输出 : 
 ================================================================================
@@ -238,62 +238,6 @@ void nwk_get_static_channel4(u8 chn, u8 *sf, u8 *bw)
     *sf=static_table4[chn][0];
     *bw=static_table4[chn][1];
   }
-}
-
-/*		
-================================================================================
-描述 : 
-输入 : 
-输出 : 
-================================================================================
-*/
-u16 nwk_cacul_sniff_time(u8 sf, u8 bw)
-{
-	float bw_value=0.f, t_s;
-	u32 tx_time=0;
-	
-	switch(bw)
-	{
-		case 0:
-			bw_value=7.8;
-			break;
-		case 1:
-			bw_value=10.4;
-			break;
-		case 2:
-			bw_value=15.6;
-			break;
-		case 3:
-			bw_value=20.8;
-			break;
-		case 4:
-			bw_value=31.25;
-			break;
-		case 5:
-			bw_value=41.6;
-			break;
-		case 6:
-			bw_value=62.5;
-			break;
-		case 7:
-			bw_value=125;
-			break;
-		case 8:
-			bw_value=250;
-			break;
-		case 9:
-			bw_value=500;
-			break;
-		default: return 0;	
-	}
-	
-	if(sf<7 || sf>12)
-	{
-		return 0;
-	}
-	t_s=1.f*(1<<sf)/bw_value;
-  tx_time=t_s*1;  
-  return tx_time;
 }
 
 /*		
