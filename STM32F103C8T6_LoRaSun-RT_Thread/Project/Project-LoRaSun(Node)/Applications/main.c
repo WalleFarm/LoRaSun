@@ -6,7 +6,6 @@
  
 int main(void)
 {
-	
 	printf("\n\n****Into main****\n");
 	printf("app name=%s\nversion=%s\n",APP_NAME,APP_VER);
 

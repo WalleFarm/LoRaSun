@@ -11,7 +11,7 @@
 
 #define		USE_WDOG   //是否启用看门狗
 
-#define		USE_RTC    //是否启用RTC
+//#define		USE_RTC    //是否启用RTC
 
 
 #ifdef		USE_UART1
@@ -32,7 +32,6 @@
 
 
 
-#define		MQTT_CONN_NUM				2   //重定义MQTT连接数量
 
 
 

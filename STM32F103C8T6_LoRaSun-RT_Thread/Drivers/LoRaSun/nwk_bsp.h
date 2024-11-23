@@ -1,3 +1,26 @@
+/******************************************************************************
+*
+* Copyright (c) 2024 艺大师
+* 本项目开源文件遵循GPL-v3协议
+* 
+* 文章专栏地址:https://blog.csdn.net/ypp240124016/category_12834955
+* 项目开源地址:https://github.com/WalleFarm/LoRaSun
+* 协议栈原理专利:CN110572843A
+*
+* 测试套件采购地址:https://duandianwulian.taobao.com/
+*
+* 作者:艺大师
+* 博客主页:https://blog.csdn.net/ypp240124016?type=blog
+* 交流QQ群:701889554  (资料文件存放)
+* 微信公众号:端点物联 (即时接收教程更新通知)
+*
+* 所有学习资源合集:https://blog.csdn.net/ypp240124016/article/details/143068017
+*
+* 免责声明:本项目所有资料仅限于学习和交流使用,请勿商用.
+*
+********************************************************************************/
+
+
 #ifndef __NWK_BSP_H__
 #define __NWK_BSP_H__
 
@@ -20,7 +43,7 @@ typedef   signed short     int s16;
 typedef   signed           int s32;
 
 //以下宏定义 在同一个网络系统中必须保持一致
-#define   NWK_UP_CHANNEL_NUM        6   //上行通道数量
+#define   NWK_UP_CHANNEL_NUM        4   //上行通道数量
 #define   NWK_DOWN_CHANNEL_NUM      4   //下行通道数量
 #define   NWK_TRANSMIT_MAX_SIZE     200  //传输最大应用数据
 #define   NWK_TIME_STAMP_THRESH     1726658962U //时间戳阈值

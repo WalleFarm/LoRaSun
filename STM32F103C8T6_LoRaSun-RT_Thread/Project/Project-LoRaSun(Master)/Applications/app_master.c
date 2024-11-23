@@ -4,8 +4,10 @@
 * 本项目开源文件遵循GPL-v3协议
 * 
 * 文章专栏地址:https://blog.csdn.net/ypp240124016/category_12834955
-* 项目开源地址:https://github.com/WalleFarm/LoRaSun
-* 协议栈原理专利:CN110572843A
+* github主页:  https://github.com/WalleFarm
+* LoRaSun开源地址:https://github.com/WalleFarm/LoRaSun
+* M2M-IOT开源地址:  https://github.com/WalleFarm/M2M-IOT
+* 协议栈原理专利:CN110572843A (一种基于LoRa无线模块CAD模式的嗅探方法及系统)
 *
 * 测试套件采购地址:https://duandianwulian.taobao.com/
 *
@@ -205,7 +207,7 @@ void app_master_recv_from_parse(void)
     up_buff[up_len++]=pack_id;   
     static char *aep_topic="node_data";
     app_mqtt_pub_data_aep(aep_topic, up_buff, up_len);
-    printf_hex("pub aep=", up_buff, up_len);
+//    printf_hex("pub aep=", up_buff, up_len);
   }
 }
 
@@ -379,10 +381,12 @@ void app_master_thread_entry(void *parameter)
   u8 root_key[17]={"0123456789ABCDEF"};//根密码, 跟节点保持一致
   nwk_master_set_root_key(root_key);
   
+  printf("LoRaSun version=V%d.%02d\n", NWK_LORASUN_VERSION>>8&0xFF, NWK_LORASUN_VERSION&0xFF);
+
+  delay_os(100);
   u8 freq_ptr=13;//不要超过30
   nwk_master_set_config(freq_ptr, NwkRunModeDynamic);//设置配置信息  
   
-  printf("LoRaSun version=V%d.%02d\n", NWK_LORASUN_VERSION>>8&0xFF, NWK_LORASUN_VERSION&0xFF);
   while(1)
   {
     app_master_uart_recv_check();//串口接收检查

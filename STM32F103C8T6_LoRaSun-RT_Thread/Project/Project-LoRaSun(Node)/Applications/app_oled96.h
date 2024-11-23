@@ -28,6 +28,7 @@ void app_oled96_show_signal(s16 rssi, s8 snr);
 void app_oled96_show_time(void);
 void app_oled96_show_tx_total(u16 total_cnts, u16 ok_cnts);
 void app_oled96_show_gw_info(u32 gw_sn, u8 freq_ptr, u8 run_mode);
+void app_oled96_show_version(void);
 void app_oled96_show_debug(char *str);
 void printf_oled(char const *const format, ...);
 

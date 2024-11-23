@@ -79,6 +79,9 @@ typedef enum
   NwkNodeTxGwRunning,
   NwkNodeTxGwAck,
 
+  NwkNodeTxGwWaitDownCheck=30,//下行数据包
+  NwkNodeTxGwAckDownCheck,
+
   NwkNodeTxStaticInit=50,//静态参数初始化
   NwkNodeTxStaticFirstCheck,
   NwkNodeTxStaticFirstAck,
@@ -94,6 +97,12 @@ typedef enum
 {
   NwkNodeTxD2dIdel=0,
   NwkNodeTxD2dInit,
+  NwkNodeTxD2dWake,
+  NwkNodeTxD2dSnCheck,
+  NwkNodeTxD2dAdrSniffInit,
+  NwkNodeTxD2dAdrSniffCheck,
+  NwkNodeTxD2dRunning,
+  NwkNodeTxD2dWaitAck,
   
   NwkNodeTxD2dExit=100,
 
@@ -163,16 +172,17 @@ typedef struct
 
 typedef struct
 {
-  u8 tx_state;
-  u8 sf, bw;
-  u8 sniff_cnts;
+  u8 d2d_state;
+  u8 curr_sf, curr_bw;
+  u8 sniff_cnts, cad_cnts, try_cnts;
   u8 wait_cnts, tx_len;
   u16 wake_period;//
-  u8 tx_buff[NWK_TRANSMIT_MAX_SIZE];//缓存应用数据
+  u8 tx_buff[255];//缓存应用数据
+  u8 group_id;
+  u32 dst_sn;
   u32 freq;
   u32 start_rtc_time;
   u32 alarm_rtc_time;//闹钟唤醒时间点
-//  NwkD2DSaveStruct *pD2d;//要对接的网关
 }NwkNodeTxD2dStruct;//D2D发送结构体
  
 typedef struct
@@ -227,9 +237,11 @@ NwkParentWorkStrcut *nwk_node_search_gw(u32 gw_sn);
 NwkParentWorkStrcut *nwk_node_select_gw(void);
 
 void nwk_node_clear_tx(void);
+void nwk_node_clear_d2d(void);
 u8 nwk_node_send2gateway(u8 *in_buff, u8 in_len);
 void nwk_node_req_join(u32 gw_sn);
-u8 nwk_node_send2node(u32 dst_node_sn, u8 *in_buff, u8 in_len);
+u8 nwk_node_send2device(u32 dst_sn, u16 period, u8 *in_buff, u8 in_len);
+
 void nwk_node_search_process(void);
 void nwk_node_rx_process(void);
 void nwk_node_tx_gw_process(void);

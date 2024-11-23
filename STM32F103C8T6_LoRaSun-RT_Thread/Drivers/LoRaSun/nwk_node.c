@@ -608,13 +608,21 @@ void nwk_node_recv_parse(u8 *recv_buff, u8 recv_len)
                   printf("update rtc time=%us\n", ack_time);
                   nwk_set_rtc_counter(ack_time);//更新RTC时间
                 }
+                u8 down_len=pData[0];
+                pData+=1;
+                if(down_len>0)//有下行数据,继续等待
+                {
+                  printf("have down len=%d, continue recv!\n", down_len);
+                  nwk_node_recv_init();//继续接收
+                  u32 tx_time=nwk_node_calcu_air_time(pNodeTxGw->sf, pNodeTxGw->bw, down_len)*1.2;//等待时间
+                  pNodeTxGw->start_rtc_time=nwk_get_rtc_counter();//记录当前时间,防止超时
+                  pNodeTxGw->wait_cnts=tx_time/1000+1;             
+                  pNodeTxGw->tx_state=NwkNodeTxGwWaitDownCheck;//下行包接收检测                     
+                }
               }
               else if(role==NwkRoleNode)
               {
-                NwkNodeTxD2dStruct *pNodeD2d=&g_sNwkNodeWork.node_tx_d2d;
-                memset(pNodeD2d->tx_buff, 0, sizeof(pNodeD2d->tx_buff));
-                pNodeD2d->tx_len=0;        					
-                printf("clear tx d2d buff!\n");
+                nwk_node_clear_d2d();
               }
             }
 						break;
@@ -657,13 +665,13 @@ void nwk_node_recv_parse(u8 *recv_buff, u8 recv_len)
             memcpy(pRecvFrom->app_data, pData, pRecvFrom->data_len);
             pRecvFrom->src_sn=src_sn;
             pRecvFrom->read_flag=true;//通知应用层读取
-//            printf_hex("app buff00=", pRecvFrom->app_data, pRecvFrom->data_len);
+
             //需要回复NwkCmdAck指令    
             NwkNodeRxStruct *pNodeRx=&g_sNwkNodeWork.node_rx;
             
             u8 opt=NwkRoleNode | (encrypt_mode<<2) | (key_type<<4);//组合配置
             //组合回复包
-            u8 tmp_buff[1]={NwkCmdDataOnce};
+            u8 tmp_buff[1]={cmd_type};
             u8 pack_num=nwk_get_rand()%255;
             pNodeRx->ack_len=nwk_node_make_send_buff(opt, src_sn, pKey, NwkCmdAck, pack_num, tmp_buff, 1, pNodeRx->ack_buff, sizeof(pNodeRx->ack_buff));
             break;
@@ -744,6 +752,23 @@ void nwk_node_clear_tx(void)
 
 /*		
 ================================================================================
+描述 : 清除D2D发送数据
+输入 : 
+输出 : 
+================================================================================
+*/
+void nwk_node_clear_d2d(void)
+{
+  NwkNodeTxD2dStruct *pNodeTxD2d=&g_sNwkNodeWork.node_tx_d2d;
+  memset(pNodeTxD2d->tx_buff, 0, sizeof(pNodeTxD2d->tx_buff));
+  pNodeTxD2d->tx_len=0; 
+  pNodeTxD2d->try_cnts=0;       
+  pNodeTxD2d->d2d_state=NwkNodeTxD2dIdel;//回合结束  
+  printf("clear d2d buff!\n");   
+}
+
+/*		
+================================================================================
 描述 : 把数据发送到网关
 输入 : 
 输出 : 
@@ -751,13 +776,6 @@ void nwk_node_clear_tx(void)
 */ 
 u8 nwk_node_send2gateway(u8 *in_buff, u8 in_len)
 {
-  static u8 join_flag=0;
-  if(join_flag==0)//首次按钮进行入网
-  {
-    join_flag=1;
-    nwk_node_req_join(0xC1011234);//请求入网
-    printf_oled("***req join!");
-  }
   NwkNodeTxGwStruct *pNodeTxGw=&g_sNwkNodeWork.node_tx_gw;
   if(pNodeTxGw->tx_len>0 || in_len>NWK_TRANSMIT_MAX_SIZE)
   {
@@ -769,10 +787,14 @@ u8 nwk_node_send2gateway(u8 *in_buff, u8 in_len)
   pNodeTxGw->tx_len=in_len;
   pNodeTxGw->tx_cmd=NwkCmdDataOnce;
   pNodeTxGw->try_cnts=0;
-  pNodeTxGw->tx_total_cnts++;
+  pNodeTxGw->tx_total_cnts++;//统计发送次数
+
+  pNodeTxGw->start_rtc_time=nwk_get_rtc_counter();
+  pNodeTxGw->wait_cnts=0;
   
-	printf("***send to gw!\n");
-  return 0;
+  printf("***send to gw!\n");
+
+  return 1;
 }
 
 /*		
@@ -790,6 +812,7 @@ void nwk_node_req_join(u32 gw_sn)
   pNodeTxGw->tx_buff[1]=g_sNwkNodeWork.wake_period;//唤醒周期
   pNodeTxGw->tx_len=2;
   pNodeTxGw->tx_cmd=NwkCmdJoin;
+  pNodeTxGw->wait_cnts=0;
   pNodeTxGw->try_cnts=0;
 	printf("***req_join!\n");  
   printf_oled("***req_join!");
@@ -802,10 +825,38 @@ void nwk_node_req_join(u32 gw_sn)
 输出 : 
 ================================================================================
 */
-u8 nwk_node_send2node(u32 dst_node_sn, u8 *in_buff, u8 in_len)
+u8 nwk_node_send2device(u32 dst_sn, u16 period, u8 *in_buff, u8 in_len)
 {
+  printf("d2d dst_sn=0x%08X, period=%ds\n", dst_sn, period);
+  printf_hex("buff=", in_buff, in_len);
+  NwkNodeTxD2dStruct *pNodeTxD2d=&g_sNwkNodeWork.node_tx_d2d;
+  if(pNodeTxD2d->tx_len>0 || in_len>NWK_TRANSMIT_MAX_SIZE)
+  {
+    printf("d2d task is busy!\n");
+    return 0;
+  }
+  if(period==0xFFFF)//长休眠设备无法发送D2D数据
+  {
+    printf("period error!\n");
+    return 0;
+  }
+  u32 now_time=nwk_get_rtc_counter();
+  if(period>0 && now_time<NWK_TIME_STAMP_THRESH)//有休眠, 时间未同步,不能发送D2D数据
+  {
+    printf("now_time=%us error!\n", now_time);
+    return 0;
+  }
+  pNodeTxD2d->dst_sn=dst_sn;
+  pNodeTxD2d->wake_period=period;
+  memcpy(pNodeTxD2d->tx_buff, in_buff, in_len);
+  pNodeTxD2d->tx_len=in_len;
+  pNodeTxD2d->try_cnts=0;
   
-  return 0;
+  pNodeTxD2d->start_rtc_time=nwk_get_rtc_counter();
+  pNodeTxD2d->wait_cnts=0;
+  
+  printf("***send to d2d sn=0x%08X!\n", dst_sn);  
+  return 1;
 }
 
 
@@ -839,6 +890,8 @@ void nwk_node_search_process(void)
     }
     case NwkNodeSearchInit: //初始化
     {
+      printf("*****start search!\n");
+      printf_oled("**start search! %us", pSearch->search_start_time);       
 			u32 freq=base_freq;
 			printf("**search param (%d, %d, %d)\n", freq/1000000, sf, bw);
       nwk_node_set_lora_param(freq, sf, bw);
@@ -905,12 +958,12 @@ void nwk_node_search_process(void)
       else
       {
         u32 now_time=nwk_get_rtc_counter();
-        if(now_time-pSearch->search_start_time>5)//搜索时间到
+        if(now_time-pSearch->search_start_time>10)//搜索时间到
         {
           pSearch->alarm_rtc_time=now_time+pSearch->wait_time;
           pSearch->search_start_time=now_time;
           printf("exit search!\nalarm time=%us\n", pSearch->alarm_rtc_time);
-//          printf_oled("exit search!");
+          printf_oled("exit search!");
           pSearch->search_state=NwkNodeSearchIdel;
         }        
       }
@@ -1118,7 +1171,7 @@ void nwk_node_rx_process(void)
         {
           //发送回复包
           nwk_node_send_buff(pNodeRx->ack_buff, pNodeRx->ack_len); 
-          u32 tx_time=nwk_node_calcu_air_time(pNodeRx->curr_sf, pNodeRx->curr_bw, 2)*1.2;//接收等待时间
+          u32 tx_time=nwk_node_calcu_air_time(pNodeRx->curr_sf, pNodeRx->curr_bw, pNodeRx->ack_len)*1.2;//接收等待时间
           pNodeRx->start_rtc_time=nwk_get_rtc_counter();//记录当前时间,防止超时
           pNodeRx->wait_cnts=tx_time/1000+1;             
           pNodeRx->rx_state=NwkNodeRxAppAck;//回复包发送检测           
@@ -1169,7 +1222,7 @@ void nwk_node_tx_gw_process(void)
   led_state=!led_state;
   
   NwkNodeTxGwStruct *pNodeTxGw=&g_sNwkNodeWork.node_tx_gw;
-  static u8 make_buff[300]={0};  //缓冲区
+  static u8 make_buff[255]={0};  //缓冲区
   static const u8 make_size=(u8)sizeof(make_buff);
   static u8 make_len=0;
   switch(pNodeTxGw->tx_state)
@@ -1220,15 +1273,13 @@ void nwk_node_tx_gw_process(void)
         
         if(pGateWay->run_mode==NwkRunModeStatic)//静态模式
         {
-          if(pNodeTxGw->try_cnts==0)//首次发送
+          pNodeTxGw->wireless_ptr=0;
+          if(pGateWay->wireless_num>0)
           {
-            pNodeTxGw->wireless_ptr=0;
-            if(pGateWay->wireless_num>=3)
-            {
-              pNodeTxGw->wireless_ptr=nwk_get_rand()%3;
-            }
-            printf("gw_sn=0x%08X in static mode!\n", pGateWay->gw_sn);
-          }
+            pNodeTxGw->wireless_ptr=nwk_get_rand()%pGateWay->wireless_num;//随机选择天线
+//            printf("wireless_ptr=%d\n", pNodeTxGw->wireless_ptr);
+            
+          }             
           printf("wireless_ptr=%d\n", pNodeTxGw->wireless_ptr);
           printf_oled("wireless_ptr=%d\n", pNodeTxGw->wireless_ptr);
           pNodeTxGw->tx_state=NwkNodeTxStaticInit;//下一步,静态参数初始化   
@@ -1245,7 +1296,6 @@ void nwk_node_tx_gw_process(void)
           {
             pNodeTxGw->wireless_ptr=nwk_get_rand()%pGateWay->wireless_num;//随机选择天线
             printf("wireless_ptr=%d\n", pNodeTxGw->wireless_ptr);
-            
           }
           printf_oled("wireless_ptr=%d\n", pNodeTxGw->wireless_ptr);
           pNodeTxGw->tx_state=NwkNodeTxGwFreqInit;//下一步            
@@ -1394,7 +1444,7 @@ void nwk_node_tx_gw_process(void)
     {
       pNodeTxGw->try_cnts++;
         printf("static try_cnts=%d\n", pNodeTxGw->try_cnts);        
-      if(pNodeTxGw->try_cnts>=4)//结束发送
+      if(pNodeTxGw->try_cnts>=3)//结束发送
       {
         nwk_node_clear_tx();       
         pNodeTxGw->alarm_rtc_time=0xFFFFFFFF;//可以进入休眠
@@ -1402,10 +1452,11 @@ void nwk_node_tx_gw_process(void)
       else
       {
         u32 now_time=nwk_get_rtc_counter();
-        pNodeTxGw->wait_cnts=nwk_get_rand()%20+3;//随机延时,再次尝试
+        pNodeTxGw->wait_cnts=nwk_get_rand()%10;//随机延时,再次尝试
         pNodeTxGw->start_rtc_time=now_time;
         pNodeTxGw->alarm_rtc_time=now_time+pNodeTxGw->wait_cnts;//闹钟时间
-        pNodeTxGw->wireless_ptr++;//下一根天线
+//        pNodeTxGw->wireless_ptr++;//下一根天线
+        
         if(pNodeTxGw->wireless_ptr>=pNodeTxGw->pGateWay->wireless_num)//结束发送
         {
           nwk_node_clear_tx();       
@@ -1571,7 +1622,7 @@ void nwk_node_tx_gw_process(void)
       else
       {
         u32 now_time=nwk_get_rtc_counter();
-        pNodeTxGw->wait_cnts=nwk_get_rand()%20+3;//随机延时,再次尝试
+        pNodeTxGw->wait_cnts=nwk_get_rand()%10;//随机延时,再次尝试
         pNodeTxGw->start_rtc_time=now_time;
         pNodeTxGw->alarm_rtc_time=now_time+pNodeTxGw->wait_cnts;//闹钟时间
         pNodeTxGw->group_id+=nwk_get_rand()%3+1;
@@ -1587,6 +1638,55 @@ void nwk_node_tx_gw_process(void)
       pNodeTxGw->tx_state=NwkNodeTxGwIdel;//回合结束
       break;
     }
+    case NwkNodeTxGwWaitDownCheck://下行数据包接收
+    {
+      u32 now_time=nwk_get_rtc_counter();
+      u8 recv_len=nwk_node_recv_check(g_sNwkNodeWork.node_rx.recv_buff, &g_sNwkNodeWork.rf_param);
+      if(recv_len>0)
+      {
+        //数据解析
+				printf("down rssi=%ddbm, snr=%ddbm\n", g_sNwkNodeWork.rf_param.rssi, g_sNwkNodeWork.rf_param.snr);
+				printf_hex("down=", g_sNwkNodeWork.node_rx.recv_buff, recv_len);
+        nwk_node_recv_parse(g_sNwkNodeWork.node_rx.recv_buff, recv_len);
+        NwkNodeRxStruct *pNodeRx=&g_sNwkNodeWork.node_rx;
+        if(pNodeRx->ack_len>0)
+        {
+          //发送回复包
+          nwk_node_send_buff(pNodeRx->ack_buff, pNodeRx->ack_len); 
+          u32 tx_time=nwk_node_calcu_air_time(pNodeTxGw->sf, pNodeTxGw->bw, pNodeRx->ack_len)*1.2;//等待时间
+          pNodeTxGw->start_rtc_time=nwk_get_rtc_counter();//记录当前时间,防止超时
+          pNodeTxGw->wait_cnts=tx_time/1000+1;             
+          pNodeTxGw->tx_state=NwkNodeTxGwAckDownCheck;//回复包发送检测           
+        }
+        else
+        {
+          printf("down none, exit!\n");
+          pNodeRx->rx_state=NwkNodeTxGwIdel;//结束本回合 
+        }	        
+      }   
+      else if(now_time-pNodeTxGw->start_rtc_time>pNodeTxGw->wait_cnts)//超时
+      {
+				printf("wait down time out!\n");  
+        pNodeTxGw->tx_state=NwkNodeTxGwIdel;//回合结束
+      }       
+      break;
+    }
+    case NwkNodeTxGwAckDownCheck://下行数据包回复
+    {
+      u32 now_time=nwk_get_rtc_counter();
+      u8 result=nwk_node_send_check();//发送完成检测
+      if(result)//发送完成
+      {
+				printf("app ack send ok!\n");
+        pNodeTxGw->tx_state=NwkNodeTxGwIdel;//结束本回合
+      }
+      else if(now_time-pNodeTxGw->start_rtc_time>pNodeTxGw->wait_cnts)//发送超时
+      {
+				printf("app ack send time out!\n");
+        pNodeTxGw->tx_state=NwkNodeTxGwIdel;//结束本回合  
+      }         
+      break;
+    }    
   }
   
 }
@@ -1600,12 +1700,237 @@ void nwk_node_tx_gw_process(void)
 */ 
 void nwk_node_tx_d2d_process(void)
 {
+  static bool led_state=false;
+  nwk_node_set_led(led_state);
+  led_state=!led_state;
+  
   NwkNodeTxD2dStruct *pNodeTxD2d=&g_sNwkNodeWork.node_tx_d2d;
-  switch(pNodeTxD2d->tx_state)
+  static u8 make_buff[255]={0};  //缓冲区
+  static const u8 make_size=(u8)sizeof(make_buff);
+  static u8 make_len=0;
+  
+  switch(pNodeTxD2d->d2d_state)
   {
     case NwkNodeTxD2dIdel: 
     {
 
+      break;
+    }
+    case NwkNodeTxD2dInit: 
+    {
+      u8 key_type=KeyTypeRoot;
+      u8 *pKey=g_sNwkNodeWork.root_key;
+      u8 encrypt_mode=NWK_NODE_USE_ENCRYPT_MODE;//加密模式一般根据芯片能力直接固定即可
+      u8 opt=NwkRoleNode | (encrypt_mode<<2) | (key_type<<4);//组合配置
+      
+      //组合发送数据
+      u8 pack_num=nwk_get_rand()%255;
+      make_len=nwk_node_make_send_buff(opt, pNodeTxD2d->dst_sn, pKey, NwkCmdDataOnce, pack_num, pNodeTxD2d->tx_buff, pNodeTxD2d->tx_len, make_buff, make_size);
+      printf_hex("make buff=", make_buff, make_len);       
+      
+      pNodeTxD2d->curr_sf=NWK_BROAD_SF;
+      pNodeTxD2d->curr_bw=NWK_BROAD_BW;   
+      pNodeTxD2d->freq =nwk_get_sn_freq(pNodeTxD2d->dst_sn);     
+      nwk_node_set_lora_param(pNodeTxD2d->freq, pNodeTxD2d->curr_sf, pNodeTxD2d->curr_bw);
+
+      printf("***set wake param (%.2f, %d, %d)\n", pNodeTxD2d->freq/1000000.0, pNodeTxD2d->curr_sf, pNodeTxD2d->curr_bw);
+      pNodeTxD2d->sniff_cnts=0; 
+      pNodeTxD2d->d2d_state=NwkNodeTxD2dWake;//进行唤醒 
+      break;
+    }
+    case NwkNodeTxD2dWake: 
+    {
+      if(pNodeTxD2d->wake_period>0)
+      {
+        printf("d2d send wake!\n");
+        for(u16 i=0; i<100; i++)
+        {
+          nwk_node_send_sniff(pNodeTxD2d->curr_sf, pNodeTxD2d->curr_bw);//发送嗅探帧,唤醒设备
+        }        
+      }
+      u8 test_buff[10]={0};
+      u8 test_len=0;
+      u32 dst_sn=pNodeTxD2d->dst_sn; 
+      test_buff[test_len++]=0xA9;
+      test_buff[test_len++]=dst_sn>>24;
+      test_buff[test_len++]=dst_sn>>16;
+      test_buff[test_len++]=dst_sn>>8;
+      test_buff[test_len++]=dst_sn;
+      test_buff[test_len++]=pNodeTxD2d->tx_len;
+      u16 crcValue=nwk_crc16(test_buff, test_len);
+      test_buff[test_len++]=crcValue>>8;
+      test_buff[test_len++]=crcValue;
+      
+      nwk_node_cad_init();//状态切换
+      printf("d2d send sn buff!\n");
+      nwk_node_send_buff(test_buff, test_len);//发送SN匹配包
+      u32 tx_time=nwk_node_calcu_air_time(pNodeTxD2d->curr_sf, pNodeTxD2d->curr_bw, pNodeTxD2d->tx_len)*1.2;//发送时间,冗余
+      pNodeTxD2d->start_rtc_time=nwk_get_sec_counter();//记录当前时间,防止超时
+      pNodeTxD2d->wait_cnts=tx_time/1000+2;//等待秒数
+      pNodeTxD2d->d2d_state=NwkNodeTxD2dSnCheck;  
+      break;
+    }
+    case NwkNodeTxD2dSnCheck: 
+    {
+      u32 now_time=nwk_get_sec_counter();
+      u8 result=nwk_node_send_check();//发送完成检测
+      if(result)//发送完成,进入ADR模式
+      {
+        printf("d2d send sn ok!\n");
+        pNodeTxD2d->sniff_cnts=0;
+        if(pNodeTxD2d->try_cnts==0)
+        {
+          pNodeTxD2d->group_id=nwk_get_rand()%2;
+        }
+        else
+        {
+          pNodeTxD2d->group_id+=(nwk_get_rand()%2+1);
+          u8 max_group=NWK_DOWN_CHANNEL_NUM-1;
+          if(pNodeTxD2d->group_id>=max_group)
+          {
+            pNodeTxD2d->group_id=max_group;
+          }
+        }
+        
+        pNodeTxD2d->d2d_state=NwkNodeTxD2dAdrSniffInit; 
+      }
+      else if(now_time-pNodeTxD2d->start_rtc_time>pNodeTxD2d->wait_cnts)//发送超时
+      {
+        printf("d2d tx sn time out! wait time=%ds\n", pNodeTxD2d->wait_cnts);
+        pNodeTxD2d->d2d_state=NwkNodeTxD2dExit;  
+      }  
+      break;
+    }
+    case NwkNodeTxD2dAdrSniffInit: 
+    { 
+      if(pNodeTxD2d->group_id>=NWK_DOWN_CHANNEL_NUM)
+      {
+        printf("d2d exit!\n");
+        pNodeTxD2d->d2d_state=NwkNodeTxD2dExit;  //退出
+        return;
+      }
+      u8 sf=0, bw=0;
+      u32 freq=pNodeTxD2d->freq;
+      nwk_get_down_channel(pNodeTxD2d->group_id, &sf, &bw); //嗅探参数
+      nwk_node_set_lora_param(freq, sf, bw);
+			 
+			for(u8 i=0; i<5; i++)//
+			{
+				nwk_node_send_sniff(sf, bw);//发送嗅探帧
+			}
+      pNodeTxD2d->sniff_cnts++;
+      printf("***d2d group id=%d, send sniff (%.2f, %d, %d), cnts=%d\n", pNodeTxD2d->group_id, freq/1000000.f, sf, bw, pNodeTxD2d->sniff_cnts);
+//      nwk_get_down_channel(pSlaveTx->group_id, &sf, &bw);//以本通道组的第二个参数作为CAD监听参数
+      
+      freq+=1000000;
+      nwk_node_set_lora_param(freq, sf, bw);
+      nwk_node_cad_init(); //开始监听返回
+      printf("d2d cad ack P(%.2f, %d, %d)\n", freq/1000000.f, sf, bw);
+			pNodeTxD2d->cad_cnts=0;
+      pNodeTxD2d->curr_sf=sf;
+      pNodeTxD2d->curr_bw=bw; //记录监听参数,发送时候再次使用            
+      for(u8 i=0; i<6; )//CAD回复检测次数
+      {
+        u8 result=nwk_node_cad_check(); 
+        if(result==CadResultFailed)//没搜索到
+        {
+          nwk_node_cad_init();//继续监听
+//          printf("111 cad init\n");
+          i++;
+        }
+        else if(result==CadResultSuccess)//搜索成功
+        {
+          printf("****d2d CAD OK!\n");
+          nwk_delay_ms(200);//适当延时,等待对方嗅探帧发送完
+          printf("d2d send app!\n");
+          nwk_node_send_buff(make_buff, make_len);//发送数据包
+          u32 tx_time=nwk_node_calcu_air_time(pNodeTxD2d->curr_sf, pNodeTxD2d->curr_bw, make_len)*1.2;//发送时间,冗余
+          pNodeTxD2d->start_rtc_time=nwk_get_sec_counter();//记录当前时间,防止超时
+          pNodeTxD2d->wait_cnts=tx_time/1000+2;//等待秒数
+          pNodeTxD2d->d2d_state=NwkNodeTxD2dRunning;     
+          return;          
+        }        
+      }
+      //没有检测到CAD
+      if(pNodeTxD2d->sniff_cnts<5)//同一组参数嗅探多次
+      {
+        pNodeTxD2d->d2d_state=NwkNodeTxD2dAdrSniffInit;//继续嗅探
+      }
+      else
+      {
+        pNodeTxD2d->group_id++;//换下一组参数 
+        pNodeTxD2d->sniff_cnts=0;
+        pNodeTxD2d->d2d_state=NwkNodeTxD2dAdrSniffInit;//继续嗅探          
+      }
+      break;
+    } 
+    case NwkNodeTxD2dRunning: 
+    {
+      u32 now_time=nwk_get_sec_counter();
+      u8 result=nwk_node_send_check();//发送完成检测
+      if(result)//发送完成
+      {
+        printf("d2d send app ok!   \nwait ack!\n");
+        nwk_node_recv_init();//进入接收,等待回复
+        u32 tx_time=nwk_node_calcu_air_time(pNodeTxD2d->curr_sf, pNodeTxD2d->curr_bw, 20)*1.2;//接收回复包等待时间
+        pNodeTxD2d->start_rtc_time=nwk_get_sec_counter();//记录当前时间,防止超时
+        pNodeTxD2d->wait_cnts=tx_time/1000+1;
+        pNodeTxD2d->d2d_state=NwkNodeTxD2dWaitAck;
+      }
+      else if(now_time-pNodeTxD2d->start_rtc_time>pNodeTxD2d->wait_cnts)//发送超时
+      {
+        //这里要加入故障跟踪,经常超时说明硬件有问题
+        printf("d2d tx buff time out! wait time=%ds\n", pNodeTxD2d->wait_cnts);
+        pNodeTxD2d->d2d_state=NwkNodeTxD2dExit;  
+      }   
+      break;
+    }  
+    case NwkNodeTxD2dWaitAck: 
+    {
+      u32 now_time=nwk_get_sec_counter();
+      u8 recv_len=nwk_node_recv_check(g_sNwkNodeWork.node_rx.recv_buff, &g_sNwkNodeWork.rf_param);
+      if(recv_len>0)
+      {
+        //数据解析
+        printf_hex("d2d ack=", g_sNwkNodeWork.node_rx.recv_buff, recv_len);
+        nwk_node_recv_parse(g_sNwkNodeWork.node_rx.recv_buff, recv_len);
+        printf_oled("*d2d tx ok! id=%d", pNodeTxD2d->group_id);        
+        
+      }   
+      else if(now_time-pNodeTxD2d->start_rtc_time>pNodeTxD2d->wait_cnts)//超时
+      {
+        printf("d2d wait ack time out!\n");
+        
+        pNodeTxD2d->d2d_state=NwkNodeTxD2dExit; 
+      }
+      break;
+    }  
+    case NwkNodeTxD2dExit: 
+    {
+      pNodeTxD2d->try_cnts++;
+        printf("try_cnts=%d\n", pNodeTxD2d->try_cnts);        
+      if(pNodeTxD2d->try_cnts>=3)//结束发送
+      {
+        nwk_node_clear_d2d();       
+        pNodeTxD2d->alarm_rtc_time=0xFFFFFFFF;//可以进入休眠
+      }
+      else
+      {
+//        u32 now_time=nwk_get_rtc_counter();
+//        pNodeTxD2d->wait_cnts=nwk_get_rand()%10;//随机延时,再次尝试
+//        pNodeTxD2d->start_rtc_time=now_time;
+//        pNodeTxD2d->alarm_rtc_time=now_time+pNodeTxD2d->wait_cnts;//闹钟时间
+//        pNodeTxD2d->group_id+=(nwk_get_rand()%3+1);
+//        if(pNodeTxD2d->group_id>=NWK_UP_CHANNEL_NUM-1)
+//        {
+//          pNodeTxD2d->group_id=NWK_UP_CHANNEL_NUM-1;
+//        }
+//        printf("d2d wait time=%ds\n", pNodeTxD2d->wait_cnts);        
+//        printf_oled("d2d wait time=%ds\n", pNodeTxD2d->wait_cnts);  
+//        printf("d2d alarm time=%us\n", pNodeTxD2d->alarm_rtc_time);
+      }
+      nwk_node_set_led(false);//指示灯灭
+      pNodeTxD2d->d2d_state=NwkNodeTxD2dIdel;//回合结束      
       break;
     }
   }
@@ -1641,24 +1966,14 @@ void nwk_node_work_check(void)
       //网关数据检查
       if(pNodeTxGw->tx_len>0)//是否有网关数据需要发送
       {
-        if(pNodeTxGw->wait_cnts>0)//有延时
+        u32 now_time=nwk_get_rtc_counter();
+        if(now_time-pNodeTxGw->start_rtc_time>=pNodeTxGw->wait_cnts)//随机延时结束
         {
-          u32 now_time=nwk_get_rtc_counter();
-          if(now_time-pNodeTxGw->start_rtc_time>=pNodeTxGw->wait_cnts)//随机延时结束
-          {
-            printf("tx gw wait ok!  time=%us\n", now_time);
-            pNodeTxGw->alarm_rtc_time=0;
-            pNodeTxGw->tx_state=NwkNodeTxGwInit;//重新开始
-            g_sNwkNodeWork.work_state=NwkNodeWorkTXGw;
-          }      
-        }
-        else//首次发送
-        {
+          printf("tx gw wait ok!  time=%us\n", now_time);
           pNodeTxGw->alarm_rtc_time=0;
-          pNodeTxGw->tx_state=NwkNodeTxGwInit;//开始
+          pNodeTxGw->tx_state=NwkNodeTxGwInit;//重新开始
           g_sNwkNodeWork.work_state=NwkNodeWorkTXGw;
-					printf("tx work state!\n");
-        }
+        }         
       }			
       //D2D数据检查
       if(g_sNwkNodeWork.work_state==NwkNodeWorkIdel)//仍旧空闲--D2D
@@ -1668,24 +1983,12 @@ void nwk_node_work_check(void)
           u32 now_time=nwk_get_rtc_counter();
           if(pNodeD2d->wake_period==0)
             pNodeD2d->wake_period=1;
-          if(now_time%pNodeD2d->wake_period==0)//唤醒周期到
+          if((now_time+1)%pNodeD2d->wake_period==0)//唤醒周期到 提前1秒
           {
-            if(pNodeD2d->wait_cnts>0)//有延时
-            {
-              if(now_time-pNodeD2d->start_rtc_time>=pNodeD2d->wait_cnts)//随机延时结束
-              {
-                printf("tx d2d wait ok!\n");
-                pNodeD2d->alarm_rtc_time=0;
-                pNodeD2d->tx_state=NwkNodeTxD2dInit;//重新开始
-                g_sNwkNodeWork.work_state=NwkNodeWorkTXGw;                
-              }
-            }
-            else//首次发送
-            {
-              pNodeD2d->alarm_rtc_time=0;
-              pNodeD2d->tx_state=NwkNodeTxD2dInit;//开始
-              g_sNwkNodeWork.work_state=NwkNodeWorkTXGw;
-            }            
+            printf("tx d2d wait ok! time=%us\n", now_time);
+            pNodeD2d->alarm_rtc_time=0;
+            pNodeD2d->d2d_state=NwkNodeTxD2dInit;//开始
+            g_sNwkNodeWork.work_state=NwkNodeWorkTXD2d;         
           }
         }
       }
@@ -1702,27 +2005,37 @@ void nwk_node_work_check(void)
 //            gw_cnts++;
 //          }
 //        }
-        u32 now_time=nwk_get_rtc_counter();
+//        u32 now_time=nwk_get_rtc_counter();
 
-        int det_time=now_time-pNodeSearch->search_start_time;
-//				printf("det_time=%d\n", det_time);
-        if(pNodeSearch->wait_time==0 || (det_time>0 && (now_time-9)%300==0) )//  
-        {
-          if(pNodeSearch->wait_time==0)
-          {
-            pNodeSearch->wait_time=300;
-          }          
-//          pNodeSearch->wait_time*=2;
-//          if(pNodeSearch->wait_time>86400)
+//        int det_time=now_time-pNodeSearch->search_start_time;
+////				printf("det_time=%d\n", det_time);
+//        if(pNodeSearch->wait_time==0 || (det_time>0 && (now_time-9)%300==0) )//  
+//        {
+//          if(pNodeSearch->wait_time==0)
 //          {
-//            pNodeSearch->wait_time=86400;
-//          }
+//            pNodeSearch->wait_time=300;
+//          }          
+////          pNodeSearch->wait_time*=2;
+////          if(pNodeSearch->wait_time>86400)
+////          {
+////            pNodeSearch->wait_time=86400;
+////          }
+//          pNodeSearch->alarm_rtc_time=0;//禁止休眠
+//          pNodeSearch->search_start_time=now_time;
+//          pNodeSearch->search_state=NwkNodeSearchInit;
+//          g_sNwkNodeWork.work_state=NwkNodeWorkSearch;//进入搜索状态
+//          printf("*****start search!\n");
+//          printf_oled("**start search!");
+//        }
+        
+        static u8 flag=0;
+        if(!flag)//启动时搜索一次,避免影响并发测试
+        {
+          flag=1;
           pNodeSearch->alarm_rtc_time=0;//禁止休眠
-          pNodeSearch->search_start_time=now_time;
+          pNodeSearch->search_start_time=nwk_get_rtc_counter();
           pNodeSearch->search_state=NwkNodeSearchInit;
-          g_sNwkNodeWork.work_state=NwkNodeWorkSearch;//进入搜索状态
-          printf("*****start search!\n");
-          printf_oled("**start search!");
+          g_sNwkNodeWork.work_state=NwkNodeWorkSearch;//进入搜索状态         
         }
         
       } 
@@ -1814,7 +2127,7 @@ void nwk_node_work_check(void)
 		case NwkNodeWorkTXD2d://发送到设备   4
 		{
 			nwk_node_tx_d2d_process();
-      if(pNodeD2d->tx_state==NwkNodeTxD2dIdel)//单回合结束
+      if(pNodeD2d->d2d_state==NwkNodeTxD2dIdel)//单回合结束
       {
         g_sNwkNodeWork.work_state=NwkNodeWorkIdel;  
       }

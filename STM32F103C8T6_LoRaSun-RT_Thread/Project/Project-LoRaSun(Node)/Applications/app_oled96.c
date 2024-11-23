@@ -2,6 +2,7 @@
 
 #include "app_oled96.h"
 #include "drv_iic.h"
+#include "nwk_bsp.h"
 
 
 AppOLEDShowNodeStruct g_sOLEDShowNode={0};
@@ -203,6 +204,23 @@ void app_oled96_show_gw_info(u32 gw_sn, u8 freq_ptr, u8 run_mode)
 
 /*		
 ================================================================================
+描述 : 显示版本信息
+输入 : 
+输出 : 
+================================================================================
+*/
+void app_oled96_show_version(void)
+{
+  char buff[30]={0};
+  sprintf(buff, "   V%s, v%d.%d", APP_VER, NWK_LORASUN_VERSION>>8&0xFF, NWK_LORASUN_VERSION&0xFF);
+//  printf("gw=%s\n", buff);
+  drv_oled96_clear_line(5);//清理
+  drv_oled96_show_str_f6x8(0, 5, buff);   
+}
+
+
+/*		
+================================================================================
 描述 : 显示调试信息,不要太多内容
 输入 : 
 输出 : 
@@ -248,6 +266,7 @@ void app_oled96_thread_entry(void *parameter)
   u8 run_cnts=0;
   app_oled96_init();
   app_oled96_show_node(g_sOLEDShowNode.node_sn, g_sOLEDShowNode.wake_period);//显示节点信息
+  app_oled96_show_version();
   printf("app_oled96_thread_entry statt ###\n");
   while(1)
   {

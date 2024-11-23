@@ -240,7 +240,7 @@ void drv_rtc_init(void)
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR | RCC_APB1Periph_BKP, ENABLE);
 	PWR_BackupAccessCmd(ENABLE);
 
-	if(BKP_ReadBackupRegister(BKP_DR1) != 0xA5A5)//检测是否断电过
+	if(0 || BKP_ReadBackupRegister(BKP_DR1) != 0xA5A5)//检测是否断电过
 	{
 		BKP_DeInit();
 		RCC_LSEConfig(RCC_LSE_ON);

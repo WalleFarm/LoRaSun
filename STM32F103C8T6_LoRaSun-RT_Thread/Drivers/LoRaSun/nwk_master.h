@@ -1,3 +1,25 @@
+/******************************************************************************
+*
+* Copyright (c) 2024 艺大师
+* 本项目开源文件遵循GPL-v3协议
+* 
+* 文章专栏地址:https://blog.csdn.net/ypp240124016/category_12834955
+* 项目开源地址:https://github.com/WalleFarm/LoRaSun
+* 协议栈原理专利:CN110572843A
+*
+* 测试套件采购地址:https://duandianwulian.taobao.com/
+*
+* 作者:艺大师
+* 博客主页:https://blog.csdn.net/ypp240124016?type=blog
+* 交流QQ群:701889554  (资料文件存放)
+* 微信公众号:端点物联 (即时接收教程更新通知)
+*
+* 所有学习资源合集:https://blog.csdn.net/ypp240124016/article/details/143068017
+*
+* 免责声明:本项目所有资料仅限于学习和交流使用,请勿商用.
+*
+********************************************************************************/
+
 
 #ifndef __NWK_MASTER_H__
 #define __NWK_MASTER_H__
@@ -18,6 +40,7 @@ typedef enum
 {
   NwkMasterDownResultAddOK=0,//添加成功
   NwkMasterDownResultFull, //缓冲区已满
+  NwkMasterDownResultLong, //数据太长
   NwkMasterDownResultErrSn, //设备不存在
   NwkMasterDownResultTimeOut,//超时,失败
   NwkMasterDownResultSuccess,//下发成功
@@ -28,7 +51,7 @@ typedef enum
 typedef struct NwkNodeTokenStruct
 {
   u32 node_sn;
-  u8 down_buff[256];//下行缓冲区
+  u8 down_buff[50];//下行缓冲区,STM32F103C8T6 RAM较小,不宜设置过大,测试50字节够用了
   u8 down_len; 
   u8 down_cnts;
   u8 join_state;
@@ -86,7 +109,7 @@ void nwk_master_uart_send_register(u8 index, u8 slave_adddr, void (*fun_send)(u8
 void nwk_master_uart_parse(u8 *recv_buff, u16 recv_len);
 void nwk_master_uart_send_level(u8 index, u8 cmd_type, u8 *in_buff, u16 in_len);
 
-u8 nwk_master_make_lora_buff(u8 opt, u32 dst_sn, u8 *key, u8 cmd_type, u8 pack_num, u8 *in_buff, u8 in_len, u8 *out_buff, u8 out_size);
+u8 nwk_master_make_lora_buff(u8 opt, u32 dst_sn, u8 *key, u8 cmd_type, u8 pack_num, u8 *in_buff, u8 in_len, u8 *out_buff, u16 out_size);
 void nwk_master_lora_parse(u8 *recv_buff, u8 recv_len, u8 slave_addr, RfParamStruct *rf);
 void nwk_master_send_broad(u8 slave_addr); 
 void nwk_master_send_slave_config(u8 slave_addr);
@@ -103,8 +126,9 @@ void nwk_master_del_node(u32 node_sn);
 void nwk_master_set_gw_sn(u32 gw_sn);
 u32 nwk_master_get_gw_sn(void);
 
-u8 nwk_master_add_down_pack(u32 dst_sn, u8 *in_buff, u8 in_len);
+u8 nwk_master_add_down_pack(u32 dst_sn, u8 *in_buff, u16 in_len);
 void nwk_master_check_down_pack(void);
+void nwk_master_clear_down_buff(NwkNodeTokenStruct *pNwkNode);
 
 NwkMasterRecvFromStruct *nwk_master_recv_from_check(void);
 NwkMasterEventStruct *nwk_master_event_check(void);

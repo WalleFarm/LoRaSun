@@ -36,9 +36,9 @@
 
 #define   M2M_DEV_TYPE      (u32)(0xC101)  //设备型号
 
-#define     TOPIC_HEAD       "yyy125/" 
+#define   TOPIC_HEAD       "yyy125/" 
 
-
+//#define   USE_AEP_IOT       //是否使用AEP平台,不用就注释掉  
 #endif
 
 

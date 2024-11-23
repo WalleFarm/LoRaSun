@@ -32,9 +32,9 @@ typedef struct
 	void (*fun_recv_parse)(u8 sock_id, u8 *buff, u16 len);//接收处理函数
 	UART_Struct *pUART;
   
-  char sta_ssid[20];
-  char sta_passwd[20];
-  char ap_ssid[20];
+  char sta_ssid[40];
+  char sta_passwd[40];
+  char ap_ssid[40];
   char ap_passwd[20];  
   
   u16 listen_port;//为0时表示不开启服务器,大于0时开启服务器,但是前提模块开启了AP模式

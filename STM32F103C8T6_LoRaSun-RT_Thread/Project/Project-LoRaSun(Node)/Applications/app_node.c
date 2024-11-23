@@ -397,15 +397,15 @@ void app_node_read_config(void)
   if(g_sAppNodeSave.crcValue!=nwk_crc16((u8*)&g_sAppNodeSave, sizeof(g_sAppNodeSave)-2))
   {
     memset(&g_sAppNodeSave, 0, sizeof(g_sAppNodeSave));
-    g_sAppNodeSave.node_sn=0x11223344;
+    g_sAppNodeSave.node_sn=0x11223300;
     g_sAppNodeSave.wake_period=10;
     app_node_write_config();
     printf("app_node_read_config new!\n");
   }
   printf("read node_sn=0x%08X, period=%ds\n", g_sAppNodeSave.node_sn, g_sAppNodeSave.wake_period);
   
-  u8 base_freq_ptr=13;
-	nwk_node_add_gw(0xC1011234, base_freq_ptr, 4, NwkRunModeDynamic);//添加目标网关 NwkRunModeStatic NwkRunModeDynamic
+//  u8 base_freq_ptr=13;
+//	nwk_node_add_gw(0xC1011234, base_freq_ptr, 4, NwkRunModeStatic);//添加目标网关 NwkRunModeStatic NwkRunModeDynamic
 	nwk_node_set_sn(g_sAppNodeSave.node_sn);//设置节点SN
 	nwk_node_set_wake_period(g_sAppNodeSave.wake_period);  //设置节点唤醒周期
   u8 root_key[17]={"0123456789ABCDEF"};//根密码,跟网关保持一致
@@ -413,6 +413,8 @@ void app_node_read_config(void)
   
   g_sOLEDShowNode.node_sn=g_sAppNodeSave.node_sn;
   g_sOLEDShowNode.wake_period=g_sAppNodeSave.wake_period;
+  
+  srand(nwk_crc16((u8*)&g_sOLEDShowNode.node_sn, 4));//随机数种子
 }
 
 /*		
@@ -570,10 +572,22 @@ void app_node_thread_entry(void *parameter)
         g_sOLEDShowNode.run_mode=0;    
       }
     }
-    
-    if(run_cnts%12000==0)//定时发送
+    if(1)//并发数测试
     {
-      app_node_send_status();
+      static u32 send_time=0;
+      u32 now_time=nwk_get_rtc_counter();
+      if(now_time>100 && now_time%60==0 && send_time==0)
+      {
+        u16 wait_time=nwk_get_rand()%45;
+        send_time=now_time+wait_time;
+        printf("\n\n$$$$ net test trigger! $$$$\nwait_time=%ds\n", wait_time);
+        
+      }
+      else if(now_time==send_time)
+      {
+        send_time=0;
+        app_node_send_status();
+      }
     }
 		
     delay_os(5);

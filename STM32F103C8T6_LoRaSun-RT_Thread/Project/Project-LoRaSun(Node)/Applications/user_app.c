@@ -87,13 +87,30 @@ void app_uart_thread_entry(void *parameter)
 			}
       else if((pData=strstr(pBuff, "sn:"))!=NULL)
       {
-        pData+=3;
-        u32 node_sn=atol(pData);
+        pData+=strlen("sn:");
+        u32 node_sn=0;
+        sscanf((char*)pData, "%08X", &node_sn);
         app_node_set_sn(node_sn);
       }
+      else if((pData=strstr(pBuff, "d2d:"))!=NULL)
+      {
+        pData+=strlen("d2d:");
+        u32 dst_sn=0;
+        sscanf((char*)pData, "%08X", &dst_sn);
+        pData+=8;
+        char *pData2=strstr(pData, " ");
+        pData2[0]='\0';
+        pData2+=1;
+        u16 period=atol(pData2);
+        pData2=strstr(pData2, " ");
+        pData2[0]='\0';
+        pData2+=1;  
+        u8 data_len=strlen(pData2);
+        nwk_node_send2device(dst_sn, period, (u8*)pData2, data_len);
+      }      
       else if((pData=strstr(pBuff, "wake:"))!=NULL)
       {
-        pData+=5;
+        pData+=strlen("wake:");
         u16 wake_period=atol(pData);
         app_node_set_wake_period(wake_period);
       }		

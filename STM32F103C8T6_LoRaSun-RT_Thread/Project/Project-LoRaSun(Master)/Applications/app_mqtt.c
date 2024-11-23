@@ -1,3 +1,24 @@
+/******************************************************************************
+*
+* Copyright (c) 2024 艺大师
+* 本项目开源文件遵循GPL-v3协议
+* 
+* 文章专栏地址:https://blog.csdn.net/ypp240124016/category_12834955
+* 项目开源地址:https://github.com/WalleFarm/LoRaSun
+* 协议栈原理专利:CN110572843A
+*
+* 测试套件采购地址:https://duandianwulian.taobao.com/
+*
+* 作者:艺大师
+* 博客主页:https://blog.csdn.net/ypp240124016?type=blog
+* 交流QQ群:701889554  (资料文件存放)
+* 微信公众号:端点物联 (即时接收教程更新通知)
+*
+* 所有学习资源合集:https://blog.csdn.net/ypp240124016/article/details/143068017
+*
+* 免责声明:本项目所有资料仅限于学习和交流使用,请勿商用.
+*
+********************************************************************************/
 
 #include "app_mqtt.h" 
 #include "app_master.h"  
@@ -17,13 +38,14 @@
 void app_mqtt_init(void)
 {
   //WIFI 参数配置
-//  drv_esp8266_init(&g_sUART3, "YPP001", "12345678");
-//  drv_esp8266_init(&g_sUART3, "CMCC-2.4G", "YHS11223344%");
 //  drv_esp8266_init(&g_sUART3, "LoRaSun", "123456789");
   drv_esp8266_init(&g_sUART3, "", "");//密码第一次设置后会保存,之后用这个可以避免重复设置,保护flash并节省时间
     
   drv_esp8266_set_client(ESP8266_M2M_LINK_ID, "broker.emqx.io", 1883, "TCP");
+  
+#ifdef    USE_AEP_IOT   
   drv_esp8266_set_client(ESP8266_AEP_LINK_ID, "10414623.non-nb.ctwing.cn", 1883, "TCP");//根据自己的AEP产品信息修改目标地址,同一类型一般是一样的
+#endif  
   
   drv_esp8266_fun_register(app_esp8266_recv);//注册ESP8266 接收处理函数(将数据放入MQTT缓冲区)
   
@@ -54,7 +76,8 @@ void app_mqtt_init(void)
     drv_server_send_register(app_mqtt_pub_data_m2m);//服务端发送函数注册 
     drv_server_cmd_parse_register(app_server_recv_parse);//服务端应用层命令解析函数注册       
   }
-  
+
+#ifdef    USE_AEP_IOT  
   if(1)//AEP MQTT平台
   {
     static char *usr_name="LoRaSun";//这个可以不改,理论上是自己的平台登录用户名
@@ -69,7 +92,7 @@ void app_mqtt_init(void)
     u32 base_msg_id=0xBB02;
     drv_mqtt_set_topic_info(MQTT_AEP_CONN_ID, 0, sub_topic, base_msg_id, TopicStateSub);     
   }
-
+#endif
 
   drv_mqtt_fun_parse_register(app_mqtt_recv_parse);//MQTT应用解析函数注册
 
@@ -276,6 +299,26 @@ void app_mqtt_thread_entry(void *parameter)
     drv_mqtt_main();     
     delay_os(10);
   }
+}
+
+/*		
+================================================================================
+描述 : 
+输入 : 
+输出 : 
+================================================================================
+*/
+extern Esp8266WorkStruct g_sEsp8266Work;
+void app_esp8266_set_ssid_pwd(char *ssid, char *pwd)
+{
+  printf("set ssid=%s, pwd=%s\n", ssid, pwd);
+  if(strlen(ssid)>40 || strlen(pwd)>40)
+  {
+    printf("error ssid or pwd too long!\n");
+    return;
+  }
+  drv_esp8266_init(&g_sUART3, ssid, pwd);
+  g_sEsp8266Work.state=ESP8266_STATE_START;//重新连接
 }
 
 /*		

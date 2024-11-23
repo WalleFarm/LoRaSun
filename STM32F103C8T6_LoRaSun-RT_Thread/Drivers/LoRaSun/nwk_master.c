@@ -1,7 +1,25 @@
-
-
-
-
+/******************************************************************************
+*
+* Copyright (c) 2024 艺大师
+* 本项目开源文件遵循GPL-v3协议
+* 代码分发请保留原作者信息
+* 
+* 文章专栏地址:https://blog.csdn.net/ypp240124016/category_12834955
+* 项目开源地址:https://github.com/WalleFarm/LoRaSun
+* 协议栈原理专利:CN110572843A
+*
+* 测试套件采购地址:https://duandianwulian.taobao.com/
+*
+* 作者:艺大师
+* 博客主页:https://blog.csdn.net/ypp240124016?type=blog
+* 交流QQ群:701889554  (资料文件存放)
+* 微信公众号:端点物联 (即时接收教程更新通知)
+*
+* 所有学习资源合集:https://blog.csdn.net/ypp240124016/article/details/143068017
+*
+* 免责声明:本项目所有资料仅限于学习和交流使用,请勿商用.
+*
+********************************************************************************/
 
 
 #include "nwk_master.h"
@@ -153,7 +171,7 @@ void nwk_master_uart_send_level(u8 slave_addr, u8 cmd_type, u8 *in_buff, u16 in_
 输出 : 
 ================================================================================
 */ 
-u8 nwk_master_make_lora_buff(u8 opt, u32 dst_sn, u8 *key, u8 cmd_type, u8 pack_num, u8 *in_buff, u8 in_len, u8 *out_buff, u8 out_size)
+u8 nwk_master_make_lora_buff(u8 opt, u32 dst_sn, u8 *key, u8 cmd_type, u8 pack_num, u8 *in_buff, u8 in_len, u8 *out_buff, u16 out_size)
 {
 	//A5 ~ opt ~ src_sn ~ data_len ~ payload
 	//opt: bit[0:1]=网络角色; bit[2:3]=加密方式;bit[4:4]=密码类型;bit[5:6]=保留;bit[7:7]=扩展位
@@ -279,11 +297,7 @@ void nwk_master_lora_parse(u8 *recv_buff, u8 recv_len, u8 slave_addr, RfParamStr
       return;
     }
     NwkNodeTokenStruct *pNodeToken=nwk_master_find_node(src_sn);
-//    if(pNodeToken==NULL)
-//    {
-//      printf("error pNodeToken==NULL!\n");
-//      return;
-//    }
+
     if(pNodeToken)
     {
       pNodeToken->rssi=rf->rssi;//更新信号强度
@@ -378,9 +392,7 @@ void nwk_master_lora_parse(u8 *recv_buff, u8 recv_len, u8 slave_addr, RfParamStr
               NwkNodeTokenStruct *pNwkNode=nwk_master_find_node(src_sn);
               if(pNwkNode)
               {
-                memset(pNwkNode->down_buff, 0, sizeof(pNwkNode->down_buff));
-                pNwkNode->down_len=0;
-                printf("clear down buff!\n");
+                nwk_master_clear_down_buff(pNwkNode);
                 NwkMasterEventStruct *pEvent=&g_sNwkMasterWork.event;
                 pEvent->event=NwkMasterEventDownAck;
                 u8 *pData=pEvent->params;
@@ -455,14 +467,19 @@ void nwk_master_lora_parse(u8 *recv_buff, u8 recv_len, u8 slave_addr, RfParamStr
               uart_buff[uart_len++]=make_len;
               memcpy(&uart_buff[uart_len], make_buff, make_len);
               uart_len+=make_len;
-              nwk_master_uart_send_level(slave_addr, MSCmdAckRxData, uart_buff, uart_len);//发送到从机
               delay_os(NWK_UP_ACK_WAIT_TIME);//等待节点做好准备
+              nwk_master_uart_send_level(slave_addr, MSCmdAckRxData, uart_buff, uart_len);//发送到从机
             }						
 						break;
 					}
 					case NwkCmdDataOnce://单包数据
 					{
 						printf("src_sn=0x%08X NwkCmdDataOnce!\n", src_sn);
+            if(pNodeToken==NULL)
+            {
+              printf("error pNodeToken==NULL!\n");
+              return;
+            }            
             NwkMasterRecvFromStruct *pRecvFrom=&g_sNwkMasterWork.recv_from;
             pRecvFrom->data_len=union_len-7;//应用数据长度
             memcpy(pRecvFrom->app_data, pData, pRecvFrom->data_len);
@@ -487,8 +504,16 @@ void nwk_master_lora_parse(u8 *recv_buff, u8 recv_len, u8 slave_addr, RfParamStr
             lora_buff[lora_len++]=now_time>>16;
             lora_buff[lora_len++]=now_time>>8;
             lora_buff[lora_len++]=now_time;	
+            if(pNodeToken->down_len>0)
+            {
+              lora_buff[lora_len++]=pNodeToken->down_len+20;	//通知节点继续等待
+            }
+            else
+            {
+              lora_buff[lora_len++]=0;	
+            }
             
-            static u8 uart_buff[100]={0};
+            static u8 uart_buff[400]={0};
             u8 uart_len=0;   
             uart_buff[uart_len++]=rf->freq>>24;
             uart_buff[uart_len++]=rf->freq>>16; 
@@ -496,19 +521,29 @@ void nwk_master_lora_parse(u8 *recv_buff, u8 recv_len, u8 slave_addr, RfParamStr
             uart_buff[uart_len++]=rf->freq;
             uart_buff[uart_len++]=rf->sf;
             uart_buff[uart_len++]=rf->bw;
-            static u8 make_buff[80]={0};
-            u8 pack_num=nwk_get_rand();
-            if(pNodeToken)
-              pack_num=++pNodeToken->down_pack_num;
+            static u8 make_buff[255]={0};
+            u8 pack_num=++pNodeToken->down_pack_num;
             u8 make_len=nwk_master_make_lora_buff(opt, src_sn, pKey, NwkCmdAck, pack_num, lora_buff, lora_len, make_buff, sizeof(make_buff));
-            if(make_len>0)
+            uart_buff[uart_len++]=make_len;
+            memcpy(&uart_buff[uart_len], make_buff, make_len);//回复数据
+            uart_len+=make_len;
+            
+            if(pNodeToken->down_len>0)
             {
+              printf("have down data, len=%d\n", pNodeToken->down_len);
+              pack_num=++pNodeToken->down_pack_num;
+              make_len=nwk_master_make_lora_buff(opt, src_sn, pKey, NwkCmdDataOnce, pack_num, pNodeToken->down_buff, pNodeToken->down_len, make_buff, sizeof(make_buff));
               uart_buff[uart_len++]=make_len;
-              memcpy(&uart_buff[uart_len], make_buff, make_len);
-              uart_len+=make_len;
-              nwk_master_uart_send_level(slave_addr, MSCmdAckRxData, uart_buff, uart_len);//发送到从机
-              delay_os(NWK_UP_ACK_WAIT_TIME);//等待节点做好准备
+              memcpy(&uart_buff[uart_len], make_buff, make_len);//下行数据
+              uart_len+=make_len;              
             }
+            else
+            {
+              uart_buff[uart_len++]=0;
+            }
+            delay_os(NWK_UP_ACK_WAIT_TIME);//等待节点做好准备
+            nwk_master_uart_send_level(slave_addr, MSCmdAckRxData, uart_buff, uart_len);//发送到从机
+                        
             break;
 					}
 					case NwkCmdDataMult://连续数据
@@ -724,7 +759,7 @@ NwkNodeTokenStruct *nwk_master_add_node(u32 node_sn)
         NwkNodeTokenStruct *pTemp=g_sNwkMasterWork.pNodeHead;
         while(pTemp->next)//寻找最后一个节点
         {
-          pTemp=pTemp->next;
+          pTemp=pTemp->next; 
         }
         pTemp->next=pNodeToken;
       }
@@ -825,19 +860,27 @@ u32 nwk_master_get_gw_sn(void)
 输出 : 
 ================================================================================
 */ 
-u8 nwk_master_add_down_pack(u32 dst_sn, u8 *in_buff, u8 in_len)
-{
+u8 nwk_master_add_down_pack(u32 dst_sn, u8 *in_buff, u16 in_len)
+{ 
   u8 result=NwkMasterDownResultErrUnknow;
   NwkNodeTokenStruct *pNwkNode=nwk_master_find_node(dst_sn);
   if(pNwkNode)
   {
     if(pNwkNode->down_len==0)
     {
-      memcpy(pNwkNode->down_buff, in_buff, in_len);
-      pNwkNode->down_len=in_len;
-      pNwkNode->down_cnts=0;
-      printf("add down pack ok! len=%d\n", in_len);
-      result=NwkMasterDownResultAddOK;
+      if(in_len<sizeof(pNwkNode->down_buff))
+      {
+        memcpy(pNwkNode->down_buff, in_buff, in_len);
+        pNwkNode->down_len=in_len;
+        pNwkNode->down_cnts=0;
+        printf("add down pack ok! len=%d\n", in_len);
+        result=NwkMasterDownResultAddOK;        
+      }
+      else
+      {
+        printf("buff too long!\n");
+        result=NwkMasterDownResultLong;     
+      }
     }
     else
     {
@@ -902,13 +945,17 @@ void nwk_master_check_down_pack(void)
           pData[param_len++]=node_sn>>16;
           pData[param_len++]=node_sn>>8;
           pData[param_len++]=node_sn;
-          pData[param_len++]=NwkMasterDownResultTimeOut;          
+          pData[param_len++]=NwkMasterDownResultTimeOut;    
+          nwk_master_clear_down_buff(pTemp);
         }
-        pTemp->down_time=now_time;
-        u8 slave_addr=nwk_get_rand()%NWK_GW_WIRELESS_NUM+1;
-        slave_addr=1;
-        printf(">>>down tx node_sn=0x%08X, slave_addr=%d\n", pTemp->node_sn, slave_addr);
-        nwk_master_send_down_pack(pTemp->node_sn, slave_addr, pTemp->down_buff, pTemp->down_len, awake_flag);         
+        else
+        {
+          pTemp->down_time=now_time;
+          u8 slave_addr=nwk_get_rand()%NWK_GW_WIRELESS_NUM+1;
+          slave_addr=1;
+          printf(">>>down tx node_sn=0x%08X, slave_addr=%d\n", pTemp->node_sn, slave_addr);
+          nwk_master_send_down_pack(pTemp->node_sn, slave_addr, pTemp->down_buff, pTemp->down_len, awake_flag);         
+        }
       }
     }
 
@@ -916,6 +963,19 @@ void nwk_master_check_down_pack(void)
   }  
 }
 
+/*		
+================================================================================
+描述 : 
+输入 : 
+输出 : 
+================================================================================
+*/ 
+void nwk_master_clear_down_buff(NwkNodeTokenStruct *pNwkNode)
+{
+  memset(pNwkNode->down_buff, 0, sizeof(pNwkNode->down_buff));
+  pNwkNode->down_len=0;
+  printf("node=%08X clear down buff!\n", pNwkNode->node_sn);  
+}
 
 /*		
 ================================================================================

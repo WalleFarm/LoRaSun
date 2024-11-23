@@ -1,3 +1,24 @@
+/******************************************************************************
+*
+* Copyright (c) 2024 艺大师
+* 本项目开源文件遵循GPL-v3协议
+* 
+* 文章专栏地址:https://blog.csdn.net/ypp240124016/category_12834955
+* 项目开源地址:https://github.com/WalleFarm/LoRaSun
+* 协议栈原理专利:CN110572843A
+*
+* 测试套件采购地址:https://duandianwulian.taobao.com/
+*
+* 作者:艺大师
+* 博客主页:https://blog.csdn.net/ypp240124016?type=blog
+* 交流QQ群:701889554  (资料文件存放)
+* 微信公众号:端点物联 (即时接收教程更新通知)
+*
+* 所有学习资源合集:https://blog.csdn.net/ypp240124016/article/details/143068017
+*
+* 免责声明:本项目所有资料仅限于学习和交流使用,请勿商用.
+*
+********************************************************************************/
 
 #include "user_app.h"
 #include "app_master.h" 
@@ -87,8 +108,9 @@ void app_uart_thread_entry(void *parameter)
 			}  
 			else if((pData=strstr(pBuff, "set sn:"))!=NULL)
 			{
+        u32 gw_sn=0; 
 				pData+=strlen("set sn:");
-        u32 gw_sn=atol(pData); 
+        sscanf(pData, "%08X", &gw_sn);
         drv_server_set_gw_sn(gw_sn);//设置网关SN
         drv_system_reset();
 			}          
@@ -123,6 +145,14 @@ void app_uart_thread_entry(void *parameter)
         printf("set freq_ptr=%d, run_mode=%d\n", freq_ptr, run_mode);
         
         nwk_master_set_config(freq_ptr, run_mode);//设置配置信息       
+      }
+      else if((pData=strstr(pBuff, "wifi:"))!=NULL)
+      {
+        pData+=strlen("wifi:");
+        char *pData2=strstr(pData, " ");
+        pData2[0]='\0';
+        pData2+=1;
+        app_esp8266_set_ssid_pwd(pData, pData2);
       }
 
 			UART_Clear(pUART);

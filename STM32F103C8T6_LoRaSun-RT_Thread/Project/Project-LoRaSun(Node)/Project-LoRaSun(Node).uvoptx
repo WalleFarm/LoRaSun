@@ -149,18 +149,18 @@
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
-          <LineNumber>37</LineNumber>
+          <LineNumber>97</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134231762</Address>
+          <Address>134234558</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>.\Applications\app_oled96.c</Filename>
+          <Filename>.\Applications\user_app.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\KKK\Applications/app_oled96.c\37</Expression>
+          <Expression>\\\Applications/user_app.c\97</Expression>
         </Bp>
       </Breakpoint>
       <WatchWindow1>
@@ -367,7 +367,7 @@
 
   <Group>
     <GroupName>Drivers</GroupName>
-    <tvExp>1</tvExp>
+    <tvExp>0</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
