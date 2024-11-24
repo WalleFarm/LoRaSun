@@ -45,6 +45,7 @@
 ".\objects\aes.o"
 ".\objects\nwk_node.o"
 ".\objects\nwk_bsp.o"
+".\objects\nwk_aes.o"
 ".\objects\hal_sx1278.o"
 ".\objects\drv_sx1278.o"
 ".\objects\drv_sx1268.o"

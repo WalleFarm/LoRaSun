@@ -530,6 +530,15 @@ void app_node_thread_entry(void *parameter)
   delay_os(500);
   app_node_led_set_blue(false);
   app_node_led_set_green(false);
+  
+  u8 in_buff[32]={"01234567890123456789AAAABBBBCCCC"};
+  u8 out_buff[32]={0};
+  u8 key[17]={"0123456789012345"};
+  nwk_aes_encrypt(in_buff, 32, out_buff, sizeof(out_buff), key);
+  printf_hex("out_buff=", out_buff, sizeof(out_buff));
+  memset(in_buff, 0, sizeof(in_buff));
+  nwk_aes_decrypt(out_buff, 32, in_buff, sizeof(in_buff), key);
+  printf_hex("in_buff=", in_buff, sizeof(in_buff));
   while(1)
   {
     nwk_node_main_process();

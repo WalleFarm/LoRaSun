@@ -22,6 +22,7 @@
 
 
 #include "nwk_bsp.h"
+#include "nwk_aes.h"
 
 
 static const u8 up_table[][2]={  //SF,BW  动态上行无线参数表,可根据自己的需求配置,独立网络中一致即可
@@ -112,7 +113,20 @@ void nwk_delay_ms(u32 dlyms)
 */ 
 int nwk_aes_encrypt(u8 *in_buff, u16 in_len,u8 *out_buff, u16 out_size,u8 *passwd)
 {
-  return aes_encrypt_buff(in_buff, in_len, out_buff, out_size, passwd);
+  static aes_context AesContext;
+  u8 iv[16];
+  memset(iv, '0', 16);
+  memset( AesContext.ksch, 0, sizeof(AesContext.ksch) );
+  aes_set_key( passwd, 16, &AesContext );
+  
+  u16 loops=in_len/16;
+  u16 remain_len=in_len%16;
+  if( remain_len > 0 )
+  {
+    return 0;
+  }  
+  aes_cbc_encrypt(in_buff, out_buff, loops, iv, &AesContext);
+  return in_len;
 }
 
 /*		
@@ -124,7 +138,20 @@ int nwk_aes_encrypt(u8 *in_buff, u16 in_len,u8 *out_buff, u16 out_size,u8 *passw
 */ 
 int nwk_aes_decrypt(u8 *in_buff, u16 in_len,u8 *out_buff, u16 out_size,u8 *passwd)
 {
-  return aes_decrypt_buff(in_buff, in_len, out_buff, out_size, passwd);
+  u8 iv[16];
+  memset(iv, '0', 16);  
+  static aes_context AesContext;
+  memset( AesContext.ksch, 0, sizeof(AesContext.ksch) );
+  aes_set_key( passwd, 16, &AesContext );
+  
+  u16 loops=in_len/16;
+  u16 remain_len=in_len%16;
+  if( remain_len > 0 )
+  {
+    return 0;
+  }  
+  aes_cbc_decrypt(in_buff, out_buff, loops, iv, &AesContext);
+  return in_len;
 }
 
 /*		
@@ -198,13 +225,6 @@ u32 nwk_get_sec_counter(void)
 
 int nwk_get_rand(void)
 {
-//  static u32 srand_num=0;
-//  if(srand_num==0)
-//  {
-//    srand_num=nwk_get_rtc_counter();
-//    srand(srand_num);
-//  }
-  
   int rand_num=rand();
 //  srand_num=rand_num;
   srand(rand_num);
