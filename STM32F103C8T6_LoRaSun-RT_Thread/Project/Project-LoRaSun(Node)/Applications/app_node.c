@@ -1,3 +1,26 @@
+/******************************************************************************
+*
+* Copyright (c) 2024 小易
+* 本项目开源文件遵循GPL-v3协议
+* 
+* 文章专栏地址:https://blog.csdn.net/ypp240124016/category_12834955
+* github主页:      https://github.com/WalleFarm
+* LoRaSun开源地址: https://github.com/WalleFarm/LoRaSun
+* M2M-IOT开源地址: https://github.com/WalleFarm/M2M-IOT
+* 协议栈原理专利:CN110572843A (一种基于LoRa无线模块CAD模式的嗅探方法及系统)
+*
+* 测试套件采购地址:https://duandianwulian.taobao.com/
+*
+* 作者:小易
+* 博客主页:https://blog.csdn.net/ypp240124016?type=blog
+* 交流QQ群:701889554  (资料文件存放)
+* 微信公众号:端点物联 (即时接收教程更新通知)
+*
+* 所有学习资源合集:https://blog.csdn.net/ypp240124016/article/details/143068017
+*
+* 免责声明:本项目所有资料仅限于学习和交流使用,请勿商用.
+*
+********************************************************************************/
 
 #include "app_node.h" 
 
@@ -11,7 +34,7 @@ DrvSx1268Struct g_sDrvSx1268={0};
 
 AppNodeSaveStruct g_sAppNodeSave={0};
 AppNodeWorkStruct g_sAppNodeWork={0};
-extern AppOLEDShowNodeStruct g_sOLEDShowNode;//节点显示参数
+extern AppOLEDShowNodeStruct g_sOLEDShowNode;//OLED节点显示参数
 /*		
 ================================================================================
 描述 : 硬件复位
@@ -22,9 +45,9 @@ extern AppOLEDShowNodeStruct g_sOLEDShowNode;//节点显示参数
 static void app_node_lora_reset(void)
 {
 	GPIO_ResetBits(GPIOB, GPIO_Pin_14);
-	delay_ms(1);
+	delay_ms(10);
 	GPIO_SetBits(GPIOB, GPIO_Pin_14);
-	delay_ms(1);	
+	delay_ms(10);	
 
 }
 
@@ -38,7 +61,6 @@ static void app_node_lora_reset(void)
 static void app_node_lora_cs0(void)
 {
 	GPIO_ResetBits(GPIOA, GPIO_Pin_4);
-	delay_ms(1);
 }
 
 /*		
@@ -183,9 +205,9 @@ void app_node_key_init(void)
 */
 void app_node_key_check(void)
 {
-  static u8 key_cnts=0;
+  static u16 key_cnts=0;
   u8 val=GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_9);
-  if(val==0)
+  if(val==0)//按下
   {
     key_cnts++;
     if(key_cnts==6)//外部循环周期是5ms,这里大概是30ms
@@ -193,8 +215,12 @@ void app_node_key_check(void)
       printf("key trigger!\n");
       app_node_send_status();
     }
+    if(key_cnts>500)
+    {
+      drv_system_reset();//长按放开复位
+    }    
   }
-  else
+  else//放开
   {
     key_cnts=0;
   }
@@ -404,10 +430,12 @@ void app_node_read_config(void)
   }
   printf("read node_sn=0x%08X, period=%ds\n", g_sAppNodeSave.node_sn, g_sAppNodeSave.wake_period);
   
-//  u8 base_freq_ptr=13;
-//	nwk_node_add_gw(0xC1011234, base_freq_ptr, 4, NwkRunModeStatic);//添加目标网关 NwkRunModeStatic NwkRunModeDynamic
+//  u8 base_freq_ptr=18;
+//	nwk_node_add_gw(0xC1012202, base_freq_ptr, 4, NwkRunModeStatic);//手动添加目标网关 NwkRunModeStatic NwkRunModeDynamic
 	nwk_node_set_sn(g_sAppNodeSave.node_sn);//设置节点SN
 	nwk_node_set_wake_period(g_sAppNodeSave.wake_period);  //设置节点唤醒周期
+  nwk_node_set_search_time(120, 10);//网关搜索周期 要进行并发测试的时候周期设置长一点,避免影响测试效果
+                                    //网关默认设置是2分钟广播一次
   u8 root_key[17]={"0123456789ABCDEF"};//根密码,跟网关保持一致
   nwk_node_set_root_key(root_key);
   
@@ -467,6 +495,7 @@ void app_node_send_status(void)
 	make_buff[make_len++]=temp_val>>8;
 	make_buff[make_len++]=temp_val;
 	make_buff[make_len++]=now_time>>24;
+ 
 	make_buff[make_len++]=now_time>>16;
 	make_buff[make_len++]=now_time>>8;
 	make_buff[make_len++]=now_time;
@@ -515,6 +544,9 @@ void app_node_thread_entry(void *parameter)
 {
   static u32 run_cnts=0;
   static bool led_state=false;  
+
+  printf("LoRaSun Nwk version=V%d.%d\n", NWK_LORASUN_VERSION>>8&0xFF, NWK_LORASUN_VERSION&0xFF);
+
   
   app_node_read_config();//读取SN等参数
   
@@ -530,15 +562,7 @@ void app_node_thread_entry(void *parameter)
   delay_os(500);
   app_node_led_set_blue(false);
   app_node_led_set_green(false);
-  
-  u8 in_buff[32]={"01234567890123456789AAAABBBBCCCC"};
-  u8 out_buff[32]={0};
-  u8 key[17]={"0123456789012345"};
-  nwk_aes_encrypt(in_buff, 32, out_buff, sizeof(out_buff), key);
-  printf_hex("out_buff=", out_buff, sizeof(out_buff));
-  memset(in_buff, 0, sizeof(in_buff));
-  nwk_aes_decrypt(out_buff, 32, in_buff, sizeof(in_buff), key);
-  printf_hex("in_buff=", in_buff, sizeof(in_buff));
+
   while(1)
   {
     nwk_node_main_process();
@@ -551,7 +575,7 @@ void app_node_thread_entry(void *parameter)
     app_node_sleep_check();//休眠检测
 
     app_node_key_check();//按键检测
-    if(run_cnts++%200==0)//指示灯运行
+    if(run_cnts++%200==0)//大概1秒
     {
       led_state=!led_state;
       app_node_led_set_green(led_state);//运行指示灯
@@ -567,35 +591,42 @@ void app_node_thread_entry(void *parameter)
       g_sOLEDShowNode.total_cnts=total_cnts;
       g_sOLEDShowNode.ok_cnts=ok_cnts;
       
-      NwkParentWorkStrcut *pGateWay=nwk_node_select_gw();
-      if(pGateWay)
+      //网关信号
+      extern NwkNodeWorkStruct g_sNwkNodeWork;
+      static u8 ptr=0;
+      for(u8 i=0; i<NWK_GW_NUM; i++)
       {
-        g_sOLEDShowNode.gw_sn=pGateWay->gw_sn;
-        g_sOLEDShowNode.freq_ptr=pGateWay->base_freq_ptr;
-        g_sOLEDShowNode.run_mode=pGateWay->run_mode;
-      }
-      else
-      {
-        g_sOLEDShowNode.gw_sn=0;
-        g_sOLEDShowNode.freq_ptr=0;
-        g_sOLEDShowNode.run_mode=0;    
-      }
+        if(ptr>=NWK_GW_NUM)ptr=0;
+        NwkParentWorkStrcut *pGateWay=&g_sNwkNodeWork.parent_list[ptr];
+        ptr++;
+        if(pGateWay->gw_sn>0)
+        {
+          g_sOLEDShowNode.gw_sn=pGateWay->gw_sn;
+          g_sOLEDShowNode.freq_ptr=pGateWay->base_freq_ptr;
+          g_sOLEDShowNode.run_mode=pGateWay->run_mode;
+          g_sOLEDShowNode.join_state=pGateWay->join_state;
+          break;
+        }
+      }       
+      
     }
-    if(1)//并发数测试
+    if(0)//并发数测试
     {
       static u32 send_time=0;
       u32 now_time=nwk_get_rtc_counter();
-      if(now_time>100 && now_time%60==0 && send_time==0)
+      if(now_time>10)
       {
-        u16 wait_time=nwk_get_rand()%45;
-        send_time=now_time+wait_time;
-        printf("\n\n$$$$ net test trigger! $$$$\nwait_time=%ds\n", wait_time);
-        
-      }
-      else if(now_time==send_time)
-      {
-        send_time=0;
-        app_node_send_status();
+        if(now_time%60==0 && send_time==0)
+        {
+          u16 wait_time=nwk_get_rand()%45;
+          send_time=now_time+wait_time;
+          printf("\n\n$$$$ net test trigger! $$$$\nwait_time=%ds\n", wait_time);          
+        }
+        else if(now_time==send_time)
+        {
+          send_time=0;
+          app_node_send_status();
+        }        
       }
     }
 		

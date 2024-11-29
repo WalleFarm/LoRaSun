@@ -1,15 +1,17 @@
 /******************************************************************************
 *
-* Copyright (c) 2024 艺大师
+* Copyright (c) 2024 小易
 * 本项目开源文件遵循GPL-v3协议
 * 
 * 文章专栏地址:https://blog.csdn.net/ypp240124016/category_12834955
-* 项目开源地址:https://github.com/WalleFarm/LoRaSun
-* 协议栈原理专利:CN110572843A
+* github主页:      https://github.com/WalleFarm
+* LoRaSun开源地址: https://github.com/WalleFarm/LoRaSun
+* M2M-IOT开源地址: https://github.com/WalleFarm/M2M-IOT
+* 协议栈原理专利:CN110572843A (一种基于LoRa无线模块CAD模式的嗅探方法及系统)
 *
 * 测试套件采购地址:https://duandianwulian.taobao.com/
 *
-* 作者:艺大师
+* 作者:小易
 * 博客主页:https://blog.csdn.net/ypp240124016?type=blog
 * 交流QQ群:701889554  (资料文件存放)
 * 微信公众号:端点物联 (即时接收教程更新通知)
@@ -99,17 +101,17 @@ void app_uart_thread_entry(void *parameter)
         printf("*** reset!\n");
         drv_system_reset();
       }
-			else if((pData=strstr(pBuff, "reg app:"))!=NULL)
+			else if((pData=strstr(pBuff, "app_id:"))!=NULL)
 			{
-				pData+=strlen("reg app:");
+				pData+=strlen("app id:");
         u32 app_id=atol(pData); 
         drv_server_set_app_id(app_id);//设置应用ID
         drv_system_reset();
 			}  
-			else if((pData=strstr(pBuff, "set sn:"))!=NULL)
+			else if((pData=strstr(pBuff, "gw_sn:"))!=NULL)
 			{
         u32 gw_sn=0; 
-				pData+=strlen("set sn:");
+				pData+=strlen("gw_sn:");
         sscanf(pData, "%08X", &gw_sn);
         drv_server_set_gw_sn(gw_sn);//设置网关SN
         drv_system_reset();
@@ -127,6 +129,12 @@ void app_uart_thread_entry(void *parameter)
         printf("set time=%us\n", time);
         nwk_set_rtc_counter(time);
 			}     
+ 			else if((pData=strstr(pBuff, "offset:"))!=NULL)
+			{
+				pData+=strlen("offset:");
+        u16 offset=atol(pData);
+        app_master_set_offset(offset);
+			}        
  			else if((pData=strstr(pBuff, "broad:"))!=NULL)
 			{
         pData+=strlen("broad:");

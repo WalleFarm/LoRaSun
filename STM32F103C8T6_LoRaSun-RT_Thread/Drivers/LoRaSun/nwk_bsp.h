@@ -1,15 +1,17 @@
 /******************************************************************************
 *
-* Copyright (c) 2024 艺大师
+* Copyright (c) 2024 小易
 * 本项目开源文件遵循GPL-v3协议
 * 
 * 文章专栏地址:https://blog.csdn.net/ypp240124016/category_12834955
-* 项目开源地址:https://github.com/WalleFarm/LoRaSun
-* 协议栈原理专利:CN110572843A
+* github主页:      https://github.com/WalleFarm
+* LoRaSun开源地址: https://github.com/WalleFarm/LoRaSun
+* M2M-IOT开源地址: https://github.com/WalleFarm/M2M-IOT
+* 协议栈原理专利:CN110572843A (一种基于LoRa无线模块CAD模式的嗅探方法及系统)
 *
 * 测试套件采购地址:https://duandianwulian.taobao.com/
 *
-* 作者:艺大师
+* 作者:小易
 * 博客主页:https://blog.csdn.net/ypp240124016?type=blog
 * 交流QQ群:701889554  (资料文件存放)
 * 微信公众号:端点物联 (即时接收教程更新通知)
@@ -45,7 +47,7 @@ typedef   signed           int s32;
 //以下宏定义 在同一个网络系统中必须保持一致
 #define   NWK_UP_CHANNEL_NUM        4   //上行通道数量
 #define   NWK_DOWN_CHANNEL_NUM      4   //下行通道数量
-#define   NWK_TRANSMIT_MAX_SIZE     200  //传输最大应用数据
+#define   NWK_TRANSMIT_MAX_SIZE     200  //应用数据最大传输量
 #define   NWK_TIME_STAMP_THRESH     1726658962U //时间戳阈值
 #define   NWK_MIN_FREQ              470000000U   //最低频段
 #define   NWK_MAX_FREQ              500000000U   //最高频段

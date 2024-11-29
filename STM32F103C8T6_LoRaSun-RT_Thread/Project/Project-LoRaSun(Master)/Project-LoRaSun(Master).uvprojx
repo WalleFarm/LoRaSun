@@ -138,7 +138,7 @@
           </Flash1>
           <bUseTDR>1</bUseTDR>
           <Flash2>BIN\UL2CM3.DLL</Flash2>
-          <Flash3>"" ()</Flash3>
+          <Flash3></Flash3>
           <Flash4></Flash4>
           <pFcarmOut></pFcarmOut>
           <pFcarmGrp></pFcarmGrp>
@@ -274,7 +274,7 @@
               <OCR_RVCT4>
                 <Type>1</Type>
                 <StartAddress>0x8000000</StartAddress>
-                <Size>0x9000</Size>
+                <Size>0x10000</Size>
               </OCR_RVCT4>
               <OCR_RVCT5>
                 <Type>1</Type>
@@ -641,9 +641,9 @@
           <GroupName>Encrypt</GroupName>
           <Files>
             <File>
-              <FileName>aes.c</FileName>
+              <FileName>drv_aes.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\Drivers\encrypt\mbedtls\aes.c</FilePath>
+              <FilePath>..\..\Drivers\encrypt\drv_aes.c</FilePath>
             </File>
           </Files>
         </Group>

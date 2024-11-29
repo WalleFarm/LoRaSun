@@ -28,8 +28,8 @@
  cipher state.
  */
 
-#ifndef NWK_AES_H
-#define NWK_AES_H
+#ifndef DRV_AES_H
+#define DRV_AES_H
 
 #include <stdint.h>
 

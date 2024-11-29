@@ -1,15 +1,17 @@
 /******************************************************************************
 *
-* Copyright (c) 2024 艺大师
+* Copyright (c) 2024 小易
 * 本项目开源文件遵循GPL-v3协议
 * 
 * 文章专栏地址:https://blog.csdn.net/ypp240124016/category_12834955
-* 项目开源地址:https://github.com/WalleFarm/LoRaSun
-* 协议栈原理专利:CN110572843A
+* github主页:      https://github.com/WalleFarm
+* LoRaSun开源地址: https://github.com/WalleFarm/LoRaSun
+* M2M-IOT开源地址: https://github.com/WalleFarm/M2M-IOT
+* 协议栈原理专利:CN110572843A (一种基于LoRa无线模块CAD模式的嗅探方法及系统)
 *
 * 测试套件采购地址:https://duandianwulian.taobao.com/
 *
-* 作者:艺大师
+* 作者:小易
 * 博客主页:https://blog.csdn.net/ypp240124016?type=blog
 * 交流QQ群:701889554  (资料文件存放)
 * 微信公众号:端点物联 (即时接收教程更新通知)
@@ -22,7 +24,6 @@
 
 
 #include "nwk_bsp.h"
-#include "nwk_aes.h"
 
 
 static const u8 up_table[][2]={  //SF,BW  动态上行无线参数表,可根据自己的需求配置,独立网络中一致即可
@@ -113,21 +114,8 @@ void nwk_delay_ms(u32 dlyms)
 */ 
 int nwk_aes_encrypt(u8 *in_buff, u16 in_len,u8 *out_buff, u16 out_size,u8 *passwd)
 {
-  static aes_context AesContext;
-  u8 iv[16];
-  memset(iv, '0', 16);
-  memset( AesContext.ksch, 0, sizeof(AesContext.ksch) );
-  aes_set_key( passwd, 16, &AesContext );
-  
-  u16 loops=in_len/16;
-  u16 remain_len=in_len%16;
-  if( remain_len > 0 )
-  {
-    return 0;
-  }  
-  aes_cbc_encrypt(in_buff, out_buff, loops, iv, &AesContext);
-  return in_len;
-}
+  return aes_encrypt_buff(in_buff, in_len, out_buff, out_size, passwd);
+} 
 
 /*		
 ================================================================================
@@ -138,20 +126,7 @@ int nwk_aes_encrypt(u8 *in_buff, u16 in_len,u8 *out_buff, u16 out_size,u8 *passw
 */ 
 int nwk_aes_decrypt(u8 *in_buff, u16 in_len,u8 *out_buff, u16 out_size,u8 *passwd)
 {
-  u8 iv[16];
-  memset(iv, '0', 16);  
-  static aes_context AesContext;
-  memset( AesContext.ksch, 0, sizeof(AesContext.ksch) );
-  aes_set_key( passwd, 16, &AesContext );
-  
-  u16 loops=in_len/16;
-  u16 remain_len=in_len%16;
-  if( remain_len > 0 )
-  {
-    return 0;
-  }  
-  aes_cbc_decrypt(in_buff, out_buff, loops, iv, &AesContext);
-  return in_len;
+  return aes_decrypt_buff(in_buff, in_len, out_buff, out_size, passwd);
 }
 
 /*		
@@ -163,7 +138,7 @@ int nwk_aes_decrypt(u8 *in_buff, u16 in_len,u8 *out_buff, u16 out_size,u8 *passw
 */ 
 u16 nwk_tea_encrypt(u8 *buff, u16 len, u32* key)
 {
-  return tea_encrypt_buff(buff, len, key);
+	return tea_encrypt_buff(buff, len, key);
 }
 
 /*		
@@ -175,7 +150,7 @@ u16 nwk_tea_encrypt(u8 *buff, u16 len, u32* key)
 */
 u16 nwk_tea_decrypt(u8 *buff, u16 len, u32* key)
 {
-  return tea_decrypt_buff(buff, len, key);
+	return tea_decrypt_buff(buff, len, key);
 }
 
 /*		
@@ -221,8 +196,6 @@ u32 nwk_get_sec_counter(void)
 输出 : 
 ================================================================================
 */
-
-
 int nwk_get_rand(void)
 {
   int rand_num=rand();

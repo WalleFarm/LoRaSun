@@ -1,15 +1,17 @@
 /******************************************************************************
 *
-* Copyright (c) 2024 艺大师
+* Copyright (c) 2024 小易
 * 本项目开源文件遵循GPL-v3协议
 * 
 * 文章专栏地址:https://blog.csdn.net/ypp240124016/category_12834955
-* 项目开源地址:https://github.com/WalleFarm/LoRaSun
-* 协议栈原理专利:CN110572843A
+* github主页:      https://github.com/WalleFarm
+* LoRaSun开源地址: https://github.com/WalleFarm/LoRaSun
+* M2M-IOT开源地址: https://github.com/WalleFarm/M2M-IOT
+* 协议栈原理专利:CN110572843A (一种基于LoRa无线模块CAD模式的嗅探方法及系统)
 *
 * 测试套件采购地址:https://duandianwulian.taobao.com/
 *
-* 作者:艺大师
+* 作者:小易
 * 博客主页:https://blog.csdn.net/ypp240124016?type=blog
 * 交流QQ群:701889554  (资料文件存放)
 * 微信公众号:端点物联 (即时接收教程更新通知)
@@ -25,7 +27,7 @@
 #define __DRV_ENCRYPT_H__
 
 
-#include "mbedtls/aes.h"
+#include "drv_aes.h"
 #include "drv_common.h"
 
 

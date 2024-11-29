@@ -1,16 +1,17 @@
 /******************************************************************************
 *
-* Copyright (c) 2024 艺大师
+* Copyright (c) 2024 小易
 * 本项目开源文件遵循GPL-v3协议
-* 代码分发请保留原作者信息
 * 
 * 文章专栏地址:https://blog.csdn.net/ypp240124016/category_12834955
-* 项目开源地址:https://github.com/WalleFarm/LoRaSun
-* 协议栈原理专利:CN110572843A
+* github主页:      https://github.com/WalleFarm
+* LoRaSun开源地址: https://github.com/WalleFarm/LoRaSun
+* M2M-IOT开源地址: https://github.com/WalleFarm/M2M-IOT
+* 协议栈原理专利:CN110572843A (一种基于LoRa无线模块CAD模式的嗅探方法及系统)
 *
 * 测试套件采购地址:https://duandianwulian.taobao.com/
 *
-* 作者:艺大师
+* 作者:小易
 * 博客主页:https://blog.csdn.net/ypp240124016?type=blog
 * 交流QQ群:701889554  (资料文件存放)
 * 微信公众号:端点物联 (即时接收教程更新通知)
@@ -220,6 +221,9 @@ u8 nwk_master_make_lora_buff(u8 opt, u32 dst_sn, u8 *key, u8 cmd_type, u8 pack_n
 		case EncryptAES:
 		{
 #ifdef	NWK_MASTER_USE_AES	//是否使用AES加密		
+			u8 remain_len=union_len%16;
+			if(remain_len>0)
+				union_len+=(16-remain_len);//8字节对齐,便于TEA加密		      
 			int out_len=nwk_aes_encrypt(union_buff, union_len, pEncrypt, NWK_TRANSMIT_MAX_SIZE, key);//aes加密
 			if(out_len<16)
 			{
@@ -303,6 +307,10 @@ void nwk_master_lora_parse(u8 *recv_buff, u8 recv_len, u8 slave_addr, RfParamStr
       pNodeToken->rssi=rf->rssi;//更新信号强度
       pNodeToken->snr=rf->snr;      
     }
+    else
+    {
+      printf("no found node_sn=0x%08X!\n", src_sn);
+    }
 		u8 *pKey=g_sNwkMasterWork.root_key;//默认根密码
     if(key_type==KeyTypeApp)
     {
@@ -340,7 +348,7 @@ void nwk_master_lora_parse(u8 *recv_buff, u8 recv_len, u8 slave_addr, RfParamStr
 				break;
 			}			
 		}
-    #define   NWK_UP_ACK_WAIT_TIME    200  //上行回复包延时
+    #define   NWK_UP_ACK_WAIT_TIME    100  //上行回复包延时
 		if(union_len>0)
 		{
 			pData=union_buff;
@@ -553,7 +561,15 @@ void nwk_master_lora_parse(u8 *recv_buff, u8 recv_len, u8 slave_addr, RfParamStr
 					}					
 				}
 			}
+      else
+      {
+        printf("crc error!\n");
+      }
 		}
+    else
+    {
+      printf("union_len=%d error!\n", union_len);
+    }
 	}
 	
 }
@@ -686,6 +702,19 @@ NwkSlaveTokenStruct *nwk_master_find_slave(u8 slave_addr)
     }
   }
   return NULL;
+}
+
+/*		
+================================================================================
+描述 : 
+输入 : 
+输出 : 
+================================================================================
+*/
+void nwk_master_set_offset(u16 offset)
+{
+  printf("set broad_offset=%ds\n", offset);
+  g_sNwkMasterWork.broad_offset=offset;
 }
 
 /*		
@@ -952,7 +981,7 @@ void nwk_master_check_down_pack(void)
         {
           pTemp->down_time=now_time;
           u8 slave_addr=nwk_get_rand()%NWK_GW_WIRELESS_NUM+1;
-          slave_addr=1;
+//          slave_addr=1;
           printf(">>>down tx node_sn=0x%08X, slave_addr=%d\n", pTemp->node_sn, slave_addr);
           nwk_master_send_down_pack(pTemp->node_sn, slave_addr, pTemp->down_buff, pTemp->down_len, awake_flag);         
         }
@@ -1048,10 +1077,11 @@ void nwk_master_main(void)
   {
     static u8 slave_addr=1;
     static u32 last_broad_time=0;
-    u16 offset=10;
+    u16 offset=g_sNwkMasterWork.broad_offset;
     u32 now_rtc_time=nwk_get_rtc_counter();
-    if((now_rtc_time-offset)%300==0 && now_rtc_time!=last_broad_time)
+    if((now_rtc_time-offset)%120==0 && now_rtc_time!=last_broad_time)
     {
+      printf("$$$ broad time is ok!\n");
 //      if(slave_addr>NWK_GW_WIRELESS_NUM)
 //        slave_addr=1;
       nwk_master_send_broad(slave_addr);//广播  

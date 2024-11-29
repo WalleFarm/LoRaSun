@@ -1,16 +1,17 @@
-
 /******************************************************************************
 *
-* Copyright (c) 2024 艺大师
+* Copyright (c) 2024 小易
 * 本项目开源文件遵循GPL-v3协议
 * 
 * 文章专栏地址:https://blog.csdn.net/ypp240124016/category_12834955
-* 项目开源地址:https://github.com/WalleFarm/LoRaSun
-* 协议栈原理专利:CN110572843A
+* github主页:      https://github.com/WalleFarm
+* LoRaSun开源地址: https://github.com/WalleFarm/LoRaSun
+* M2M-IOT开源地址: https://github.com/WalleFarm/M2M-IOT
+* 协议栈原理专利:CN110572843A (一种基于LoRa无线模块CAD模式的嗅探方法及系统)
 *
 * 测试套件采购地址:https://duandianwulian.taobao.com/
 *
-* 作者:艺大师
+* 作者:小易
 * 博客主页:https://blog.csdn.net/ypp240124016?type=blog
 * 交流QQ群:701889554  (资料文件存放)
 * 微信公众号:端点物联 (即时接收教程更新通知)
@@ -40,6 +41,20 @@ typedef enum
   GW01_CMD_SET_BROAD,//手动触发广播
 
 }Gw01Cmd;
+
+typedef struct
+{
+  u8 freq_ptr;//频段序号
+  u8 run_mode;  
+  u32 reserved;
+  u16 broad_offset;//广播偏移,避免广播冲突
+  u16 crcValue;
+}AppMasterSaveStruct;
+
+void app_master_save(void);
+void app_master_read(void);
+
+void app_master_set_offset(u16 offset);
 
 void app_master_thread_entry(void *parameter); 
 

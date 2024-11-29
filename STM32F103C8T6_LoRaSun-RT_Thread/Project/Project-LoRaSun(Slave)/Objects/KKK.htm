@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\Objects\KKK.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\Objects\KKK.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060422: Last Updated: Sat Nov 23 16:16:38 2024
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060422: Last Updated: Thu Nov 28 14:46:08 2024
 <BR><P>
 <H3>Maximum Stack Usage =        496 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -564,15 +564,15 @@ Global Symbols
 <P><STRONG><a name="[5f]"></a>_float_epilogue</STRONG> (Thumb, 92 bytes, Stack size 4 bytes, fepilogue.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 4<LI>Call Chain = _float_epilogue
 </UL>
-<BR>[Called By]<UL><LI><a href="#[5e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_i2f
-<LI><a href="#[60]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ui2f
+<BR>[Called By]<UL><LI><a href="#[60]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ui2f
+<LI><a href="#[5e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_i2f
 </UL>
 
 <P><STRONG><a name="[59]"></a>_double_round</STRONG> (Thumb, 30 bytes, Stack size 8 bytes, depilogue.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = _double_round
 </UL>
-<BR>[Called By]<UL><LI><a href="#[55]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dadd
-<LI><a href="#[5d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
+<BR>[Called By]<UL><LI><a href="#[5d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
+<LI><a href="#[55]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dadd
 <LI><a href="#[58]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_double_epilogue
 </UL>
 
@@ -583,10 +583,10 @@ Global Symbols
 <LI><a href="#[56]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_llsl
 <LI><a href="#[59]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_double_round
 </UL>
-<BR>[Called By]<UL><LI><a href="#[61]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_i2d
-<LI><a href="#[55]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dadd
-<LI><a href="#[62]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ui2d
+<BR>[Called By]<UL><LI><a href="#[62]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ui2d
 <LI><a href="#[5c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
+<LI><a href="#[61]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_i2d
+<LI><a href="#[55]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dadd
 </UL>
 
 <P><STRONG><a name="[68]"></a>__aeabi_d2ulz</STRONG> (Thumb, 48 bytes, Stack size 0 bytes, dfixul.o(.text), UNUSED)
@@ -718,15 +718,15 @@ Global Symbols
 <P><STRONG><a name="[88]"></a>GPIO_Init</STRONG> (Thumb, 274 bytes, Stack size 24 bytes, stm32f10x_gpio.o(i.GPIO_Init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = GPIO_Init
 </UL>
-<BR>[Called By]<UL><LI><a href="#[43]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_uart_send
+<BR>[Called By]<UL><LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART3_Init
+<LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART2_Init
+<LI><a href="#[8f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART1_Init
+<LI><a href="#[43]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_uart_send
 <LI><a href="#[be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_uart_init
 <LI><a href="#[c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_uart_cts_set_mode
 <LI><a href="#[af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_led_init
 <LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_lora_init
 <LI><a href="#[79]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HSI_Config
-<LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART3_Init
-<LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART2_Init
-<LI><a href="#[8f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART1_Init
 </UL>
 
 <P><STRONG><a name="[87]"></a>GPIO_PinRemapConfig</STRONG> (Thumb, 138 bytes, Stack size 20 bytes, stm32f10x_gpio.o(i.GPIO_PinRemapConfig))
@@ -813,19 +813,19 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[95]"></a>RCC_APB1PeriphClockCmd</STRONG> (Thumb, 26 bytes, Stack size 0 bytes, stm32f10x_rcc.o(i.RCC_APB1PeriphClockCmd))
-<BR><BR>[Called By]<UL><LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_system_reset
-<LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART3_Init
+<BR><BR>[Called By]<UL><LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART3_Init
 <LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART2_Init
+<LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_system_reset
 </UL>
 
 <P><STRONG><a name="[86]"></a>RCC_APB2PeriphClockCmd</STRONG> (Thumb, 26 bytes, Stack size 0 bytes, stm32f10x_rcc.o(i.RCC_APB2PeriphClockCmd))
-<BR><BR>[Called By]<UL><LI><a href="#[be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_uart_init
+<BR><BR>[Called By]<UL><LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART3_Init
+<LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART2_Init
+<LI><a href="#[8f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART1_Init
+<LI><a href="#[be]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_uart_init
 <LI><a href="#[af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_led_init
 <LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_lora_init
 <LI><a href="#[79]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HSI_Config
-<LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART3_Init
-<LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART2_Init
-<LI><a href="#[8f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART1_Init
 </UL>
 
 <P><STRONG><a name="[7a]"></a>RCC_DeInit</STRONG> (Thumb, 64 bytes, Stack size 0 bytes, stm32f10x_rcc.o(i.RCC_DeInit))
@@ -1074,11 +1074,11 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[9b]"></a>USART_GetFlagStatus</STRONG> (Thumb, 26 bytes, Stack size 0 bytes, stm32f10x_usart.o(i.USART_GetFlagStatus))
-<BR><BR>[Called By]<UL><LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_Send
-<LI><a href="#[3a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;fputc
-<LI><a href="#[31]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART3_IRQHandler
+<BR><BR>[Called By]<UL><LI><a href="#[31]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART3_IRQHandler
 <LI><a href="#[30]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART2_IRQHandler
 <LI><a href="#[2f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART1_IRQHandler
+<LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_Send
+<LI><a href="#[3a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;fputc
 </UL>
 
 <P><STRONG><a name="[9d]"></a>USART_GetITStatus</STRONG> (Thumb, 84 bytes, Stack size 16 bytes, stm32f10x_usart.o(i.USART_GetITStatus))
@@ -1155,6 +1155,7 @@ Global Symbols
 <LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_lora_init
 <LI><a href="#[c5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_slave_uart_parse
 <LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_system_reset
+<LI><a href="#[39]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_thread_entry
 <LI><a href="#[38]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_uart_thread_entry
 <LI><a href="#[104]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;$Super$$main
 <LI><a href="#[e8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_recv_check
@@ -1216,7 +1217,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[39]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_thread_entry
 </UL>
 
-<P><STRONG><a name="[39]"></a>app_slave_thread_entry</STRONG> (Thumb, 110 bytes, Stack size 0 bytes, app_slave.o(i.app_slave_thread_entry))
+<P><STRONG><a name="[39]"></a>app_slave_thread_entry</STRONG> (Thumb, 120 bytes, Stack size 0 bytes, app_slave.o(i.app_slave_thread_entry))
 <BR><BR>[Stack]<UL><LI>Max Depth = 496<LI>Call Chain = app_slave_thread_entry &rArr; nwk_slave_main &rArr; nwk_slave_work_state_check &rArr; nwk_slave_rx_process &rArr; nwk_slave_uart_send_rx &rArr; nwk_slave_uart_send_level &rArr; nwk_crc16 &rArr; drv_crc16
 </UL>
 <BR>[Calls]<UL><LI><a href="#[bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_slave_uart_send_register
@@ -1229,6 +1230,7 @@ Global Symbols
 <LI><a href="#[af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_led_init
 <LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_lora_init
 <LI><a href="#[c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;delay_os
+<LI><a href="#[99]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2printf
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> user_app.o(i.APP_Init)
 </UL>
@@ -1260,8 +1262,8 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[39]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_thread_entry
 </UL>
 
-<P><STRONG><a name="[43]"></a>app_slave_uart_send</STRONG> (Thumb, 138 bytes, Stack size 24 bytes, app_slave.o(i.app_slave_uart_send))
-<BR><BR>[Stack]<UL><LI>Max Depth = 104<LI>Call Chain = app_slave_uart_send &rArr; delay_os &rArr; rt_thread_delay &rArr; rt_thread_sleep &rArr; rt_timer_start &rArr; _rt_timer_remove
+<P><STRONG><a name="[43]"></a>app_slave_uart_send</STRONG> (Thumb, 154 bytes, Stack size 32 bytes, app_slave.o(i.app_slave_uart_send))
+<BR><BR>[Stack]<UL><LI>Max Depth = 112<LI>Call Chain = app_slave_uart_send &rArr; delay_os &rArr; rt_thread_delay &rArr; rt_thread_sleep &rArr; rt_timer_start &rArr; _rt_timer_remove
 </UL>
 <BR>[Calls]<UL><LI><a href="#[c7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_get_rtc_counter
 <LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_Send
@@ -1324,8 +1326,8 @@ Global Symbols
 <LI><a href="#[c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_uart_recv_check
 <LI><a href="#[3d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_slave_lora_reset
 <LI><a href="#[38]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;app_uart_thread_entry
-<LI><a href="#[e0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_wakeup
 <LI><a href="#[108]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_delay_ms
+<LI><a href="#[e0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_wakeup
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> app_slave.o(i.app_slave_lora_init)
 </UL>
@@ -1398,14 +1400,14 @@ Global Symbols
 <P><STRONG><a name="[d8]"></a>drv_sx1268_calcu_air_time</STRONG> (Thumb, 266 bytes, Stack size 72 bytes, drv_sx1268.o(i.drv_sx1268_calcu_air_time))
 <BR><BR>[Stack]<UL><LI>Max Depth = 160<LI>Call Chain = drv_sx1268_calcu_air_time &rArr; __aeabi_dadd &rArr; _double_epilogue &rArr; _double_round
 </UL>
-<BR>[Calls]<UL><LI><a href="#[5e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_i2f
+<BR>[Calls]<UL><LI><a href="#[60]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ui2f
+<LI><a href="#[53]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fdiv
+<LI><a href="#[63]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2uiz
+<LI><a href="#[5e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_i2f
 <LI><a href="#[61]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_i2d
 <LI><a href="#[d9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fmul
 <LI><a href="#[da]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2uiz
 <LI><a href="#[55]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dadd
-<LI><a href="#[60]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ui2f
-<LI><a href="#[53]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fdiv
-<LI><a href="#[63]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2uiz
 </UL>
 <BR>[Called By]<UL><LI><a href="#[112]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;nwk_slave_calcu_air_time
 </UL>
@@ -1703,11 +1705,11 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_spi_rw_byte
 </UL>
 <BR>[Called By]<UL><LI><a href="#[b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_init
+<LI><a href="#[dd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_get_rssi_inst
+<LI><a href="#[dc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_get_pack_status
 <LI><a href="#[e0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_wakeup
 <LI><a href="#[de]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_get_rx_buff_status
 <LI><a href="#[d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_get_irq_status
-<LI><a href="#[dd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_get_rssi_inst
-<LI><a href="#[dc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_get_pack_status
 </UL>
 
 <P><STRONG><a name="[e9]"></a>hal_sx1268_read_fifo</STRONG> (Thumb, 76 bytes, Stack size 24 bytes, hal_sx1268.o(i.hal_sx1268_read_fifo))
@@ -1723,9 +1725,9 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[102]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_read_regs
 </UL>
-<BR>[Called By]<UL><LI><a href="#[e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_power
+<BR>[Called By]<UL><LI><a href="#[ea]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_recv_init
+<LI><a href="#[e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_power
 <LI><a href="#[e5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_pack_params
-<LI><a href="#[ea]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_recv_init
 </UL>
 
 <P><STRONG><a name="[102]"></a>hal_sx1268_read_regs</STRONG> (Thumb, 84 bytes, Stack size 24 bytes, hal_sx1268.o(i.hal_sx1268_read_regs))
@@ -1759,7 +1761,12 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_spi_rw_byte
 </UL>
-<BR>[Called By]<UL><LI><a href="#[eb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_stop_rxtimer_onpreamble_detect
+<BR>[Called By]<UL><LI><a href="#[f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_sf_bw
+<LI><a href="#[f1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_freq
+<LI><a href="#[ee]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_send
+<LI><a href="#[ea]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_recv_init
+<LI><a href="#[d4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_cad_init
+<LI><a href="#[eb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_stop_rxtimer_onpreamble_detect
 <LI><a href="#[d5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_standby
 <LI><a href="#[e2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_regulator_mode
 <LI><a href="#[e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_power
@@ -1771,11 +1778,6 @@ Global Symbols
 <LI><a href="#[e6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_cad_params
 <LI><a href="#[e3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_buff_base_addr
 <LI><a href="#[d3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_clr_irq_status
-<LI><a href="#[f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_sf_bw
-<LI><a href="#[f1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_freq
-<LI><a href="#[ee]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_send
-<LI><a href="#[ea]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_recv_init
-<LI><a href="#[d4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_cad_init
 </UL>
 
 <P><STRONG><a name="[ef]"></a>hal_sx1268_write_fifo</STRONG> (Thumb, 68 bytes, Stack size 24 bytes, hal_sx1268.o(i.hal_sx1268_write_fifo))
@@ -1791,9 +1793,9 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[103]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hal_sx1268_write_regs
 </UL>
-<BR>[Called By]<UL><LI><a href="#[e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_power
+<BR>[Called By]<UL><LI><a href="#[ea]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_recv_init
+<LI><a href="#[e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_power
 <LI><a href="#[e5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_set_pack_params
-<LI><a href="#[ea]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;drv_sx1268_recv_init
 </UL>
 
 <P><STRONG><a name="[103]"></a>hal_sx1268_write_regs</STRONG> (Thumb, 74 bytes, Stack size 24 bytes, hal_sx1268.o(i.hal_sx1268_write_regs))
@@ -2198,9 +2200,9 @@ Global Symbols
 <P><STRONG><a name="[127]"></a>rt_free</STRONG> (Thumb, 98 bytes, Stack size 16 bytes, mem.o(i.rt_free))
 <BR><BR>[Stack]<UL><LI>Max Depth = 104<LI>Call Chain = rt_free &rArr; rt_sem_take &rArr; rt_ipc_list_suspend &rArr; rt_thread_suspend &rArr; rt_timer_stop &rArr; _rt_timer_remove
 </UL>
-<BR>[Calls]<UL><LI><a href="#[128]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_sem_take
+<BR>[Calls]<UL><LI><a href="#[129]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;plug_holes
+<LI><a href="#[128]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_sem_take
 <LI><a href="#[12a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_sem_release
-<LI><a href="#[129]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;plug_holes
 </UL>
 <BR>[Called By]<UL><LI><a href="#[13e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_object_delete
 <LI><a href="#[155]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_thread_idle_excute
@@ -2278,12 +2280,12 @@ Global Symbols
 <P><STRONG><a name="[13a]"></a>rt_object_allocate</STRONG> (Thumb, 74 bytes, Stack size 24 bytes, object.o(i.rt_object_allocate))
 <BR><BR>[Stack]<UL><LI>Max Depth = 136<LI>Call Chain = rt_object_allocate &rArr; rt_malloc &rArr; rt_sem_take &rArr; rt_ipc_list_suspend &rArr; rt_thread_suspend &rArr; rt_timer_stop &rArr; _rt_timer_remove
 </UL>
-<BR>[Calls]<UL><LI><a href="#[139]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_malloc
+<BR>[Calls]<UL><LI><a href="#[13c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_strncpy
+<LI><a href="#[139]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_malloc
 <LI><a href="#[124]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_hw_interrupt_enable
 <LI><a href="#[6b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_hw_interrupt_disable
 <LI><a href="#[13b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_object_get_information
 <LI><a href="#[13d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_list_insert_after
-<LI><a href="#[13c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_strncpy
 </UL>
 <BR>[Called By]<UL><LI><a href="#[6e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_thread_create
 </UL>
@@ -2319,11 +2321,11 @@ Global Symbols
 <P><STRONG><a name="[141]"></a>rt_object_init</STRONG> (Thumb, 60 bytes, Stack size 24 bytes, object.o(i.rt_object_init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = rt_object_init &rArr; rt_strncpy
 </UL>
-<BR>[Calls]<UL><LI><a href="#[124]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_hw_interrupt_enable
+<BR>[Calls]<UL><LI><a href="#[13c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_strncpy
+<LI><a href="#[124]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_hw_interrupt_enable
 <LI><a href="#[6b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_hw_interrupt_disable
 <LI><a href="#[13b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_object_get_information
 <LI><a href="#[13d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_list_insert_after
-<LI><a href="#[13c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_strncpy
 </UL>
 <BR>[Called By]<UL><LI><a href="#[147]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_sem_init
 <LI><a href="#[158]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rt_thread_init
@@ -2881,9 +2883,9 @@ Local Symbols
 </UL>
 
 <P><STRONG><a name="[a4]"></a>_fp_digits</STRONG> (Thumb, 366 bytes, Stack size 64 bytes, printfa.o(i._fp_digits), UNUSED)
-<BR><BR>[Calls]<UL><LI><a href="#[55]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dadd
-<LI><a href="#[5c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
+<BR><BR>[Calls]<UL><LI><a href="#[5c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
 <LI><a href="#[5d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
+<LI><a href="#[55]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dadd
 <LI><a href="#[65]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_uldivmod
 <LI><a href="#[68]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2ulz
 <LI><a href="#[a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_cdrcmple

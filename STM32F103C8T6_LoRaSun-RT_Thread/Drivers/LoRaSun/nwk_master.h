@@ -1,15 +1,17 @@
 /******************************************************************************
 *
-* Copyright (c) 2024 艺大师
+* Copyright (c) 2024 小易
 * 本项目开源文件遵循GPL-v3协议
 * 
 * 文章专栏地址:https://blog.csdn.net/ypp240124016/category_12834955
-* 项目开源地址:https://github.com/WalleFarm/LoRaSun
-* 协议栈原理专利:CN110572843A
+* github主页:      https://github.com/WalleFarm
+* LoRaSun开源地址: https://github.com/WalleFarm/LoRaSun
+* M2M-IOT开源地址: https://github.com/WalleFarm/M2M-IOT
+* 协议栈原理专利:CN110572843A (一种基于LoRa无线模块CAD模式的嗅探方法及系统)
 *
 * 测试套件采购地址:https://duandianwulian.taobao.com/
 *
-* 作者:艺大师
+* 作者:小易
 * 博客主页:https://blog.csdn.net/ypp240124016?type=blog
 * 交流QQ群:701889554  (资料文件存放)
 * 微信公众号:端点物联 (即时接收教程更新通知)
@@ -28,7 +30,7 @@
 
 #define NWK_GW_WIRELESS_NUM     4    //天线数量    
 #define NWK_NODE_MAX_NUM        100  //节点最大数量,根据芯片RAM确定  
-//#define NWK_MASTER_USE_AES        //是否启用AES加密,根据芯片能力和需求确定
+#define NWK_MASTER_USE_AES        //是否启用AES加密,根据芯片能力和需求确定
 
 typedef enum
 {
@@ -54,9 +56,9 @@ typedef struct NwkNodeTokenStruct
   u8 down_buff[50];//下行缓冲区,STM32F103C8T6 RAM较小,不宜设置过大,测试50字节够用了
   u8 down_len; 
   u8 down_cnts;
-  u8 join_state;
   u16 wake_period;//唤醒周期
   s16 rssi;
+  u8 join_state;
   s8 snr;
   u8 up_pack_num,down_pack_num;
   u8 app_key[16];
@@ -89,8 +91,6 @@ typedef struct
   u8 params[50];
 }NwkMasterEventStruct;//事件
 
-
-
 typedef struct
 {
   u32 gw_sn;
@@ -99,6 +99,7 @@ typedef struct
   u16 node_cnts;
   u8 freq_ptr;//频段序号
   u8 run_mode;
+  u16 broad_offset;//广播偏移
   NwkSlaveTokenStruct slave_token_list[NWK_GW_WIRELESS_NUM];
   NwkMasterRecvFromStruct recv_from;
   NwkMasterEventStruct event;
@@ -116,6 +117,7 @@ void nwk_master_send_slave_config(u8 slave_addr);
 void nwk_master_send_down_pack(u32 dst_sn, u8 slave_addr, u8 *in_buff, u8 in_len, u8 flag);
 
 NwkSlaveTokenStruct *nwk_master_find_slave(u8 slave_addr);
+void nwk_master_set_offset(u16 offset);
 void nwk_master_set_root_key(u8 *key);
 void nwk_master_set_config(u8 freq_ptr, u8 run_mode);
 void nwk_master_get_config(u8 *freq_ptr, u8 *run_mode);

@@ -62,7 +62,7 @@
 #  define VERSION_1
 #endif
 
-#include "nwk_aes.h"
+#include "drv_aes.h"
 
 //#if defined( HAVE_UINT_32T )
 //  typedef unsigned long uint32_t;

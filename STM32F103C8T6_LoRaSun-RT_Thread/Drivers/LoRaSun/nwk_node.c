@@ -1,8 +1,27 @@
+/******************************************************************************
+*
+* Copyright (c) 2024 小易
+* 本项目开源文件遵循GPL-v3协议
+* 
+* 文章专栏地址:https://blog.csdn.net/ypp240124016/category_12834955
+* github主页:      https://github.com/WalleFarm
+* LoRaSun开源地址: https://github.com/WalleFarm/LoRaSun
+* M2M-IOT开源地址: https://github.com/WalleFarm/M2M-IOT
+* 协议栈原理专利:CN110572843A (一种基于LoRa无线模块CAD模式的嗅探方法及系统)
+*
+* 测试套件采购地址:https://duandianwulian.taobao.com/
+*
+* 作者:小易
+* 博客主页:https://blog.csdn.net/ypp240124016?type=blog
+* 交流QQ群:701889554  (资料文件存放)
+* 微信公众号:端点物联 (即时接收教程更新通知)
+*
+* 所有学习资源合集:https://blog.csdn.net/ypp240124016/article/details/143068017
+*
+* 免责声明:本项目所有资料仅限于学习和交流使用,请勿商用.
+*
+********************************************************************************/
 
-/*
-	组网协议中的节点部分
-
-*/
 
 
 #include "nwk_node.h" 
@@ -88,6 +107,20 @@ void nwk_node_del_gw(u32 gw_sn)
 void nwk_node_set_wake_period(u16 period)
 {
 	g_sNwkNodeWork.wake_period=period;
+}
+
+/*		
+================================================================================
+描述 : 设置搜索周期和时长
+输入 : 
+输出 : 
+================================================================================
+*/ 
+void nwk_node_set_search_time(u32 period, u32 wait_time)
+{
+  NwkNodeSearchStruct *pSearch=&g_sNwkNodeWork.node_search;
+  pSearch->period=period;
+  pSearch->wait_time=wait_time;
 }
 
 /*		
@@ -445,6 +478,9 @@ u8 nwk_node_make_send_buff(u8 opt, u32 dst_sn, u8 *key, u8 cmd_type, u8 pack_num
 		case EncryptAES:
 		{
 #ifdef	NWK_NODE_USE_AES	//是否使用AES加密		
+			u8 remain_len=union_len%16;
+			if(remain_len>0)
+				union_len+=(16-remain_len);//16字节对齐,便于TEA加密		      
 			int out_len=nwk_aes_encrypt(union_buff, union_len, pEncrypt, NWK_TRANSMIT_MAX_SIZE, key);//aes加密
 			if(out_len<16)
 			{
@@ -719,15 +755,17 @@ NwkParentWorkStrcut *nwk_node_search_gw(u32 gw_sn)
 */ 
 NwkParentWorkStrcut *nwk_node_select_gw(void)
 {
-	//网关质量:N信号*0.5+N(1-负载)*0.3+N(5-失败次数)*0.2   N表示归一化
-  
+  u8 ptr=nwk_get_rand()%NWK_GW_NUM;
   for(u8 i=0; i<NWK_GW_NUM; i++)
   {
-    NwkParentWorkStrcut *pGateWay=&g_sNwkNodeWork.parent_list[i];
-    if(pGateWay->gw_sn>0)
+    if(ptr>=NWK_GW_NUM)ptr=0;
+    NwkParentWorkStrcut *pGateWay=&g_sNwkNodeWork.parent_list[ptr];
+    if(pGateWay->gw_sn>0 && pGateWay->join_state==JoinStateOK)
     {
+      printf("select gw=0x%08X\n", pGateWay->gw_sn);
       return pGateWay;
     }
+    ptr++;
   }  
   
 	return NULL;
@@ -958,7 +996,7 @@ void nwk_node_search_process(void)
       else
       {
         u32 now_time=nwk_get_rtc_counter();
-        if(now_time-pSearch->search_start_time>10)//搜索时间到
+        if(now_time-pSearch->search_start_time>pSearch->wait_time)//搜索时间到
         {
           pSearch->alarm_rtc_time=now_time+pSearch->wait_time;
           pSearch->search_start_time=now_time;
@@ -1097,7 +1135,7 @@ void nwk_node_rx_process(void)
 		case NwkNodeRxAdrInit:
 		{
 			u8 sf, bw;
-			u32 freq=pNodeRx->freq;//+pNodeRx->group_id*500000;
+			u32 freq=pNodeRx->freq;
       nwk_get_down_channel(pNodeRx->group_id, &sf, &bw);
       pNodeRx->curr_sf=sf;
       pNodeRx->curr_bw=bw;      
@@ -1255,7 +1293,7 @@ void nwk_node_tx_gw_process(void)
       
       if(pGateWay)
       {
-//        nwk_node_device_init();//初始化设备
+        nwk_node_device_init();//初始化设备
         u8 key_type=KeyTypeRoot;
         u8 *pKey=g_sNwkNodeWork.root_key;
         if(pGateWay->join_state==JoinStateOK && pNodeTxGw->tx_cmd!=NwkCmdJoin)//入网用根密码,入网后应用数据用应用密码
@@ -1333,7 +1371,7 @@ void nwk_node_tx_gw_process(void)
       pNodeTxGw->start_rtc_time=nwk_get_rtc_counter();//记录当前时间,防止超时
       pNodeTxGw->wait_cnts=tx_time/1000+1;//等待秒数
       pNodeTxGw->tx_state=NwkNodeTxStaticFirstCheck;
-      printf("send first buff!\n");         
+      printf("send first buff! tx_time=%ums\n", tx_time);         
       break;
     }
     case NwkNodeTxStaticFirstCheck://发送抢占包检测
@@ -1454,9 +1492,7 @@ void nwk_node_tx_gw_process(void)
         u32 now_time=nwk_get_rtc_counter();
         pNodeTxGw->wait_cnts=nwk_get_rand()%10;//随机延时,再次尝试
         pNodeTxGw->start_rtc_time=now_time;
-        pNodeTxGw->alarm_rtc_time=now_time+pNodeTxGw->wait_cnts;//闹钟时间
-//        pNodeTxGw->wireless_ptr++;//下一根天线
-        
+        pNodeTxGw->alarm_rtc_time=now_time+pNodeTxGw->wait_cnts;//闹钟时间        
         if(pNodeTxGw->wireless_ptr>=pNodeTxGw->pGateWay->wireless_num)//结束发送
         {
           nwk_node_clear_tx();       
@@ -1720,7 +1756,7 @@ void nwk_node_tx_d2d_process(void)
     {
       u8 key_type=KeyTypeRoot;
       u8 *pKey=g_sNwkNodeWork.root_key;
-      u8 encrypt_mode=NWK_NODE_USE_ENCRYPT_MODE;//加密模式一般根据芯片能力直接固定即可
+      u8 encrypt_mode=EncryptTEA;
       u8 opt=NwkRoleNode | (encrypt_mode<<2) | (key_type<<4);//组合配置
       
       //组合发送数据
@@ -1914,21 +1950,6 @@ void nwk_node_tx_d2d_process(void)
         nwk_node_clear_d2d();       
         pNodeTxD2d->alarm_rtc_time=0xFFFFFFFF;//可以进入休眠
       }
-      else
-      {
-//        u32 now_time=nwk_get_rtc_counter();
-//        pNodeTxD2d->wait_cnts=nwk_get_rand()%10;//随机延时,再次尝试
-//        pNodeTxD2d->start_rtc_time=now_time;
-//        pNodeTxD2d->alarm_rtc_time=now_time+pNodeTxD2d->wait_cnts;//闹钟时间
-//        pNodeTxD2d->group_id+=(nwk_get_rand()%3+1);
-//        if(pNodeTxD2d->group_id>=NWK_UP_CHANNEL_NUM-1)
-//        {
-//          pNodeTxD2d->group_id=NWK_UP_CHANNEL_NUM-1;
-//        }
-//        printf("d2d wait time=%ds\n", pNodeTxD2d->wait_cnts);        
-//        printf_oled("d2d wait time=%ds\n", pNodeTxD2d->wait_cnts);  
-//        printf("d2d alarm time=%us\n", pNodeTxD2d->alarm_rtc_time);
-      }
       nwk_node_set_led(false);//指示灯灭
       pNodeTxD2d->d2d_state=NwkNodeTxD2dIdel;//回合结束      
       break;
@@ -1954,10 +1975,10 @@ void nwk_node_tx_d2d_process(void)
 */ 
 void nwk_node_work_check(void)
 {
-  NwkNodeTxGwStruct *pNodeTxGw=&g_sNwkNodeWork.node_tx_gw;
-  NwkNodeTxD2dStruct *pNodeD2d=&g_sNwkNodeWork.node_tx_d2d;  
-  NwkNodeRxStruct *pNodeRx=&g_sNwkNodeWork.node_rx;
-  NwkNodeSearchStruct *pNodeSearch=&g_sNwkNodeWork.node_search;
+  static NwkNodeTxGwStruct *pNodeTxGw=&g_sNwkNodeWork.node_tx_gw;
+  static NwkNodeTxD2dStruct *pNodeD2d=&g_sNwkNodeWork.node_tx_d2d;  
+  static NwkNodeRxStruct *pNodeRx=&g_sNwkNodeWork.node_rx;
+  static NwkNodeSearchStruct *pNodeSearch=&g_sNwkNodeWork.node_search;
   
 	switch(g_sNwkNodeWork.work_state)
 	{
@@ -1992,50 +2013,42 @@ void nwk_node_work_check(void)
           }
         }
       }
+      if(g_sNwkNodeWork.work_state==NwkNodeWorkIdel)//仍旧空闲--入网检查
+      {
+				u32 now_time=nwk_get_rtc_counter();
+        for(u8 i=0; i<NWK_GW_NUM; i++)
+        {
+          NwkParentWorkStrcut *pGateWay=&g_sNwkNodeWork.parent_list[i];
+          if(pGateWay->gw_sn>0)
+          {
+            if(pGateWay->wait_join_time==0)
+            {
+              pGateWay->wait_join_time=nwk_get_rand()%10+3;//首次入网等待时间
+              pGateWay->last_join_time=now_time;
+            }          
+            if(pGateWay->join_state==JoinStateNone && 
+               now_time-pGateWay->last_join_time>pGateWay->wait_join_time)
+            {
+              printf("pGateWay=0x%08X, join_state=%d\n", pGateWay->gw_sn, pGateWay->join_state);          
+              pGateWay->wait_join_time=nwk_get_rand()%60+60;
+              pGateWay->last_join_time=now_time;
+              nwk_node_req_join(pGateWay->gw_sn);//请求入网
+              return;
+            }            
+          }
+        }        
+      }      
       //搜索检查
       if(g_sNwkNodeWork.work_state==NwkNodeWorkIdel)//仍旧空闲--搜索
       {
-//        //不具备有效网关就要搜索
-//        u8 gw_cnts=0;
-//        for(u8 i=0; i<NWK_GW_NUM; i++)
-//        {
-//          NwkParentWorkStrcut *pGateWay=&g_sNwkNodeWork.parent_list[i];
-//          if(pGateWay->gw_sn>0)
-//          {
-//            gw_cnts++;
-//          }
-//        }
-//        u32 now_time=nwk_get_rtc_counter();
-
-//        int det_time=now_time-pNodeSearch->search_start_time;
-////				printf("det_time=%d\n", det_time);
-//        if(pNodeSearch->wait_time==0 || (det_time>0 && (now_time-9)%300==0) )//  
-//        {
-//          if(pNodeSearch->wait_time==0)
-//          {
-//            pNodeSearch->wait_time=300;
-//          }          
-////          pNodeSearch->wait_time*=2;
-////          if(pNodeSearch->wait_time>86400)
-////          {
-////            pNodeSearch->wait_time=86400;
-////          }
-//          pNodeSearch->alarm_rtc_time=0;//禁止休眠
-//          pNodeSearch->search_start_time=now_time;
-//          pNodeSearch->search_state=NwkNodeSearchInit;
-//          g_sNwkNodeWork.work_state=NwkNodeWorkSearch;//进入搜索状态
-//          printf("*****start search!\n");
-//          printf_oled("**start search!");
-//        }
-        
-        static u8 flag=0;
-        if(!flag)//启动时搜索一次,避免影响并发测试
+        u32 now_time=nwk_get_rtc_counter();
+        if(pNodeSearch->search_start_time==0  || //起始
+           now_time<TIME_STAMP_THRESH ||  //时间未同步
+          (pNodeSearch->period>0 && now_time%pNodeSearch->period==0) )
         {
-          flag=1;
-          pNodeSearch->alarm_rtc_time=0;//禁止休眠
-          pNodeSearch->search_start_time=nwk_get_rtc_counter();
+          pNodeSearch->search_start_time=now_time;
           pNodeSearch->search_state=NwkNodeSearchInit;
-          g_sNwkNodeWork.work_state=NwkNodeWorkSearch;//进入搜索状态         
+          g_sNwkNodeWork.work_state=NwkNodeWorkSearch;//进入搜索状态             
         }
         
       } 
@@ -2067,31 +2080,7 @@ void nwk_node_work_check(void)
           }
         }        
       }
-      if(g_sNwkNodeWork.work_state==NwkNodeWorkIdel)//仍旧空闲--入网检查
-      {
-				u32 now_time=nwk_get_rtc_counter();
-        for(u8 i=0; i<NWK_GW_NUM; i++)
-        {
-          NwkParentWorkStrcut *pGateWay=&g_sNwkNodeWork.parent_list[i];
-          if(pGateWay->gw_sn>0)
-          {
-            if(pGateWay->wait_join_time==0)
-            {
-              pGateWay->wait_join_time=nwk_get_rand()%10+3;//首次入网等待时间
-              pGateWay->last_join_time=now_time;
-            }          
-            if(pGateWay->join_state==JoinStateNone && 
-               now_time-pGateWay->last_join_time>pGateWay->wait_join_time)
-            {
-              printf("pGateWay=0x%08X, join_state=%d\n", pGateWay->gw_sn, pGateWay->join_state);          
-              pGateWay->wait_join_time=nwk_get_rand()%60+60;
-              pGateWay->last_join_time=now_time;
-              nwk_node_req_join(pGateWay->gw_sn);//请求入网
-              return;
-            }            
-          }
-        }        
-      }
+
     
 			break;
 		}

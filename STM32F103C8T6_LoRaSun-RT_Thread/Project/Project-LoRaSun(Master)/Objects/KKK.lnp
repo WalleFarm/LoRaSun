@@ -44,7 +44,7 @@
 ".\objects\mqttsubscribeserver.o"
 ".\objects\mqttunsubscribeclient.o"
 ".\objects\mqttunsubscribeserver.o"
-".\objects\aes.o"
+".\objects\drv_aes.o"
 ".\objects\nwk_bsp.o"
 ".\objects\nwk_master.o"
 ".\objects\hal_sx1268.o"

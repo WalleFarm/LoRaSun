@@ -1,3 +1,26 @@
+/******************************************************************************
+*
+* Copyright (c) 2024 小易
+* 本项目开源文件遵循GPL-v3协议
+* 
+* 文章专栏地址:https://blog.csdn.net/ypp240124016/category_12834955
+* github主页:      https://github.com/WalleFarm
+* LoRaSun开源地址: https://github.com/WalleFarm/LoRaSun
+* M2M-IOT开源地址: https://github.com/WalleFarm/M2M-IOT
+* 协议栈原理专利:CN110572843A (一种基于LoRa无线模块CAD模式的嗅探方法及系统)
+*
+* 测试套件采购地址:https://duandianwulian.taobao.com/
+*
+* 作者:小易
+* 博客主页:https://blog.csdn.net/ypp240124016?type=blog
+* 交流QQ群:701889554  (资料文件存放)
+* 微信公众号:端点物联 (即时接收教程更新通知)
+*
+* 所有学习资源合集:https://blog.csdn.net/ypp240124016/article/details/143068017
+*
+* 免责声明:本项目所有资料仅限于学习和交流使用,请勿商用.
+*
+********************************************************************************/
 
 #ifndef __NWK_NODE_H__
 #define __NWK_NODE_H__
@@ -29,11 +52,10 @@
 
 
 #define NWK_GW_NUM              3   //监听的网关最大数量
-#define NWK_D2D_NODE_NUM        3   //D2D设备存储最大数量
 
-//#define NWK_NODE_USE_AES        //是否启用AES加密,根据芯片能力和需求确定
+#define NWK_NODE_USE_AES        //是否启用AES加密,根据芯片能力和需求确定
 
-#define NWK_NODE_USE_ENCRYPT_MODE     EncryptTEA  //节点使用的加密方法
+#define NWK_NODE_USE_ENCRYPT_MODE     EncryptAES  //节点使用的加密方法
 
 
 typedef enum
@@ -129,7 +151,7 @@ typedef struct
 typedef struct
 {
   u8 search_state;//搜索状态
-  u32 wait_time;//搜索间隔
+  u32 period, wait_time;//搜索周期和时长
   u32 search_start_time;
   u32 alarm_rtc_time;//闹钟唤醒时间点
 }NwkNodeSearchStruct;//广播搜索结构体
@@ -188,7 +210,7 @@ typedef struct
 typedef struct
 {
   u32 src_sn; //数据来源
-  u8 app_data[256];//应用数据
+  u8 app_data[255];//应用数据
   u16 data_len;//数据长度
   bool read_flag;//读取标志
 }NwkNodeRecvFromStruct;//数据接收结构体
@@ -217,6 +239,7 @@ void nwk_node_set_root_key(u8 *key);
 void nwk_node_add_gw(u32 gw_sn, u8 base_freq, u8 wireless_num, u8 run_mode);
 void nwk_node_del_gw(u32 gw_sn);
 void nwk_node_set_wake_period(u16 period);
+void nwk_node_set_search_time(u32 period, u32 wait_time);
 void nwk_node_set_lora_dev(LoRaDevStruct *pLoRaDev);
 void nwk_node_set_led(bool state);//LED
 void nwk_node_set_lora_param(u32 freq, u8 sf, u8 bw);

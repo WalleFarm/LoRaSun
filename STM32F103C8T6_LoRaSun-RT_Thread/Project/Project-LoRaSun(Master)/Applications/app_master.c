@@ -1,17 +1,17 @@
 /******************************************************************************
 *
-* Copyright (c) 2024 艺大师
+* Copyright (c) 2024 小易
 * 本项目开源文件遵循GPL-v3协议
 * 
 * 文章专栏地址:https://blog.csdn.net/ypp240124016/category_12834955
-* github主页:  https://github.com/WalleFarm
-* LoRaSun开源地址:https://github.com/WalleFarm/LoRaSun
-* M2M-IOT开源地址:  https://github.com/WalleFarm/M2M-IOT
+* github主页:      https://github.com/WalleFarm
+* LoRaSun开源地址: https://github.com/WalleFarm/LoRaSun
+* M2M-IOT开源地址: https://github.com/WalleFarm/M2M-IOT
 * 协议栈原理专利:CN110572843A (一种基于LoRa无线模块CAD模式的嗅探方法及系统)
 *
 * 测试套件采购地址:https://duandianwulian.taobao.com/
 *
-* 作者:艺大师
+* 作者:小易
 * 博客主页:https://blog.csdn.net/ypp240124016?type=blog
 * 交流QQ群:701889554  (资料文件存放)
 * 微信公众号:端点物联 (即时接收教程更新通知)
@@ -27,6 +27,7 @@
 #include "app_mqtt.h" 
 #include "drv_server.h"
 
+AppMasterSaveStruct g_sAppMasterSave={0};
 /*		
 ================================================================================
 描述 : led初始化
@@ -293,9 +294,12 @@ u16 app_server_recv_parse(u8 cmd_type, u8 *buff, u16 len)
       u8 freq_ptr=pData[0];
       pData+=1;
       u8 run_mode=pData[0];
-      pData+=1;
+      pData+=1;     
       nwk_master_set_config(freq_ptr, run_mode);//设置配置信息 
       app_master_send_status();
+      g_sAppMasterSave.freq_ptr=freq_ptr;
+      g_sAppMasterSave.run_mode=run_mode;      
+      app_master_save();//保存参数
       break;
     }    
     case GW01_CMD_SET_BROAD:
@@ -332,6 +336,56 @@ void app_aep_recv_parse(char *topic, u8 *in_buff, u16 in_len)
     pData+=2;
     nwk_master_add_down_pack(dst_sn, pData, data_len);//缓存
   }
+}
+
+/*		
+================================================================================
+描述 : 配置信息保存
+输入 : 
+输出 : 
+================================================================================
+*/
+void app_master_save(void)
+{
+  g_sAppMasterSave.crcValue=nwk_crc16((u8*)&g_sAppMasterSave, sizeof(g_sAppMasterSave)-2);
+  EEPROM_Write(0x200, (u8*)&g_sAppMasterSave, sizeof(g_sAppMasterSave));
+}
+
+/*		
+================================================================================
+描述 : 配置信息读取
+输入 : 
+输出 : 
+================================================================================
+*/
+void app_master_read(void)
+{
+  EEPROM_Read(0x200, (u8*)&g_sAppMasterSave, sizeof(g_sAppMasterSave));
+  if(g_sAppMasterSave.crcValue!=nwk_crc16((u8*)&g_sAppMasterSave, sizeof(g_sAppMasterSave)-2))
+  {
+    memset((u8*)&g_sAppMasterSave, 0, sizeof(g_sAppMasterSave));
+    g_sAppMasterSave.freq_ptr=0;//起始频段
+    g_sAppMasterSave.run_mode=NwkRunModeDynamic;//运行模式
+    app_master_save();
+    printf("app_master_read new!\n");
+  }
+  
+  nwk_master_set_config(g_sAppMasterSave.freq_ptr, g_sAppMasterSave.run_mode);//设置配置信息    
+  nwk_master_set_offset(g_sAppMasterSave.broad_offset);
+}
+
+/*		
+================================================================================
+描述 : 
+输入 : 
+输出 : 
+================================================================================
+*/
+void app_master_set_offset(u16 offset)
+{
+  nwk_master_set_offset(offset);
+  g_sAppMasterSave.broad_offset=offset;
+  app_master_save();
 }
 
 
@@ -381,12 +435,10 @@ void app_master_thread_entry(void *parameter)
   u8 root_key[17]={"0123456789ABCDEF"};//根密码, 跟节点保持一致
   nwk_master_set_root_key(root_key);
   
-  printf("LoRaSun version=V%d.%02d\n", NWK_LORASUN_VERSION>>8&0xFF, NWK_LORASUN_VERSION&0xFF);
+  printf("LoRaSun Nwk version=V%d.%02d\n", NWK_LORASUN_VERSION>>8&0xFF, NWK_LORASUN_VERSION&0xFF);
 
   delay_os(100);
-  u8 freq_ptr=13;//不要超过30
-  nwk_master_set_config(freq_ptr, NwkRunModeDynamic);//设置配置信息  
-  
+  app_master_read();//读取运行模式等配置参数
   while(1)
   {
     app_master_uart_recv_check();//串口接收检查

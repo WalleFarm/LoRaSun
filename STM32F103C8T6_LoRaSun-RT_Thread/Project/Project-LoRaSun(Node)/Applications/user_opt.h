@@ -7,7 +7,7 @@
 #define		USE_UART2
 #define		USE_UART3
 
-#define		APP_NAME						"LoRaSun"
+#define		APP_NAME						"LoRaSun-Node"
 #define		APP_VER 						"1.0.1"  //应用软件版本
 
 //#define		USE_WDOG   //是否启用看门狗

@@ -456,11 +456,6 @@
               <FilePath>..\..\Drivers\board.c</FilePath>
             </File>
             <File>
-              <FileName>drv_iic.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Drivers\drv_iic.c</FilePath>
-            </File>
-            <File>
               <FileName>drv_encrypt.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Drivers\drv_encrypt.c</FilePath>
@@ -563,67 +558,12 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>MQTT</GroupName>
-          <Files>
-            <File>
-              <FileName>MQTTConnectClient.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Drivers\MQTT\MQTTConnectClient.c</FilePath>
-            </File>
-            <File>
-              <FileName>MQTTConnectServer.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Drivers\MQTT\MQTTConnectServer.c</FilePath>
-            </File>
-            <File>
-              <FileName>MQTTDeserializePublish.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Drivers\MQTT\MQTTDeserializePublish.c</FilePath>
-            </File>
-            <File>
-              <FileName>MQTTFormat.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Drivers\MQTT\MQTTFormat.c</FilePath>
-            </File>
-            <File>
-              <FileName>MQTTPacket.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Drivers\MQTT\MQTTPacket.c</FilePath>
-            </File>
-            <File>
-              <FileName>MQTTSerializePublish.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Drivers\MQTT\MQTTSerializePublish.c</FilePath>
-            </File>
-            <File>
-              <FileName>MQTTSubscribeClient.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Drivers\MQTT\MQTTSubscribeClient.c</FilePath>
-            </File>
-            <File>
-              <FileName>MQTTSubscribeServer.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Drivers\MQTT\MQTTSubscribeServer.c</FilePath>
-            </File>
-            <File>
-              <FileName>MQTTUnsubscribeClient.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Drivers\MQTT\MQTTUnsubscribeClient.c</FilePath>
-            </File>
-            <File>
-              <FileName>MQTTUnsubscribeServer.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Drivers\MQTT\MQTTUnsubscribeServer.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
           <GroupName>Encrypt</GroupName>
           <Files>
             <File>
-              <FileName>aes.c</FileName>
+              <FileName>drv_aes.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\Drivers\encrypt\mbedtls\aes.c</FilePath>
+              <FilePath>..\..\Drivers\encrypt\drv_aes.c</FilePath>
             </File>
           </Files>
         </Group>

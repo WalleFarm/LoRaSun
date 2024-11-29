@@ -7,7 +7,8 @@
 #define		USE_UART2
 #define		USE_UART3
 
-
+#define		APP_NAME						"LoRaSun-Master"
+#define		APP_VER 						"1.0.1"
 
 //#define		USE_WDOG   //是否启用看门狗
 

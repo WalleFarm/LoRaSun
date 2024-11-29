@@ -1,15 +1,17 @@
 /******************************************************************************
 *
-* Copyright (c) 2024 艺大师
+* Copyright (c) 2024 小易
 * 本项目开源文件遵循GPL-v3协议
 * 
 * 文章专栏地址:https://blog.csdn.net/ypp240124016/category_12834955
-* 项目开源地址:https://github.com/WalleFarm/LoRaSun
-* 协议栈原理专利:CN110572843A
+* github主页:      https://github.com/WalleFarm
+* LoRaSun开源地址: https://github.com/WalleFarm/LoRaSun
+* M2M-IOT开源地址: https://github.com/WalleFarm/M2M-IOT
+* 协议栈原理专利:CN110572843A (一种基于LoRa无线模块CAD模式的嗅探方法及系统)
 *
 * 测试套件采购地址:https://duandianwulian.taobao.com/
 *
-* 作者:艺大师
+* 作者:小易
 * 博客主页:https://blog.csdn.net/ypp240124016?type=blog
 * 交流QQ群:701889554  (资料文件存放)
 * 微信公众号:端点物联 (即时接收教程更新通知)
@@ -215,7 +217,8 @@ void app_slave_uart_send(u8 *buff, u16 len)
 {
   u8 state=GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_2);
   srand(drv_get_rtc_counter());
-  while(state==0)
+  u16 wait_cnts=20;
+  while(state==0 && wait_cnts--)
   {
     u8 rand_num=(u8)rand();
     delay_os(rand_num);
@@ -381,7 +384,7 @@ void app_slave_read_config(void)
   EEPROM_Read(50, (u8*)&g_sAppSlaveSave, sizeof(g_sAppSlaveSave));
   if(g_sAppSlaveSave.crcValue!=drv_crc16((u8*)&g_sAppSlaveSave, sizeof(g_sAppSlaveSave)-2))
   {
-    g_sAppSlaveSave.slave_addr=1;
+    g_sAppSlaveSave.slave_addr=4;
     app_slave_write_config();
     printf("app_slave_read_config new!\n");
   }
@@ -413,6 +416,7 @@ void app_slave_thread_entry(void *parameter)
 {
   static u32 run_cnts=0;
   static bool led_state=false;
+  printf("LoRaSun Nwk version=V%d.%02d\n", NWK_LORASUN_VERSION>>8&0xFF, NWK_LORASUN_VERSION&0xFF);
   
   app_slave_read_config();
   app_slave_lora_init();
