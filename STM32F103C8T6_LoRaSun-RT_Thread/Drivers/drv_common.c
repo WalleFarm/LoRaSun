@@ -261,7 +261,7 @@ void drv_rtc_init(void)
 	u8 count=0;
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR | RCC_APB1Periph_BKP, ENABLE);
 	PWR_BackupAccessCmd(ENABLE);
-
+  RCC_LSICmd(ENABLE);
 	if(0 || BKP_ReadBackupRegister(BKP_DR1) != 0xA5A5)//检测是否断电过
 	{
 		BKP_DeInit();

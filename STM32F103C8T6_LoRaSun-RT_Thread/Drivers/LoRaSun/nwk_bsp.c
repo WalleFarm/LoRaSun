@@ -200,7 +200,7 @@ int nwk_get_rand(void)
 {
   int rand_num=rand();
 //  srand_num=rand_num;
-  srand(rand_num);
+//  srand(rand_num);
   return rand_num;
 }
 
@@ -268,6 +268,83 @@ u32 nwk_get_sn_freq(u32 node_sn)
   u16 freq_cnts=(NWK_MAX_FREQ-NWK_MIN_FREQ)/500000;//频点数量,0.5M间隔
   u32 freq=(nwk_crc16((u8*)&node_sn, 4)%freq_cnts)*500000+NWK_MIN_FREQ;//根据序列号计算频段    
   return freq;
+}
+
+/*		
+================================================================================
+描述 : 根据射频参数计算发送时间
+输入 : 
+输出 : 发送时间,返回0表示无效,单位：ms
+================================================================================
+*/ 
+u32 nwk_calcu_air_time(u8 sf, u8 bw, u16 data_len)
+{
+	float bw_value=0.f, t_s;
+	u32 tx_time=0;
+	
+	switch(bw)
+	{
+		case 0:
+			bw_value=7.8;
+			break;
+		case 1:
+			bw_value=10.4;
+			break;
+		case 2:
+			bw_value=15.6;
+			break;
+		case 3:
+			bw_value=20.8;
+			break;
+		case 4:
+			bw_value=31.25;
+			break;
+		case 5:
+			bw_value=41.6;
+			break;
+		case 6:
+			bw_value=62.5;
+			break;
+		case 7:
+			bw_value=125;
+			break;
+		case 8:
+			bw_value=250;
+			break;
+		case 9:
+			bw_value=500;
+			break;
+		default: return 0;	
+	}
+	
+	if(sf<7 || sf>12)
+	{
+		return 0;
+	}
+	t_s=1.f*(1<<sf)/bw_value;
+	
+	int payload_nb=0;
+	int k1=8*data_len-4*sf+24;
+	int k2=4*(sf-2);
+	
+	payload_nb=k1/k2;
+	if(payload_nb<0)
+	{
+		payload_nb=0;
+	}
+	else if(k1%k2>0)
+	{
+		payload_nb++;
+	}
+	
+	payload_nb=payload_nb*5+8;
+		
+	tx_time=(u32)(payload_nb+12.5)*t_s;
+	if(tx_time==0)
+	{
+		tx_time=1;
+	}
+	return tx_time*1.2;
 }
 
 /*		

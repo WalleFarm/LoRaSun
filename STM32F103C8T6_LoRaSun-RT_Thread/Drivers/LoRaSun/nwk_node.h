@@ -130,6 +130,24 @@ typedef enum
 
 }NwkNodeTxD2dState;//发送D2D状态
 
+typedef enum
+{
+  NwkNodeEventNone=0,
+  NwkNodeEventTxGwOK,//网关发送结果
+  NwkNodeEventTxGwFailed,
+  NwkNodeEventTxD2DOK,//D2D发送结果
+  NwkNodeEventTxD2DFailed,
+  NwkNodeEventJoinResult,
+  
+}NwkNodeEvent;//事件类型
+
+typedef struct
+{
+  u8 event;
+  u8 params[50];
+}NwkNodeEventStruct;//事件
+
+
 typedef struct
 {
   u32 gw_sn; //网关序列号
@@ -225,6 +243,7 @@ typedef struct
   RfParamStruct rf_param;
   LoRaDevStruct *pLoRaDev;
   NwkNodeRecvFromStruct recv_from;
+  NwkNodeEventStruct event;
 
   NwkNodeSearchStruct node_search;
   NwkNodeTxGwStruct node_tx_gw;
@@ -249,7 +268,7 @@ void nwk_node_cad_init(void);
 void nwk_node_recv_init(void);
 u8 nwk_node_cad_check(void);
 u8 nwk_node_recv_check(u8 *buff, RfParamStruct *rf_param);
-u32 nwk_node_calcu_air_time(u8 sf, u8 bw, u16 data_len);
+
 void nwk_node_send_buff(u8 *buff, u16 len);
 u8 nwk_node_send_check(void);
 void nwk_node_send_sniff(u8 sf, u8 bw);
@@ -272,9 +291,10 @@ void nwk_node_tx_d2d_process(void);
 
 void nwk_node_work_check(void);
 NwkNodeRecvFromStruct *nwk_node_recv_from_check(void);
+NwkNodeEventStruct *nwk_node_event_check(void);
 RfParamStruct *nwk_node_take_rf_param(void);
 void nwk_node_take_tx_cnts(u16 *total_cnts, u16 *ok_cnts);
-u32 nwk_node_cacul_alarm_time(void);
+u32 nwk_node_calcu_alarm_time(void);
 void nwk_node_main_process(void);
 
 

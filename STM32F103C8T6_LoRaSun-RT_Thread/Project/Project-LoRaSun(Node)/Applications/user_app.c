@@ -108,9 +108,9 @@ void app_uart_thread_entry(void *parameter)
 			{
 				nwk_node_req_join(0xC1011234);//请求入网
 			}
-      else if((pData=strstr(pBuff, "sn:"))!=NULL)
+      else if((pData=strstr(pBuff, "node_sn:"))!=NULL)
       {
-        pData+=strlen("sn:");
+        pData+=strlen("node_sn:");
         u32 node_sn=0;
         sscanf((char*)pData, "%08X", &node_sn);
         app_node_set_sn(node_sn);

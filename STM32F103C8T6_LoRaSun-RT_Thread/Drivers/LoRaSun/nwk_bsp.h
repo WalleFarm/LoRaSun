@@ -147,6 +147,7 @@ void nwk_get_up_channel(u8 chn, u8 *sf, u8 *bw);
 void nwk_get_down_channel(u8 chn, u8 *sf, u8 *bw);
 void nwk_get_static_channel4(u8 chn, u8 *sf, u8 *bw);
 u32 nwk_get_sn_freq(u32 node_sn);
+u32 nwk_calcu_air_time(u8 sf, u8 bw, u16 data_len);
 
 
 #endif

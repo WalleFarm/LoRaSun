@@ -48,27 +48,6 @@ void nwk_master_uart_send_register(u8 index, u8 slave_adddr, void (*fun_send)(u8
 
 /*		
 ================================================================================
-描述 : 发送时长计算
-输入 : 
-输出 : 
-================================================================================
-*/ 
-u32 nwk_master_calcu_air_time(u8 sf, u8 bw, u16 data_len)
-{
-  u32 tx_time=0;
-#if defined(LORA_SX1278)  
-	
-	tx_time=drv_sx1278_calcu_air_time(sf, bw, data_len);
-#elif defined(LORA_SX1268)
-  tx_time=drv_sx1268_calcu_air_time(sf, bw, data_len);
-#elif defined(LORA_LLCC68)
- 
-#endif	
-return tx_time;  
-}
-
-/*		
-================================================================================
 描述 : 
 输入 :  
 输出 : 
@@ -269,7 +248,7 @@ void nwk_master_lora_parse(u8 *recv_buff, u8 recv_len, u8 slave_addr, RfParamStr
 	u8 head[1]={0xA5}; 
 	u8 union_buff[NWK_TRANSMIT_MAX_SIZE+16]={0};
 	u8 *pData=nwk_find_head(recv_buff, recv_len, head, 1);
-	
+	printf_hex("lora in=", recv_buff, recv_len);
 	if(pData)
 	{
 		pData+=1;
@@ -349,6 +328,7 @@ void nwk_master_lora_parse(u8 *recv_buff, u8 recv_len, u8 slave_addr, RfParamStr
 			}			
 		}
     #define   NWK_UP_ACK_WAIT_TIME    100  //上行回复包延时
+    printf_hex("lora out=", union_buff, union_len);
 		if(union_len>0)
 		{
 			pData=union_buff;
@@ -435,7 +415,7 @@ void nwk_master_lora_parse(u8 *recv_buff, u8 recv_len, u8 slave_addr, RfParamStr
             //组合LoRa回复包
             static u8 lora_buff[50]={0};
             u8 lora_len=0;						
-            u32 tx_time=nwk_master_calcu_air_time(rf->sf, rf->bw, 16)+NWK_UP_ACK_WAIT_TIME;
+            u32 tx_time=nwk_calcu_air_time(rf->sf, rf->bw, 16)+NWK_UP_ACK_WAIT_TIME;
             u8 det_sec=tx_time/1000;
             if(tx_time%1000>500)det_sec+=1;//四舍五入
             now_time+=det_sec;//增加延时
@@ -502,7 +482,7 @@ void nwk_master_lora_parse(u8 *recv_buff, u8 recv_len, u8 slave_addr, RfParamStr
             //组合回复包
             static u8 lora_buff[50]={0}; 
             u8 lora_len=0;
-            u32 tx_time=nwk_master_calcu_air_time(rf->sf, rf->bw, 16)+NWK_UP_ACK_WAIT_TIME;
+            u32 tx_time=nwk_calcu_air_time(rf->sf, rf->bw, 16)+NWK_UP_ACK_WAIT_TIME;
             u8 det_sec=tx_time/1000;
             if(tx_time%1000>500)det_sec+=1;//四舍五入
             now_time+=det_sec;//增加延时          
@@ -600,6 +580,8 @@ void nwk_master_send_broad(u8 slave_addr)
 	u8 make_buff[20]={0};
 	u8 make_len=0;
 	u32 gw_sn=g_sNwkMasterWork.gw_sn;
+  u32 now_time=nwk_get_rtc_counter();
+  printf("now_time1=%us\n", now_time);
 	make_buff[make_len++]=0xA5;
 	make_buff[make_len++]=gw_sn>>24;
 	make_buff[make_len++]=gw_sn>>16;
@@ -608,6 +590,24 @@ void nwk_master_send_broad(u8 slave_addr)
 	make_buff[make_len++]=g_sNwkMasterWork.freq_ptr | (g_sNwkMasterWork.run_mode<<7);//起始频段+运行模式
 	make_buff[make_len++]=slave_addr<<4 | NWK_GW_WIRELESS_NUM;//天线序号/数量
 	make_buff[make_len++]=nwk_get_rand();//保留
+  
+  u16 tx_time=nwk_calcu_air_time(NWK_BROAD_SF, NWK_BROAD_BW, 16)*1.2;
+  u16 remain_time=tx_time%1000;
+  u16 delay_time=0;
+  if(remain_time>0)
+  {
+    delay_time=1000-remain_time;
+    delay_os(delay_time);    
+  }
+  printf("tx_time=%ums, remain_time=%ums, delay_time=%ums\n", tx_time, remain_time, delay_time);
+
+  now_time+=(tx_time/1000+1);//增加发送时间
+  printf("now_time2=%us\n", now_time);
+	make_buff[make_len++]=now_time>>24;
+	make_buff[make_len++]=now_time>>16;
+	make_buff[make_len++]=now_time>>8;
+	make_buff[make_len++]=now_time;
+  make_len+=4;//补全8字节
 	make_len=nwk_tea_encrypt(make_buff, make_len, (u32 *)g_sNwkMasterWork.root_key);//加密广播数据
 	if(make_len>0)
 	{
@@ -980,7 +980,7 @@ void nwk_master_check_down_pack(void)
         else
         {
           pTemp->down_time=now_time;
-          u8 slave_addr=nwk_get_rand()%NWK_GW_WIRELESS_NUM+1;
+          u8 slave_addr=nwk_get_rand()%(NWK_GW_WIRELESS_NUM-1)+2;
 //          slave_addr=1;
           printf(">>>down tx node_sn=0x%08X, slave_addr=%d\n", pTemp->node_sn, slave_addr);
           nwk_master_send_down_pack(pTemp->node_sn, slave_addr, pTemp->down_buff, pTemp->down_len, awake_flag);         

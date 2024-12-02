@@ -434,7 +434,7 @@ void app_node_read_config(void)
 //	nwk_node_add_gw(0xC1012202, base_freq_ptr, 4, NwkRunModeStatic);//手动添加目标网关 NwkRunModeStatic NwkRunModeDynamic
 	nwk_node_set_sn(g_sAppNodeSave.node_sn);//设置节点SN
 	nwk_node_set_wake_period(g_sAppNodeSave.wake_period);  //设置节点唤醒周期
-  nwk_node_set_search_time(120, 10);//网关搜索周期 要进行并发测试的时候周期设置长一点,避免影响测试效果
+  nwk_node_set_search_time(120*1, 10);//网关搜索周期 要进行并发测试的时候周期设置长一点,避免影响测试效果
                                     //网关默认设置是2分钟广播一次
   u8 root_key[17]={"0123456789ABCDEF"};//根密码,跟网关保持一致
   nwk_node_set_root_key(root_key);
@@ -442,7 +442,7 @@ void app_node_read_config(void)
   g_sOLEDShowNode.node_sn=g_sAppNodeSave.node_sn;
   g_sOLEDShowNode.wake_period=g_sAppNodeSave.wake_period;
   
-  srand(nwk_crc16((u8*)&g_sOLEDShowNode.node_sn, 4));//随机数种子
+  srand(g_sOLEDShowNode.node_sn*nwk_get_rtc_counter());//随机数种子
 }
 
 /*		
@@ -515,7 +515,7 @@ void app_node_send_status(void)
 void app_node_sleep_check(void)
 {
   static u32 last_time=0;
-  u32 alarm_time=nwk_node_cacul_alarm_time();
+  u32 alarm_time=nwk_node_calcu_alarm_time();
   if(last_time!=alarm_time)
   {
     last_time=alarm_time;
@@ -532,6 +532,60 @@ void app_node_sleep_check(void)
   }
 
 }
+
+
+/*		
+================================================================================
+描述 : 协议层事件处理
+输入 : 
+输出 : 
+================================================================================
+*/
+void app_node_event_parse(void)
+{
+  NwkNodeEventStruct *pEvent=nwk_node_event_check();
+  if(pEvent)//有事件发生
+  {
+    switch(pEvent->event)//事件处理
+    {
+      case NwkNodeEventTxGwOK:
+      {
+        printf("### NwkNodeEventTxGwOK\n");
+        break;
+      }
+      case NwkNodeEventTxGwFailed:
+      {
+        printf("### NwkNodeEventTxGwFailed\n");      
+        printf_oled("tx gw failed!");
+        break;
+      }
+      case NwkNodeEventTxD2DOK:
+      {
+        printf("### NwkNodeEventTxD2DOK\n");
+        break;
+      }
+      case NwkNodeEventTxD2DFailed:
+      {
+        printf("### NwkNodeEventTxD2DFailed\n");
+        printf_oled("tx d2d failed!");
+        break;
+      }      
+      case NwkNodeEventJoinResult:
+      {
+        u8 *pData=pEvent->params;
+        u8 join_state=pData[0];
+        pData+=1;
+        u32 gw_sn=pData[0]<<24|pData[1]<<16|pData[2]<<8|pData[3];
+        pData+=4;
+        printf("join %08X =%d!\n", gw_sn, join_state);
+        printf_oled("join %08X ok!", gw_sn);
+        break;
+      }
+    }
+    pEvent->event=NwkNodeEventNone;
+  }
+}
+
 
 /*		
 ================================================================================
@@ -572,6 +626,7 @@ void app_node_thread_entry(void *parameter)
       printf_hex("app buff=", recv_from->app_data, recv_from->data_len);//用户数据
       printf_oled("rx=%s", recv_from->app_data);
     }
+    app_node_event_parse();//协议栈内部事件处理
     app_node_sleep_check();//休眠检测
 
     app_node_key_check();//按键检测
