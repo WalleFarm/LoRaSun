@@ -1121,9 +1121,9 @@ void nwk_node_rx_process(void)
 				if(pData)
 				{
 					pData+=1;
-					u32 dst_sn=pData[0]<<24|pData[1]<<16|pData[2]<<8|pData[3];
+					u32 dst_sn=pData[0]<<24|pData[1]<<16|pData[2]<<8|pData[3];//目标SN
 					pData+=4;
-					pNodeRx->will_len=pData[0];
+					pNodeRx->will_len=pData[0];//将要发送的数据长度
 					pData+=1;
 					if(dst_sn==0xFFFFFFFF)//广播
 					{
@@ -2031,9 +2031,10 @@ void nwk_node_work_check(void)
         if(pNodeD2d->tx_len>0)//是否有D2D数据需要发送
         {
           u32 now_time=nwk_get_rtc_counter();
-          if(pNodeD2d->wake_period==0)
-            pNodeD2d->wake_period=1;
-          if((now_time+1)%pNodeD2d->wake_period==0)//唤醒周期到 提前1秒
+          u16 wake_period=pNodeD2d->wake_period;
+          if(wake_period==0)
+            wake_period=1;
+          if((now_time+1)%wake_period==0)//唤醒周期到 提前1秒
           {
             printf("tx d2d wait ok! time=%us\n", now_time);
             pNodeD2d->alarm_rtc_time=0;
@@ -2073,7 +2074,7 @@ void nwk_node_work_check(void)
         u32 now_time=nwk_get_rtc_counter();
         if(pNodeSearch->search_start_time==0  || //起始
            now_time<TIME_STAMP_THRESH ||  //时间未同步
-          (pNodeSearch->period>0 && now_time%pNodeSearch->period==0) )
+          (pNodeSearch->period>0 && now_time%pNodeSearch->period==0) )//周期到达
         {
           pNodeSearch->search_start_time=now_time;
           pNodeSearch->search_state=NwkNodeSearchInit;

@@ -133,11 +133,11 @@ typedef enum
 typedef enum
 {
   NwkNodeEventNone=0,
-  NwkNodeEventTxGwOK,//网关发送结果
-  NwkNodeEventTxGwFailed,
-  NwkNodeEventTxD2DOK,//D2D发送结果
-  NwkNodeEventTxD2DFailed,
-  NwkNodeEventJoinResult,
+  NwkNodeEventTxGwOK,//网关发送成功
+  NwkNodeEventTxGwFailed,//网关发送失败
+  NwkNodeEventTxD2DOK,//D2D发送成功
+  NwkNodeEventTxD2DFailed,//D2D发送失败
+  NwkNodeEventJoinResult,//入网结果
   
 }NwkNodeEvent;//事件类型
 

@@ -47,10 +47,6 @@
 ".\objects\drv_aes.o"
 ".\objects\nwk_bsp.o"
 ".\objects\nwk_master.o"
-".\objects\hal_sx1268.o"
-".\objects\drv_sx1268.o"
-".\objects\hal_sx1278.o"
-".\objects\drv_sx1278.o"
 --library_type=microlib --strict --scatter ".\Objects\KKK.sct"
 --summary_stderr --info summarysizes --map --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers

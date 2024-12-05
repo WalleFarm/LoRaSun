@@ -57,16 +57,6 @@ void app_oled96_iic_init(void)
   I2C_InitStructure.I2C_OwnAddress1           = 0x30;                         //设置自身设备地址为0x30
   I2C_Init(I2C1, &I2C_InitStructure);
   I2C_Cmd(I2C1, ENABLE);                                                      //使能I2C1  
-
-//模拟IIC
-//  RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
-//  g_sI2cDrv.port_sda=GPIOB;
-//  g_sI2cDrv.pin_sda=GPIO_Pin_7;
-//  g_sI2cDrv.port_scl=GPIOB;
-//  g_sI2cDrv.pin_scl=GPIO_Pin_6;
-//  IIC_GPIOInit(&g_sI2cDrv);
-  
-  
 }
 
 /*		
@@ -91,19 +81,6 @@ void app_oled96_write_byte(u8 data, u8 mode)
   I2C_SendData(I2C1, data);
   while( I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_BYTE_TRANSMITTING) == ERROR );//检测EV8_2事件
   I2C_GenerateSTOP(I2C1, ENABLE);  
-
-//模拟IIC  
-//  I2cDriverStruct *pIIC=&g_sI2cDrv;
-//  IIC_Start(pIIC);
-//  IIC_WriteByte(pIIC, 0x78);
-//  IIC_WaitAck(pIIC);
-//  if(mode)IIC_WriteByte(pIIC, 0x40);
-//  else IIC_WriteByte(pIIC, 0x00);
-//  
-//  IIC_WaitAck(pIIC);
-//  IIC_WriteByte(pIIC, data);
-//  IIC_WaitAck(pIIC);
-//  IIC_Stop(pIIC);
 }
 
 /*		

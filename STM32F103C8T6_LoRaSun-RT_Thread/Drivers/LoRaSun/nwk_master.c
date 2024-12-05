@@ -591,13 +591,13 @@ void nwk_master_send_broad(u8 slave_addr)
 	make_buff[make_len++]=slave_addr<<4 | NWK_GW_WIRELESS_NUM;//天线序号/数量
 	make_buff[make_len++]=nwk_get_rand();//保留
   
-  u16 tx_time=nwk_calcu_air_time(NWK_BROAD_SF, NWK_BROAD_BW, 16)*1.2;
-  u16 remain_time=tx_time%1000;
+  u16 tx_time=nwk_calcu_air_time(NWK_BROAD_SF, NWK_BROAD_BW, 16);//计算空中时间
+  u16 remain_time=tx_time%1000;//求非整数秒的时间(余数时间)
   u16 delay_time=0;
-  if(remain_time>0)
+  if(remain_time>50)//大于50ms
   {
-    delay_time=1000-remain_time;
-    delay_os(delay_time);    
+    delay_time=1000-remain_time;//需要对齐的延时时间
+    delay_os(delay_time); //进行延时   
   }
   printf("tx_time=%ums, remain_time=%ums, delay_time=%ums\n", tx_time, remain_time, delay_time);
 
@@ -954,7 +954,7 @@ void nwk_master_check_down_pack(void)
       }
       else
       {
-        if((now_time)%period==0)
+        if((now_time+1)%period==0)
         {
           send_flag=true;
         }
@@ -962,7 +962,7 @@ void nwk_master_check_down_pack(void)
       if(send_flag)
       {
         pTemp->down_cnts++;
-        if(pTemp->down_cnts>3)
+        if(pTemp->down_cnts>3)//超过次数, 清理
         {
           printf("down_cnts>3\n");
           NwkMasterEventStruct *pEvent=&g_sNwkMasterWork.event;
@@ -980,10 +980,10 @@ void nwk_master_check_down_pack(void)
         else
         {
           pTemp->down_time=now_time;
-          u8 slave_addr=nwk_get_rand()%(NWK_GW_WIRELESS_NUM-1)+2;
+          u8 slave_addr=nwk_get_rand()%(NWK_GW_WIRELESS_NUM-1)+2;//选择天线
 //          slave_addr=1;
           printf(">>>down tx node_sn=0x%08X, slave_addr=%d\n", pTemp->node_sn, slave_addr);
-          nwk_master_send_down_pack(pTemp->node_sn, slave_addr, pTemp->down_buff, pTemp->down_len, awake_flag);         
+          nwk_master_send_down_pack(pTemp->node_sn, slave_addr, pTemp->down_buff, pTemp->down_len, awake_flag);//发送下行包         
         }
       }
     }

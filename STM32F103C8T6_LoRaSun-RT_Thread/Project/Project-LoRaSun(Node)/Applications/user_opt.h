@@ -33,7 +33,6 @@
 
 
 
-#define		MQTT_CONN_NUM				2   //重定义MQTT连接数量
 
 
 

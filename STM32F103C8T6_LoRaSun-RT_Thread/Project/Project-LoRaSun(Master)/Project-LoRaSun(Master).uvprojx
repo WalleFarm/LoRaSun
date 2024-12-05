@@ -662,36 +662,6 @@
             </File>
           </Files>
         </Group>
-        <Group>
-          <GroupName>SX1268</GroupName>
-          <Files>
-            <File>
-              <FileName>hal_sx1268.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Drivers\sx1268\hal_sx1268.c</FilePath>
-            </File>
-            <File>
-              <FileName>drv_sx1268.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Drivers\sx1268\drv_sx1268.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>SX1278</GroupName>
-          <Files>
-            <File>
-              <FileName>hal_sx1278.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Drivers\sx1278\hal_sx1278.c</FilePath>
-            </File>
-            <File>
-              <FileName>drv_sx1278.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Drivers\sx1278\drv_sx1278.c</FilePath>
-            </File>
-          </Files>
-        </Group>
       </Groups>
     </Target>
   </Targets>
