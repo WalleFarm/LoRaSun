@@ -641,7 +641,7 @@ void nwk_node_recv_parse(u8 *recv_buff, u8 recv_len)
                 u32 ack_time=pData[0]<<24|pData[1]<<16|pData[2]<<8|pData[3];
                 pData+=4;
 								printf("ack_time=%us, now_time=%us\n", ack_time, now_time);
-                if(ack_time>NWK_TIME_STAMP_THRESH && now_time!=ack_time)
+                if(ack_time>NWK_TIME_STAMP_THRESH && now_time!=ack_time) 
                 {
 //                  printf("update rtc time=%us\n", ack_time);
 //                  nwk_set_rtc_counter(ack_time);//更新RTC时间
