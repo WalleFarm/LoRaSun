@@ -1017,7 +1017,14 @@ void nwk_node_search_process(void)
         u32 now_time=nwk_get_rtc_counter();
         if(now_time-pSearch->search_start_time>pSearch->wait_time)//搜索时间到
         {
-          pSearch->alarm_rtc_time=now_time+pSearch->wait_time;
+          if(pSearch->period>0)
+          {
+            pSearch->alarm_rtc_time=(now_time/pSearch->period+1)*pSearch->period;//计算下一个唤醒时刻
+          }
+          else
+          {
+            pSearch->alarm_rtc_time=0;
+          }
           pSearch->search_start_time=now_time;
           printf("exit search!\nalarm time=%us\n", pSearch->alarm_rtc_time);
           printf_oled("exit search!");
